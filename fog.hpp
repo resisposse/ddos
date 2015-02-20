@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #ifndef FOG
 #define FOG
@@ -20,7 +20,8 @@ enum SourceType
 {
 	stStatic,
 	stFading,
-	stPulsing
+	stPulsing,
+	stTest
 };
 
 struct StaticLightSource
@@ -45,7 +46,7 @@ struct StaticLightSource
 struct FadingLightSource : StaticLightSource
 {
 	float lifetime;
-	float life;
+	float life = 0;
 	FadingLightSource(sf::Vector2i _position, sf::Color _color,
 	                  char _intensity, float _lifetime);
 	bool update();
@@ -57,9 +58,21 @@ struct FadingLightSource : StaticLightSource
 struct PulsingLightSource : StaticLightSource
 {
 	float period;
-	float life;
+	float life = 0;
 	PulsingLightSource(sf::Vector2i _position, sf::Color _color,
 	                   char _intensity, float _period);
+	bool update();
+	bool over() {
+		return false;
+	};
+};
+
+struct TestLightSource : StaticLightSource
+{
+	float period;
+	float life = 0;
+	TestLightSource(sf::Vector2i _position, sf::Color _color,
+	                char _intensity, float _period);
 	bool update();
 	bool over() {
 		return false;

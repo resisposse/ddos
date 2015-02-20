@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
@@ -22,13 +22,14 @@ Game::Game()
 {
 	clock = new sf::Clock;
 	app = new sf::RenderWindow(sf::VideoMode(800, 608, 32),
-	                           "SFML Lighting demo by Achpile",
+	                           "Dark Domains Of Space",
 	                           sf::Style::Close);
 	running = true;
 	lastClock = clock->getElapsedTime().asMilliseconds();
 	object = new Object;
 	map = new Map;
 	app->setFramerateLimit(60);
+
 	state.brush.type = stStatic;
 	state.brush.color = sf::Color::Red;
 	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
@@ -64,7 +65,7 @@ void Game::update()
 	state.brush.color.b = 150;
 	state.brush.sourceTime = 2.0f;
 
-	/* Options are: stStatic, stPulsing, stFading */
+	/* Options are: stStatic, stPulsing, stFading, stTest */
 	state.brush.type = stStatic;
 
 	while (running) {
@@ -130,33 +131,40 @@ void Game::processEvent(sf::Event event)
 
 void Game::addSource()
 {
-	if (! sf::IntRect(0, 0, 800, 608).contains(sf::Mouse::getPosition(*app))) {
-		 return;
+	if (!sf::IntRect(0, 0, 800, 608).contains(sf::Mouse::getPosition(*app))) {
+		return;
 	}
 	switch (state.brush.type) {
 	case stStatic:
 		map->sources.push_back((StaticLightSource *)
-		                       (new StaticLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity)));
+		                      (new StaticLightSource
+		                      (state.brush.position,
+		                       state.brush.color,
+		                       state.brush.intensity)));
 		break;
 	case stFading:
 		map->sources.push_back((StaticLightSource *)
-		                       (new FadingLightSource
-                                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity,
-		                        state.brush.sourceTime)));
+		                      (new FadingLightSource
+		                      (state.brush.position,
+		                       state.brush.color,
+		                       state.brush.intensity,
+		                       state.brush.sourceTime)));
 		break;
 	case stPulsing:
 		map->sources.push_back((StaticLightSource *)
-		                       (new PulsingLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity,
-		                        state.brush.sourceTime)));
+		                      (new PulsingLightSource
+		                      (state.brush.position,
+		                       state.brush.color,
+		                       state.brush.intensity,
+		                       state.brush.sourceTime)));
 		break;
+	case stTest:
+		map->sources.push_back((StaticLightSource *)
+		                      (new TestLightSource
+		                      (state.brush.position,
+		                       state.brush.color,
+		                       state.brush.intensity,
+		                       state.brush.sourceTime)));
 	}
 }
 
@@ -164,7 +172,7 @@ int main()
 {
 	game = new Game;
 	srand(time(NULL));
-	while(game->running) {
+	while (game->running) {
 		game->update();
 	}
 	delete game;

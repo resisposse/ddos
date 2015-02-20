@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #ifndef MAIN
 #define MAIN
@@ -19,7 +19,7 @@ struct Game
 	bool focused;
 	Map *map;
 	Object *object;
-	 Game();
+	Game();
 	~Game();
 	void update();
 	void render();
