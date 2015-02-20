@@ -52,7 +52,7 @@ void Game::update()
 	state.brush.sourceTime = 2.0f;
 
 	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stTest;
+	state.brush.type = stFading;
 
 	state.brush.position = sf::Vector2i(sf::Mouse::getPosition(*app) / TILE_SIZE);
 	state.tmpSource = StaticLightSource(state.brush.position,

@@ -4,7 +4,7 @@
 */
 
 #define LIGHT_MAX_LIGHTLEVEL 100
-#define LIGHT_ABSOLUTE 100
+#define LIGHT_ABSOLUTE 80
 
 sf::Color applyIntensity(sf::Color c, char intensity);
 sf::Color reapplyIntensity(sf::Color c, char intensity1, char intensity2);
@@ -54,7 +54,7 @@ struct FadingLightSource : StaticLightSource
 
 struct PulsingLightSource : StaticLightSource
 {
-	float period ;
+	float period;
 	float life = 0;
 	PulsingLightSource(sf::Vector2i _position, sf::Color _color,
 	                   char _intensity, float _period);

@@ -174,21 +174,21 @@ StaticLightSource::StaticLightSource(sf::Vector2i _position, sf::Color _color, c
 
 FadingLightSource::FadingLightSource(sf::Vector2i _position, sf::Color _color,
                                      char _intensity, float _lifetime)
-									 : StaticLightSource(_position, _color, _intensity)
+                                     : StaticLightSource(_position, _color, _intensity)
 {
 	lifetime = _lifetime;
 }
 
 PulsingLightSource::PulsingLightSource(sf::Vector2i _position, sf::Color _color,
                                        char _intensity, float _period) 
-									   : StaticLightSource(_position, _color, _intensity)
+                                       : StaticLightSource(_position, _color, _intensity)
 {
 	period = _period;
 }
 
 TestLightSource::TestLightSource(sf::Vector2i _position, sf::Color _color,
                                  char _intensity, float _period) 
-								 : StaticLightSource(_position, _color, _intensity)
+                                 : StaticLightSource(_position, _color, _intensity)
 {
 	period = _period;
 }
@@ -196,7 +196,7 @@ TestLightSource::TestLightSource(sf::Vector2i _position, sf::Color _color,
 bool FadingLightSource::update()
 {
 	life += frameClock;
-	actualIntensity = (char)(intensity * (abs(lifetime - life)) / lifetime);
+	actualIntensity = (char)(intensity * (lifetime - life) / lifetime);
 	return !over(); 
 }
 
