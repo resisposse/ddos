@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #include <SFML/Graphics.hpp>
 #include <math.h>
@@ -59,31 +59,31 @@ void Map::checkNeighbours(MapTile *tile)
 	}
 	sf::Color color = reapplyIntensity(tile->light, tile->intensity, intensity);
 	if (x > 0) {
-		setIntensity(&tiles[x-1][y], intensity, color);
+		setIntensity(&tiles[x - 1][y], intensity, color);
 	}
 	if (x < MAP_SIZE_X - 1) {
-		setIntensity(&tiles[x+1][y], intensity, color);
+		setIntensity(&tiles[x + 1][y], intensity, color);
 	}
 	if (y > 0) {
-		setIntensity(&tiles[x][y-1], intensity, color);
+		setIntensity(&tiles[x][y - 1], intensity, color);
 	}
 	if (y < MAP_SIZE_Y - 1) {
-		setIntensity(&tiles[x][y+1], intensity, color);
+		setIntensity(&tiles[x][y + 1], intensity, color);
 	}
 	color.r *= 0.9f;
 	color.g *= 0.9f;
 	color.b *= 0.9f;
 	if (x > 0 && y < MAP_SIZE_Y - 1) {
-		setIntensity(&tiles[x-1][y+1], intensity, color);
+		setIntensity(&tiles[x - 1][y + 1], intensity, color);
 	}
 	if (x < MAP_SIZE_X - 1 && y > 0) {
-		setIntensity(&tiles[x+1][y-1], intensity, color);
+		setIntensity(&tiles[x + 1][y - 1], intensity, color);
 	}
 	if (y > 0 && x > 0) {
-		setIntensity(&tiles[x-1][y-1], intensity, color);
+		setIntensity(&tiles[x - 1][y - 1], intensity, color);
 	}
 	if (y < MAP_SIZE_Y - 1 && x < MAP_SIZE_X - 1) {
-		setIntensity(&tiles[x+1][y+1], intensity, color);
+		setIntensity(&tiles[x + 1][y + 1], intensity, color);
 	}
 }
 
@@ -103,7 +103,8 @@ void Map::resetLight()
 			if (tiles[i][j].type == mtAir) {
 				tiles[i][j].intensity = ambientIntensity;
 				tiles[i][j].light = color;
-			} else {
+			}
+			else {
 				tiles[i][j].intensity = 0;
 				tiles[i][j].light = sf::Color::Black;
 			}
@@ -150,14 +151,14 @@ void Map::renderLight()
 	sf::Vector2i to(MAP_SIZE_X, MAP_SIZE_Y);
 	for (int i = from.x - 1; i < to.x; i++) {
 		for (int j = from.y - 1; j < to.y; j++) {
-			lightMask[0].position = getTilePos(i  , j  );
-			lightMask[1].position = getTilePos(i+1, j  );
-			lightMask[2].position = getTilePos(i+1, j+1);
-			lightMask[3].position = getTilePos(i  , j+1);
-			lightMask[0].color = getTileLight(i  , j  );
-			lightMask[1].color = getTileLight(i+1, j  );
-			lightMask[2].color = getTileLight(i+1, j+1);
-			lightMask[3].color = getTileLight(i  , j+1);
+			lightMask[0].position = getTilePos(i, j);
+			lightMask[1].position = getTilePos(i + 1, j);
+			lightMask[2].position = getTilePos(i + 1, j + 1);
+			lightMask[3].position = getTilePos(i, j + 1);
+			lightMask[0].color = getTileLight(i, j);
+			lightMask[1].color = getTileLight(i + 1, j);
+			lightMask[2].color = getTileLight(i + 1, j + 1);
+			lightMask[3].color = getTileLight(i, j + 1);
 			app->draw(lightMask, 4, sf::Quads, sf::BlendMultiply);
 		}
 	}
@@ -172,13 +173,22 @@ StaticLightSource::StaticLightSource(sf::Vector2i _position, sf::Color _color, c
 }
 
 FadingLightSource::FadingLightSource(sf::Vector2i _position, sf::Color _color,
-char _intensity, float _lifetime) : StaticLightSource(_position, _color, _intensity)
+                                     char _intensity, float _lifetime)
+									 : StaticLightSource(_position, _color, _intensity)
 {
 	lifetime = _lifetime;
 }
 
 PulsingLightSource::PulsingLightSource(sf::Vector2i _position, sf::Color _color,
-char _intensity, float _period) : StaticLightSource(_position, _color, _intensity)
+                                       char _intensity, float _period) 
+									   : StaticLightSource(_position, _color, _intensity)
+{
+	period = _period;
+}
+
+TestLightSource::TestLightSource(sf::Vector2i _position, sf::Color _color,
+                                 char _intensity, float _period) 
+								 : StaticLightSource(_position, _color, _intensity)
 {
 	period = _period;
 }
@@ -186,14 +196,21 @@ char _intensity, float _period) : StaticLightSource(_position, _color, _intensit
 bool FadingLightSource::update()
 {
 	life += frameClock;
-	actualIntensity = (char)(intensity * (lifetime - life) / lifetime);
-	return !over();
+	actualIntensity = (char)(intensity * (abs(lifetime - life)) / lifetime);
+	return !over(); 
 }
 
 bool PulsingLightSource::update()
 {
 	life += frameClock;
 	actualIntensity = (char)abs(intensity * (cos(3.1415926 * (life / period))));
+	return !over();
+}
+
+bool TestLightSource::update()
+{
+	life += frameClock;
+	actualIntensity = (char)abs(intensity * (sin(life)*0.5 + sin(3 * life)*0.2 + sin(0.3*life)*0.5));
 	return !over();
 }
 
@@ -212,7 +229,8 @@ sf::Color applyIntensity(sf::Color c, char intensity)
 	float k;
 	if (intensity >= LIGHT_ABSOLUTE) {
 		k = 1.0f;
-	} else {
+	}
+	else {
 		k = (float)intensity / (float)LIGHT_ABSOLUTE;
 	}
 	sf::Color result;
@@ -228,12 +246,14 @@ sf::Color reapplyIntensity(sf::Color c, char intensityOld, char intensityNew)
 	float k1, k2;
 	if (intensityNew >= LIGHT_ABSOLUTE) {
 		k1 = 1.0f;
-	} else {
+	}
+	else {
 		k1 = (float)intensityNew / (float)LIGHT_ABSOLUTE;
 	}
 	if (intensityOld >= LIGHT_ABSOLUTE) {
 		k2 = 1.0f;
-	} else {
+	}
+	else {
 		k2 = (float)intensityOld / (float)LIGHT_ABSOLUTE;
 	}
 	sf::Color result;

@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 struct Game
 {
@@ -12,7 +12,7 @@ struct Game
 	bool focused;
 	GameState state;
 	Map *map;
-	 Game();
+	Game();
 	~Game();
 	void update();
 	void render();

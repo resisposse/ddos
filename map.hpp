@@ -1,7 +1,7 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #define deleteList(list) \
 for (; !(list).empty(); delete (list).back(), (list).pop_back())
@@ -10,10 +10,11 @@ for (unsigned int i = 0; i < (list).size();) { \
 	if (!(list)[i]->update()) { \
 		delete (list)[i]; \
 		(list).erase((list).begin() + i); \
-	} else { \
+		} else { \
 		i++; \
-	} \
+		} \
 }
+
 #define TILE_SIZE 16
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
@@ -63,7 +64,7 @@ struct Map
 	sf::Color ambientColor;
 	std::vector<StaticLightSource *> sources;
 	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
-	 Map();
+	Map();
 	~Map();
 	void update(StaticLightSource *tmpSource);
 	void checkSources(StaticLightSource *tmpSource);

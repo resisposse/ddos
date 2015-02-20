@@ -1,12 +1,16 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
 #include "main.hpp"
+
+#include <vector>
+#include <array>
+#include <list>
 
 Map::Map()
 {
@@ -16,11 +20,11 @@ Map::Map()
 	bgSpr->setTexture(*bgTex);
 	tileTex = new sf::Texture();
 	tileSpr = new sf::Sprite();
-	tileTex->loadFromFile("media/grass.png");
+	tileTex->loadFromFile("media/floor_16px.png");
 	tileSpr->setTexture(*tileTex);
 	forestTex = new sf::Texture();
 	forestSpr = new sf::Sprite();
-	forestTex->loadFromFile("media/forest.png");
+	forestTex->loadFromFile("media/floor_metal_16px.png");
 	forestSpr->setTexture(*forestTex);
 	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
 		"                                  XXXX",

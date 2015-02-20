@@ -1,10 +1,10 @@
 /*
- * Project Name
- * 2015 Â© Project Team (see: LICENSE)
- */
+* Project Name
+* 2015 © Project Team (see: LICENSE)
+*/
 
 #define LIGHT_MAX_LIGHTLEVEL 100
-#define LIGHT_ABSOLUTE 80
+#define LIGHT_ABSOLUTE 100
 
 sf::Color applyIntensity(sf::Color c, char intensity);
 sf::Color reapplyIntensity(sf::Color c, char intensity1, char intensity2);
@@ -17,7 +17,8 @@ enum SourceType
 {
 	stStatic,
 	stFading,
-	stPulsing
+	stPulsing,
+	stTest
 };
 
 struct StaticLightSource
@@ -42,7 +43,7 @@ struct StaticLightSource
 struct FadingLightSource : StaticLightSource
 {
 	float lifetime;
-	float life;
+	float life = 0;
 	FadingLightSource(sf::Vector2i _position, sf::Color _color,
 	                  char _intensity, float _lifetime);
 	bool update();
@@ -53,10 +54,22 @@ struct FadingLightSource : StaticLightSource
 
 struct PulsingLightSource : StaticLightSource
 {
-	float period;
-	float life;
+	float period ;
+	float life = 0;
 	PulsingLightSource(sf::Vector2i _position, sf::Color _color,
 	                   char _intensity, float _period);
+	bool update();
+	bool over() {
+		return false;
+	};
+};
+
+struct TestLightSource : StaticLightSource
+{
+	float period;
+	float life = 0;
+	TestLightSource(sf::Vector2i _position, sf::Color _color,
+	                char _intensity, float _period);
 	bool update();
 	bool over() {
 		return false;
