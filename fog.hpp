@@ -3,6 +3,9 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#ifndef FOG
+#define FOG
+
 #define LIGHT_MAX_LIGHTLEVEL 100
 #define LIGHT_ABSOLUTE 80
 
@@ -76,3 +79,5 @@ struct GameState
 	sf::Color ambientColor;
 	StaticLightSource tmpSource;
 };
+
+#endif

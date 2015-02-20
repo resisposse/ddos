@@ -3,6 +3,9 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#ifndef MAP
+#define MAP
+
 #define deleteList(list) \
 for (; !(list).empty(); delete (list).back(), (list).pop_back())
 #define updateList(list) \
@@ -35,6 +38,12 @@ struct MapTile
 	char absorb;
 };
 
+/*
+ * The fog of war effect is very much integrated into drawing the map
+ * so we have some prototypes mixed in here. Editing the attributes
+ * of FOW happens from 'map.cpp' while the actual implementations reside
+ * in 'fog.cpp'.
+ */
 struct Map
 {
 	/* Lighting */
@@ -73,3 +82,5 @@ struct Map
 		deleteList(sources);
 	};
 };
+
+#endif

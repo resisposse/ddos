@@ -87,7 +87,8 @@ void Map::checkNeighbours(MapTile *tile)
 	}
 }
 
-void Map::light() {
+void Map::light()
+{
 	buildLight();
 	renderLight();
 }
@@ -172,13 +173,15 @@ StaticLightSource::StaticLightSource(sf::Vector2i _position, sf::Color _color, c
 }
 
 FadingLightSource::FadingLightSource(sf::Vector2i _position, sf::Color _color,
-char _intensity, float _lifetime) : StaticLightSource(_position, _color, _intensity)
+                                     char _intensity, float _lifetime)
+                                     : StaticLightSource(_position, _color, _intensity)
 {
 	lifetime = _lifetime;
 }
 
 PulsingLightSource::PulsingLightSource(sf::Vector2i _position, sf::Color _color,
-char _intensity, float _period) : StaticLightSource(_position, _color, _intensity)
+                                       char _intensity, float _period)
+                                       : StaticLightSource(_position, _color, _intensity)
 {
 	period = _period;
 }

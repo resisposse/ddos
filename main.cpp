@@ -6,7 +6,17 @@
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
+#include "object.hpp"
 #include "main.hpp"
+#include <stdio.h>
+
+/* TODO: Parempi paikka tälle? */
+GameState state;
+
+float frameClock;
+sf::RenderWindow *app;
+Game *game;
+sf::Sprite mPlayer;
 
 Game::Game()
 {
@@ -16,14 +26,13 @@ Game::Game()
 	                           sf::Style::Close);
 	running = true;
 	lastClock = clock->getElapsedTime().asMilliseconds();
+	object = new Object;
 	map = new Map;
 	app->setFramerateLimit(60);
-
 	state.brush.type = stStatic;
 	state.brush.color = sf::Color::Red;
 	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
 	state.brush.sourceTime = 2.0f;
-
 	state.ambientColor = sf::Color::White;
 	state.ambientIntensity = 5;
 }
@@ -32,6 +41,7 @@ Game::~Game()
 {
 	delete map;
 	delete clock;
+	delete object;
 	delete app;
 }
 
@@ -40,6 +50,9 @@ void Game::update()
 	currentClock = clock->getElapsedTime().asMilliseconds();
 	frameClock = (currentClock - lastClock) / 1000.0;
 	lastClock = currentClock;
+
+	sf::Time timeSinceLastUpdate = sf::Time::Zero;
+	const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 	state.ambientIntensity = 0;
 	state.ambientColor.r = 0;
@@ -54,24 +67,40 @@ void Game::update()
 	/* Options are: stStatic, stPulsing, stFading */
 	state.brush.type = stStatic;
 
-	state.brush.position = sf::Vector2i(sf::Mouse::getPosition(*app) / TILE_SIZE);
-	state.tmpSource = StaticLightSource(state.brush.position,
-	                                    state.brush.color,
-	                                    state.brush.intensity);
+	while (running) {
+		/* FIXME TILE_SIZE */
+		float positionx = mPlayer.getPosition().x;
+		printf("\n%f", positionx);
+		float positiony = mPlayer.getPosition().y;
+		printf("%f\n", positiony);
+		state.brush.position = sf::Vector2i((int)positionx/4,
+		                                    (int)positiony/4);
 
-	map->ambientColor = state.ambientColor;
-	map->ambientIntensity = state.ambientIntensity;
+		state.tmpSource = StaticLightSource(state.brush.position,
+		                                    state.brush.color,
+		                                    state.brush.intensity);
+		map->ambientColor = state.ambientColor;
+		map->ambientIntensity = state.ambientIntensity;
 
-	processEvents();
+		processEvents();
 
-	app->clear();
-	render();
-	app->display();
+		sf::Time elapsedTime = clock->restart();
+		timeSinceLastUpdate += elapsedTime;
+		while (timeSinceLastUpdate > TimePerFrame) {
+			timeSinceLastUpdate -= TimePerFrame;
+			object->update(TimePerFrame);
+		}
+
+		app->clear();
+		render();
+		app->display();
+	}
 }
 
 void Game::render()
 {
 	map->update(&state.tmpSource);
+	object->render();
 }
 
 void Game::processEvents()
@@ -79,6 +108,7 @@ void Game::processEvents()
 	sf::Event event;
 	while (app->pollEvent(event)) {
 		processEvent(event);
+		object->processEvent(event);
 	}
 	if (!app->isOpen()) {
 		running = false;
@@ -88,12 +118,12 @@ void Game::processEvents()
 void Game::processEvent(sf::Event event)
 {
 	switch(event.type) {
-	case sf::Event::Closed:
-		stop();
-		break;
 	case sf::Event::MouseButtonReleased:
 		if (event.mouseButton.button == sf::Mouse::Left) addSource();
 		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
+		break;
+	case sf::Event::Closed:
+		stop();
 		break;
 	}
 }
@@ -129,10 +159,6 @@ void Game::addSource()
 		break;
 	}
 }
-
-float frameClock;
-sf::RenderWindow *app;
-Game *game;
 
 int main()
 {
