@@ -8,10 +8,6 @@
 #include "map.hpp"
 #include "main.hpp"
 
-#include <vector>
-#include <array>
-#include <list>
-
 Map::Map()
 {
 	bgTex = new sf::Texture();
@@ -148,12 +144,10 @@ Map::~Map()
 	for (int i = 0; i < LIGHT_MAX_LIGHTLEVEL; delete lightTiles[i++]);
 	delete bgTex;
 	delete bgSpr;
-
 	delete floorTex;
 	delete floorSpr;
 	delete floorMetalTex;
 	delete floorMetalSpr;
-
 	delete wallTopLeftTex;
 	delete wallTopLeftSpr;
 	delete wallTopTex;
@@ -172,22 +166,23 @@ Map::~Map()
 	delete wallBottomSpr;
 	delete wallBottomRightSpr;
 	delete wallBottomRightTex;
-
 	deleteList(sources);
 }
+
 /* TODO Add more types of wall types, like T-shaped etc. */
 int Map::updateWallDirection(MapTile tile)
 {
-	/* Tile positions
+	/*
+	 * Tile positions
 	 * [1 2 3]
 	 * [4 5 6]
 	 * [7 8 9]
-	*/
+	 */
 	int a = 5;
 	int x = tile.index.x;
 	int y = tile.index.y;
 
-	if (tiles[x - 1][y].type != tile.type && tiles[x][y - 1].type != tile.type && 
+	if (tiles[x - 1][y].type != tile.type && tiles[x][y - 1].type != tile.type &&
 	    tiles[x + 1][y].type == tile.type && tiles[x][y + 1].type == tile.type) {
 		a = 1;
 	} else if (tiles[x - 1][y].type == tile.type && tiles[x][y - 1].type != tile.type &&

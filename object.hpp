@@ -17,12 +17,12 @@ public:
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
-	sf::RenderWindow mWindow;
 	sf::Texture mTexture;
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	sf::Vector2i mouse;
 };
 extern sf::Sprite mPlayer;
 #endif

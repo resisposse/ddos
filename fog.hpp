@@ -34,13 +34,13 @@ struct StaticLightSource
 	StaticLightSource(sf::Vector2i _position, sf::Color _color, char _intensity);
 	virtual bool update() {
 		return !over();
-	};
+	}
 	virtual char getIntensity() {
 		return actualIntensity;
-	};
+	}
 	virtual bool over() {
 		return false;
-	};
+	}
 };
 
 struct FadingLightSource : StaticLightSource
@@ -52,7 +52,7 @@ struct FadingLightSource : StaticLightSource
 	bool update();
 	bool over() {
 		return (life > lifetime);
-	};
+	}
 };
 
 struct PulsingLightSource : StaticLightSource
@@ -64,7 +64,7 @@ struct PulsingLightSource : StaticLightSource
 	bool update();
 	bool over() {
 		return false;
-	};
+	}
 };
 
 struct TestLightSource : StaticLightSource
@@ -76,7 +76,7 @@ struct TestLightSource : StaticLightSource
 	bool update();
 	bool over() {
 		return false;
-	};
+	}
 };
 
 struct GameState

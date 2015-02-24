@@ -12,7 +12,6 @@ struct Map;
 
 struct Game
 {
-	sf::Clock *clock;
 	long currentClock;
 	long lastClock;
 	bool running;
@@ -23,8 +22,6 @@ struct Game
 	~Game();
 	void update();
 	void render();
-	/* TODO stopin implementaatio helvettiin */
-	void stop() { running = false; };
 	void processEvents();
 	void processEvent(sf::Event event);
 	void addSource();
@@ -32,5 +29,6 @@ struct Game
 extern float frameClock;
 extern sf::RenderWindow *app;
 extern Game *game;
+extern sf::Clock timer;
 
 #endif

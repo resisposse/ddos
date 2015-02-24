@@ -6,9 +6,12 @@
 #include <SFML/Graphics.hpp>
 #include "object.hpp"
 #include "main.hpp"
+#include <math.h>
 
 const float Object::PlayerSpeed = 100.f;
+sf::Time timeSinceLastUpdate = sf::Time::Zero;
 const sf::Time Object::TimePerFrame = sf::seconds(1.f / 60.f);
+sf::Sprite mPlayer;
 
 Object::Object()
 {
@@ -23,19 +26,24 @@ Object::Object()
 
 void Object::run()
 {
-	/*
-	 * TODO: Ajanlaskumenetelmä pitää muuttaa.
-	 * Toimii hyvin yksinään, mutta muun ohjelman kanssa kusee.
-	 */
+	float angle;
+	double a, b;
 
-	sf::Clock clock;
-	sf::Time timeSinceLastUpdate = sf::Time::Zero;
-		sf::Time elapsedTime = clock.restart();
-		timeSinceLastUpdate += elapsedTime;
-		while (timeSinceLastUpdate > TimePerFrame) {
-			timeSinceLastUpdate -= TimePerFrame;
-			update(TimePerFrame);
-		}
+	mouse = sf::Mouse::getPosition(*app);
+	float positionX = mPlayer.getPosition().x;
+	float positionY = mPlayer.getPosition().y;
+	mPlayer.setOrigin(24, 32);
+	a = mouse.x - (positionX);
+	b = mouse.y - (positionY);
+	angle = -atan2(a, b) * 180 / 3.14;
+	mPlayer.setRotation(180 + angle);
+
+	sf::Time elapsedTime = timer.restart();
+	timeSinceLastUpdate += elapsedTime;
+	while (timeSinceLastUpdate > TimePerFrame) {
+		timeSinceLastUpdate -= TimePerFrame;
+		update(TimePerFrame);
+	}
 }
 
 void Object::processEvent(sf::Event event)

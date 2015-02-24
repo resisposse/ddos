@@ -104,8 +104,7 @@ void Map::resetLight()
 			if (tiles[i][j].type == mtAir) {
 				tiles[i][j].intensity = ambientIntensity;
 				tiles[i][j].light = color;
-			}
-			else {
+			} else {
 				tiles[i][j].intensity = 0;
 				tiles[i][j].light = sf::Color::Black;
 			}
@@ -139,10 +138,18 @@ sf::Vector2f Map::getTilePos(int x, int y)
 
 sf::Color Map::getTileLight(int x, int y)
 {
-	if (x < 0) x = 0;
-	if (y < 0) y = 0;
-	if (x >= MAP_SIZE_X) x = MAP_SIZE_X - 1;
-	if (y >= MAP_SIZE_Y) y = MAP_SIZE_Y - 1;
+	if (x < 0) {
+		x = 0;
+	}
+	if (y < 0) {
+		y = 0;
+	}
+	if (x >= MAP_SIZE_X) {
+		x = MAP_SIZE_X - 1;
+	}
+	if (y >= MAP_SIZE_Y) {
+		y = MAP_SIZE_Y - 1;
+	}
 	return tiles[x][y].light;
 }
 
@@ -230,8 +237,7 @@ sf::Color applyIntensity(sf::Color c, char intensity)
 	float k;
 	if (intensity >= LIGHT_ABSOLUTE) {
 		k = 1.0f;
-	}
-	else {
+	} else {
 		k = (float)intensity / (float)LIGHT_ABSOLUTE;
 	}
 	sf::Color result;
@@ -247,14 +253,13 @@ sf::Color reapplyIntensity(sf::Color c, char intensityOld, char intensityNew)
 	float k1, k2;
 	if (intensityNew >= LIGHT_ABSOLUTE) {
 		k1 = 1.0f;
-	}
-	else {
+	} else {
 		k1 = (float)intensityNew / (float)LIGHT_ABSOLUTE;
 	}
+
 	if (intensityOld >= LIGHT_ABSOLUTE) {
 		k2 = 1.0f;
-	}
-	else {
+	} else {
 		k2 = (float)intensityOld / (float)LIGHT_ABSOLUTE;
 	}
 	sf::Color result;
