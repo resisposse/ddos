@@ -19,7 +19,8 @@ Object::Object()
 	mIsMovingDown = false;
 	mIsMovingRight = false;
 	mIsMovingLeft = false;
-	mTexture.loadFromFile("Eagle.png");
+	mTexture.loadFromFile("media/Eagle.png");
+	mTexture.setSmooth(true);
 	mPlayer.setTexture(mTexture);
 	mPlayer.setPosition(100, 100);
 }

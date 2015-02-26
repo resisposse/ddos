@@ -18,7 +18,7 @@ for (unsigned int i = 0; i < (list).size();) { \
 		} \
 }
 
-#define TILE_SIZE 16
+#define TILE_SIZE 32
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
 
@@ -63,29 +63,20 @@ struct Map
 	sf::Color getTileLight(int x, int y);
 
 	/* Tiles */
+	sf::Texture *tileMapTex;
+
 	sf::Texture *bgTex;
 	sf::Sprite *bgSpr;
-	sf::Texture *floorTex;
 	sf::Sprite *floorSpr;
-	sf::Texture *floorMetalTex;
 	sf::Sprite *floorMetalSpr;
-	sf::Texture *wallTopLeftTex;
 	sf::Sprite *wallTopLeftSpr;
-	sf::Texture *wallTopTex;
 	sf::Sprite *wallTopSpr;
-	sf::Texture *wallTopRightTex;
 	sf::Sprite *wallTopRightSpr;
-	sf::Texture *wallLeftTex;
 	sf::Sprite *wallLeftSpr;
-	sf::Texture *wallMiddleTex;
 	sf::Sprite *wallMiddleSpr;
-	sf::Texture *wallRightTex;
 	sf::Sprite *wallRightSpr;
-	sf::Texture *wallBottomLeftTex;
 	sf::Sprite *wallBottomLeftSpr;
-	sf::Texture *wallBottomTex;
 	sf::Sprite *wallBottomSpr;
-	sf::Texture *wallBottomRightTex;
 	sf::Sprite *wallBottomRightSpr;
 
 	int direction;

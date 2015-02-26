@@ -10,83 +10,65 @@
 
 Map::Map()
 {
+	tileMapTex = new sf::Texture();
+	tileMapTex->loadFromFile("media/ddos-tiles1.png");
+
 	bgTex = new sf::Texture();
-	bgSpr = new sf::Sprite();
 	bgTex->loadFromFile("media/background.png");
-	bgSpr->setTexture(*bgTex);
+	bgSpr = new sf::Sprite(*bgTex);
 
-	floorTex = new sf::Texture();
-	floorSpr = new sf::Sprite();
-	floorTex->loadFromFile("media/floor_16px.png");
-	floorSpr->setTexture(*floorTex);
-	floorMetalTex = new sf::Texture();
-	floorMetalSpr = new sf::Sprite();
-	floorMetalTex->loadFromFile("media/floor_metal_16px.png");
-	floorMetalSpr->setTexture(*floorMetalTex);
+	sf::IntRect floor           (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorMetal      (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
 
-	wallTopLeftTex = new sf::Texture();
-	wallTopLeftSpr = new sf::Sprite();
-	wallTopLeftTex->loadFromFile("media/wall_top_left_16px.png");
-	wallTopLeftSpr->setTexture(*wallTopLeftTex);
-	wallTopTex = new sf::Texture();
-	wallTopSpr = new sf::Sprite();
-	wallTopTex->loadFromFile("media/wall_top_16px.png");
-	wallTopSpr->setTexture(*wallTopTex);
-	wallTopRightTex = new sf::Texture();
-	wallTopRightSpr = new sf::Sprite();
-	wallTopRightTex->loadFromFile("media/wall_top_right_16px.png");
-	wallTopRightSpr->setTexture(*wallTopRightTex);
-	wallLeftTex = new sf::Texture();
-	wallLeftSpr = new sf::Sprite();
-	wallLeftTex->loadFromFile("media/wall_left_16px.png");
-	wallLeftSpr->setTexture(*wallLeftTex);
-	wallMiddleTex = new sf::Texture();
-	wallMiddleSpr = new sf::Sprite();
-	wallMiddleTex->loadFromFile("media/wall_middle_16px.png");
-	wallMiddleSpr->setTexture(*wallMiddleTex);
-	wallRightTex = new sf::Texture();
-	wallRightSpr = new sf::Sprite();
-	wallRightTex->loadFromFile("media/wall_right_16px.png");
-	wallRightSpr->setTexture(*wallRightTex);
-	wallBottomLeftTex = new sf::Texture();
-	wallBottomLeftSpr = new sf::Sprite();
-	wallBottomLeftTex->loadFromFile("media/wall_bottom_left_16px.png");
-	wallBottomLeftSpr->setTexture(*wallBottomLeftTex);
-	wallBottomTex = new sf::Texture();
-	wallBottomSpr = new sf::Sprite();
-	wallBottomTex->loadFromFile("media/wall_bottom_16px.png");
-	wallBottomSpr->setTexture(*wallBottomTex);
-	wallBottomRightTex = new sf::Texture();
-	wallBottomRightSpr = new sf::Sprite();
-	wallBottomRightTex->loadFromFile("media/wall_bottom_right_16px.png");
-	wallBottomRightSpr->setTexture(*wallBottomRightTex);
+	sf::IntRect wallTopLeft     (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallTop         (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallTopRight    (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallLeft        (TILE_SIZE * 3, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallMiddle      (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallRight       (TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallBottomLeft  (TILE_SIZE * 3, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallBottom      (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallBottomRight (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+
+	floorSpr           = new sf::Sprite(*tileMapTex, floor);
+	floorMetalSpr      = new sf::Sprite(*tileMapTex, floorMetal);
+
+	wallTopLeftSpr     = new sf::Sprite(*tileMapTex, wallTopLeft);
+	wallTopSpr         = new sf::Sprite(*tileMapTex, wallTop);
+	wallTopRightSpr    = new sf::Sprite(*tileMapTex, wallTopRight);
+	wallLeftSpr        = new sf::Sprite(*tileMapTex, wallLeft);
+	wallMiddleSpr      = new sf::Sprite(*tileMapTex, wallMiddle);
+	wallRightSpr       = new sf::Sprite(*tileMapTex, wallRight);
+	wallBottomLeftSpr  = new sf::Sprite(*tileMapTex, wallBottomLeft);
+	wallBottomSpr      = new sf::Sprite(*tileMapTex, wallBottom);
+	wallBottomRightSpr = new sf::Sprite(*tileMapTex, wallBottomRight);
 
 	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
 		"                                  XXXX",
-		"                                 XXXXX",
-		"                                XXXXXX",
-		"                           XXXXXXXXXXX",
-		"                           XXXXXXXXXXX",
-		"                          XX.......XXX",
-		"XXXXXXXXX                 XX.......XXX",
-		"XXXXXXXXX                XXX.......XXX",
-		"X......XX                XXX.......XXX",
-		"X......XXX              XXXX.......XXX",
-		"X.......XXX             XXXX.......XXX",
-		"X........XXX            XXXX.......XXX",
-		"X.........XX            XXXX.......XXX",
-		"X.........XX             XXX.......XXX",
-		"X.........XX    XXXXXXXXXXXX.......XXX",
-		"X.........XX    XXXXXXXXXXXX.......XXX",
-		"X.........XX    XXXXXXXXXXXX.......XXX",
+		"      XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXX",
+		"      X........XXXXXXXXXXXXXXXXXXXXXXX",
+		"      X...00000...X..............XXXXX",
+		"      X...........X..............XXXXX",
+		"      X.......XX..XXXXXXXXXXXXX..XXXXX",
+		"XXXXXXX..XXXXXXX..XXXXXXXXXX.......XXX",
+		"XXXXXXX..XXXXXXX..XXXXXXXXXX.......XXX",
+		"X........XXXXXXX..X   XXXXXX.......XXX",
+		"X..XXXX..XXXXX X..X    XXXXX.......XXX",
+		"X..X  X..XXX   X..X     XXXX.......XXX",
+		"X..X  X..XXXX  X..X   XXXXXX.......XXX",
+		"X..XXXX...XXXXXX..XXXXXXXXXX.......XXX",
+		"X.....0...XXXXXX..XXXXXXXXXX.......XXX",
+		"X...00000.........X................XXX",
+		"X.....0...........X................XXX",
+		"X.........XXXXXXXXXXXXXXXXXX.......XXX",
 		"X.........XXX   XXX....XXXXXXX.....XXX",
-		"X.........XXX   XXX....XXXXXXX.....XXX",
-		"X000000000XXX   XXX....XXXXXXX.....XXX",
-		"X...00....XXXX  XXX....XXXXXXX.....XXX",
-		"X...000...XXXX  XXX....XXXXXXX.....XXX",
-		"X...00....XXXX  XXX....XXXXXXX.....XXX",
-		"X...000...XXXXXXXXX................XXX",
-		"X...00....XXXXXXXXX................XXX",
+		"X.........XXXXXXXXX....XXXXXXX.....XXX",
+		"X....XXXXXXX....XXX....XXXXXXX.....XXX",
+		"X....X..........XXX....XXXXXXX.....XXX",
+		"X...0X0.........XXX....XXXXXXX.....XXX",
+		"X...00...XXXX...XXX....XXXXXXX.....XXX",
+		"X........XXXXXXXXXX................XXX",
+		"XXXXXXXXXXXXXXXXXXX................XXX",
 		"X...000...XXXXXXXXX................XXX",
 		"X...00....XXXXXXXXX....XXXXXXX.....XXX",
 		"X...000................XXXXXXX.....XXX",
@@ -144,28 +126,17 @@ Map::~Map()
 	for (int i = 0; i < LIGHT_MAX_LIGHTLEVEL; delete lightTiles[i++]);
 	delete bgTex;
 	delete bgSpr;
-	delete floorTex;
 	delete floorSpr;
-	delete floorMetalTex;
 	delete floorMetalSpr;
-	delete wallTopLeftTex;
 	delete wallTopLeftSpr;
-	delete wallTopTex;
 	delete wallTopSpr;
-	delete wallTopRightTex;
 	delete wallTopRightSpr;
-	delete wallLeftTex;
 	delete wallLeftSpr;
-	delete wallMiddleTex;
 	delete wallMiddleSpr;
-	delete wallRightTex;
 	delete wallRightSpr;
-	delete wallBottomLeftTex;
 	delete wallBottomLeftSpr;
-	delete wallBottomTex;
 	delete wallBottomSpr;
 	delete wallBottomRightSpr;
-	delete wallBottomRightTex;
 	deleteList(sources);
 }
 
