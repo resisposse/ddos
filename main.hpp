@@ -12,10 +12,11 @@ struct Map;
 
 struct Game
 {
-	long currentClock;
-	long lastClock;
+	long currentClock = 0;
+	long lastClock = 0;
 	bool running;
 	bool focused;
+	float zoomLevel;
 	Map *map;
 	Object *object;
 	Game();
@@ -28,6 +29,8 @@ struct Game
 };
 extern float frameClock;
 extern sf::RenderWindow *app;
+extern sf::View *playerView;
+extern sf::View *backgroundView;
 extern Game *game;
 extern sf::Clock timer;
 
