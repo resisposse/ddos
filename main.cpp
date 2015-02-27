@@ -41,8 +41,6 @@ Game::Game()
 	
 	float positionX = mPlayerSpr->getPosition().x;
 	float positionY = mPlayerSpr->getPosition().y;
-
-	sf::View test(sf::FloatRect(positionX, positionY, 300, 300));
 	
 	playerView->setCenter(positionX, positionY);
 	playerView->setSize(sf::Vector2f(600, 600));

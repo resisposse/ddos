@@ -23,7 +23,7 @@ Object::Object()
 	mTexture = new sf::Texture();
 	mTexture->loadFromFile("media/ddos-dude-guns.png");
 
-	sf::IntRect mPlayer (32 * 0, 32 * 0, 32, 32);
+	sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
 	mPlayerSpr = new sf::Sprite(*mTexture, mPlayer);
 	mPlayerSpr->setPosition(500, 200);
 }
@@ -39,13 +39,13 @@ void Object::run()
 	float angle;
 	double a, b;
 
-	mouse = sf::Mouse::getPosition(*app);
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
 	float positionX = mPlayerSpr->getPosition().x;
 	float positionY = mPlayerSpr->getPosition().y;
 	mPlayerSpr->setOrigin(16, 16);
 	a = mouse.x - (positionX);
 	b = mouse.y - (positionY);
-	angle = -atan2(a, b) * 180 / 3.14;
+	angle = -atan2(a, b) * 180 / 3.141593;
 	mPlayerSpr->setRotation(angle);
 
 	sf::Time elapsedTime = timer.restart();

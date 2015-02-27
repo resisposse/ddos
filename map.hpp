@@ -1,7 +1,7 @@
 /*
-* Project Name
-* 2015 © Project Team (see: LICENSE)
-*/
+ * Project Name
+ * 2015 © Project Team (see: LICENSE)
+ */
 
 #ifndef MAP
 #define MAP
