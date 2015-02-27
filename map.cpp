@@ -17,6 +17,8 @@ Map::Map()
 	bgTex->loadFromFile("media/background.png");
 	bgSpr = new sf::Sprite(*bgTex);
 
+	
+
 	sf::IntRect floor           (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorMetal      (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
 
