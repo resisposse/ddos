@@ -1,7 +1,7 @@
 /*
-* Project Name
-* 2015 ? Project Team (see: LICENSE)
-*/
+ * Project Name
+ * 2015 ? Project Team (see: LICENSE)
+ */
 
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
@@ -9,7 +9,7 @@
 #include "object.hpp"
 #include "main.hpp"
 
-float frameClock;
+float frameClock = 0;
 GameState state;
 sf::RenderWindow *app;
 Game *game;
@@ -42,10 +42,6 @@ Game::~Game()
 
 void Game::update()
 {
-	currentClock = timer.getElapsedTime().asMilliseconds();
-	frameClock = (currentClock - lastClock) / 1000.0;
-	lastClock = currentClock;
-
 	state.ambientIntensity = 0;
 	state.ambientColor.r = 0;
 	state.ambientColor.g = 0;
@@ -60,6 +56,10 @@ void Game::update()
 	state.brush.type = stPulsing;
 
 	while (running) {
+		currentClock += timer.getElapsedTime().asMilliseconds();
+		frameClock = (currentClock - lastClock) / 1000.f;
+		lastClock = currentClock;
+
 		float positionX = mPlayerSpr->getPosition().x;
 		float positionY = mPlayerSpr->getPosition().y;
 		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,

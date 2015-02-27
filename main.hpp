@@ -1,7 +1,7 @@
 /*
-* Project Name
-* 2015 © Project Team (see: LICENSE)
-*/
+ * Project Name
+ * 2015 © Project Team (see: LICENSE)
+ */
 
 #ifndef MAIN
 #define MAIN
@@ -12,8 +12,8 @@ struct Map;
 
 struct Game
 {
-	long currentClock;
-	long lastClock;
+	long currentClock = 0;
+	long lastClock = 0;
 	bool running;
 	bool focused;
 	Map *map;
