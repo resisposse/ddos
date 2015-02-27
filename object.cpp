@@ -11,7 +11,7 @@
 const float Object::PlayerSpeed = 100.f;
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
 const sf::Time Object::TimePerFrame = sf::seconds(1.f / 60.f);
-sf::Sprite mPlayer;
+sf::Sprite *mPlayerSpr;
 
 Object::Object()
 {
@@ -19,10 +19,19 @@ Object::Object()
 	mIsMovingDown = false;
 	mIsMovingRight = false;
 	mIsMovingLeft = false;
-	mTexture.loadFromFile("media/Eagle.png");
-	mTexture.setSmooth(true);
-	mPlayer.setTexture(mTexture);
-	mPlayer.setPosition(100, 100);
+
+	mTexture = new sf::Texture();
+	mTexture->loadFromFile("media/ddos-dude-guns.png");
+
+	sf::IntRect mPlayer (32 * 0, 32 * 0, 32, 32);
+	mPlayerSpr = new sf::Sprite(*mTexture, mPlayer);
+	mPlayerSpr->setPosition(500, 200);
+}
+
+Object::~Object()
+{
+	delete mTexture;
+	delete mPlayerSpr;
 }
 
 void Object::run()
@@ -31,13 +40,13 @@ void Object::run()
 	double a, b;
 
 	mouse = sf::Mouse::getPosition(*app);
-	float positionX = mPlayer.getPosition().x;
-	float positionY = mPlayer.getPosition().y;
-	mPlayer.setOrigin(24, 32);
+	float positionX = mPlayerSpr->getPosition().x;
+	float positionY = mPlayerSpr->getPosition().y;
+	mPlayerSpr->setOrigin(16, 16);
 	a = mouse.x - (positionX);
 	b = mouse.y - (positionY);
 	angle = -atan2(a, b) * 180 / 3.14;
-	mPlayer.setRotation(180 + angle);
+	mPlayerSpr->setRotation(angle);
 
 	sf::Time elapsedTime = timer.restart();
 	timeSinceLastUpdate += elapsedTime;
@@ -77,12 +86,12 @@ void Object::update(sf::Time TimePerFrame)
 	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
 	}
-	mPlayer.move(movement * TimePerFrame.asSeconds());
+	mPlayerSpr->move(movement * TimePerFrame.asSeconds());
 }
 
 void Object::render()
 {
-	app->draw(mPlayer);
+	app->draw(*mPlayerSpr);
 }
 
 void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)

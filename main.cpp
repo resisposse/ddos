@@ -60,8 +60,8 @@ void Game::update()
 	state.brush.type = stPulsing;
 
 	while (running) {
-		float positionX = mPlayer.getPosition().x;
-		float positionY = mPlayer.getPosition().y;
+		float positionX = mPlayerSpr->getPosition().x;
+		float positionY = mPlayerSpr->getPosition().y;
 		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
 		                                    (int)positionY / TILE_SIZE);
 		state.tmpSource = StaticLightSource(state.brush.position,
