@@ -1,6 +1,6 @@
 /*
  * Project Name
- * 2015 © Project Team (see: LICENSE)
+ * 2015 ? Project Team (see: LICENSE)
  */
 
 #include <SFML/Graphics.hpp>
@@ -33,21 +33,15 @@ Game::Game()
 	state.ambientColor = sf::Color::White;
 	state.ambientIntensity = 5;
 
-
-
-
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
-
+	
 	float positionX = mPlayerSpr->getPosition().x;
 	float positionY = mPlayerSpr->getPosition().y;
-
+	
 	playerView->setCenter(positionX, positionY);
-	playerView->setSize(sf::Vector2f(600, 600));
-	app->setView(*playerView);
-
-
-
+	playerView->setSize(sf::Vector2f(800, 608));
+	app->setView(*playerView);	
 }
 
 Game::~Game()
@@ -56,7 +50,6 @@ Game::~Game()
 	delete object;
 	delete app;
 	delete playerView;
-
 }
 
 void Game::update()
@@ -97,7 +90,7 @@ void Game::update()
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(positionX, positionY);
 		app->setView(*playerView);
-
+		
 		app->display();
 	}
 }
