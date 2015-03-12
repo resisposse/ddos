@@ -21,6 +21,7 @@ struct Game
 	Object *object;
 	Game();
 	~Game();
+	int collision(float x, float y);
 	void update();
 	void render();
 	void processEvents();

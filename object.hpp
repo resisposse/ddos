@@ -16,6 +16,9 @@ public:
 	void update(sf::Time TimePerFrame);
 	void render();
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+	void updatePosition(float X, float Y);
+	float updateCollisionX(float X, float Y);
+	float updateCollisionY();
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
 	sf::Texture *mTexture;
@@ -23,6 +26,8 @@ public:
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	float objectX[3];
+	float objectY[3];
 	sf::Vector2i mouse;
 };
 extern sf::Sprite *mPlayerSpr;

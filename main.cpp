@@ -8,6 +8,7 @@
 #include "map.hpp"
 #include "object.hpp"
 #include "main.hpp"
+#include <iostream>
 
 float frameClock = 0;
 GameState state;
@@ -33,9 +34,6 @@ Game::Game()
 	state.ambientColor = sf::Color::White;
 	state.ambientIntensity = 5;
 
-
-
-
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
 
@@ -46,8 +44,6 @@ Game::Game()
 	playerView->setSize(sf::Vector2f(600, 600));
 	app->setView(*playerView);
 
-
-
 }
 
 Game::~Game()
@@ -57,6 +53,11 @@ Game::~Game()
 	delete app;
 	delete playerView;
 
+}
+
+int Game::collision(float x, float y) {
+	int i = map->Collision(x, y);
+	return i;
 }
 
 void Game::update()
@@ -81,6 +82,7 @@ void Game::update()
 
 		float positionX = mPlayerSpr->getPosition().x;
 		float positionY = mPlayerSpr->getPosition().y;
+		//std::cout << "Main X: " << positionX << "Main Y: " << positionY << std::endl;
 		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
 		                                    (int)positionY / TILE_SIZE);
 		state.tmpSource = StaticLightSource(state.brush.position,
@@ -89,6 +91,19 @@ void Game::update()
 		map->ambientColor = state.ambientColor;
 		map->ambientIntensity = state.ambientIntensity;
 
+		/*
+		int test = 0;
+		if (map->testCollision((positionX), (positionY)) == 1) {
+			//test++;
+			//std::cout << "Collision" << test << std::endl;
+			positionX = mPlayerSpr->getPosition().x;
+			positionY = mPlayerSpr->getPosition().y;
+			object->updateCollisionX(positionX, positionY);
+			//object->updateCollisionY();
+			//mPlayerSpr->move((object->updateCollisionX()), object->updateCollisionY());
+			//std::cout << "uusi position x: " << mPlayerSpr->getPosition().x << "y: " << mPlayerSpr->getPosition().y << std::endl;
+		}
+		*/
 		processEvents();
 		object->run();
 		app->clear();
@@ -97,7 +112,7 @@ void Game::update()
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(positionX, positionY);
 		app->setView(*playerView);
-
+		
 		app->display();
 	}
 }

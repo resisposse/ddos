@@ -3,6 +3,7 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#include "fog.hpp"
 #ifndef MAP
 #define MAP
 
@@ -84,6 +85,7 @@ struct Map
 	sf::Color ambientColor;
 	std::vector<StaticLightSource *> sources;
 	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
+	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
 	Map();
 	~Map();
 	int updateWallDirection(MapTile tile);
@@ -91,6 +93,8 @@ struct Map
 	void checkSources(StaticLightSource *tmpSource);
 	void render();
 	void renderTiles();
+	int testCollision(int x, int y);
+	int Collision(float X, float Y);
 	void clear() {
 		deleteList(sources);
 	};

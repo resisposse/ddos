@@ -6,7 +6,10 @@
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
+#include "object.hpp"
 #include "main.hpp"
+#include "math.h";
+#include <iostream>
 
 Map::Map()
 {
@@ -14,7 +17,7 @@ Map::Map()
 	tileMapTex->loadFromFile("media/ddos-tiles1.png");
 
 	bgTex = new sf::Texture();
-	bgTex->loadFromFile("media/background.png");
+	bgTex->loadFromFile("media/ddos-bg.png");
 	bgSpr = new sf::Sprite(*bgTex);
 
 	
@@ -103,18 +106,22 @@ Map::Map()
 		case 'X':
 			tiles[i][j].type = mtWall;
 			tiles[i][j].absorb = 35;
+			collisionMap[i][j] = 1;
 			break;
 		case '.':
 			tiles[i][j].type = mtFloor;
 			tiles[i][j].absorb = 6;
+			collisionMap[i][j] = 0;
 			break;
 		case ' ':
 			tiles[i][j].type = mtAir;
 			tiles[i][j].absorb = 35;
+			collisionMap[i][j] = 0;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
 			tiles[i][j].absorb = 6;
+			collisionMap[i][j] = 0;
 		}
 	}
 	int lightCount = MAP_SIZE_X * MAP_SIZE_Y;
@@ -281,4 +288,61 @@ void Map::renderTiles()
 			break;
 		}
 	}
+}
+
+
+
+int Map::Collision(float X, float Y) {
+	float x = X;
+	float y = Y;
+	int collision = 0;
+
+	//top
+	int i = x - 9;
+	int j = y - 10;
+
+	if (collision == 0) {
+		for (i; i < x + 9; i++) {
+			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
+				collision = 1;
+				break;
+			}
+		}
+	}
+	//left
+	if (collision == 0) {
+		i = x - 10;
+		j = y - 10;
+		for (j; j < y + 10; j++) {
+			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
+				collision = 1;
+				break;
+			}
+		}
+	}
+	//right
+	if (collision == 1) {
+		i = x + 10;
+		j = y - 10;
+		for (j; j < y + 10; j++) {
+			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
+				collision = 1;
+				break;
+			}
+		}
+	}
+
+	//bottom
+	if (collision == 1) {
+		j = y + 10;
+		i = x - 9;
+		for (i; i < x + 9; i++) {
+			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
+				collision = 1;
+				break;
+			}
+		}
+	}
+	
+	return collision;
 }
