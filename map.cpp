@@ -378,9 +378,6 @@ void Map::renderTiles()
 	}
 }
 
-<<<<<<< HEAD
-
-
 int Map::Collision(float X, float Y) {
 	float x = X;
 	float y = Y;
@@ -432,9 +429,10 @@ int Map::Collision(float X, float Y) {
 			}
 		}
 	}
-	
+
 	return collision;
-=======
+}
+
 int Map::checkNeighbourType(MapTile tile, MapTileType tileType){
 	int neighbours = 0;
 	int x = tile.index.x;
@@ -495,5 +493,4 @@ void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_
 	tileVector[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	tileVector[type]->setColor(tileColor);
 	app->draw(*tileVector[type]);
->>>>>>> c6496200d84400890763de400edc5e98b9c3cc27
 }
