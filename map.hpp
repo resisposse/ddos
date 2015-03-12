@@ -60,6 +60,7 @@ struct Map
 	void addIntensity(sf::Vector2i index, char intensity, sf::Color color);
 	void initIntensity(MapTile *tile);
 	void checkNeighbours(MapTile *tile);
+	int checkNeighbourType(MapTile tile, MapTileType tileType);
 	sf::Vector2f getTilePos(int x, int y);
 	sf::Color getTileLight(int x, int y);
 
@@ -70,15 +71,55 @@ struct Map
 	sf::Sprite *bgSpr;
 	sf::Sprite *floorSpr;
 	sf::Sprite *floorMetalSpr;
-	sf::Sprite *wallTopLeftSpr;
-	sf::Sprite *wallTopSpr;
-	sf::Sprite *wallTopRightSpr;
-	sf::Sprite *wallLeftSpr;
+	sf::Sprite *floorDamagedV1Spr;
+	sf::Sprite *floorDamagedV2Spr;
+	sf::Sprite *floorDamagedV3Spr;
+	sf::Sprite *floorDamagedV4Spr;
+	sf::Sprite *floorDamagedV5Spr;
+
 	sf::Sprite *wallMiddleSpr;
-	sf::Sprite *wallRightSpr;
-	sf::Sprite *wallBottomLeftSpr;
-	sf::Sprite *wallBottomSpr;
-	sf::Sprite *wallBottomRightSpr;
+
+	sf::Sprite *wallHorizontal1Spr;
+	sf::Sprite *wallHorizontal2Spr;
+	sf::Sprite *wallHorizontal3Spr;
+	sf::Sprite *wallHorizontal4Spr;
+	sf::Sprite *wallHorizontal5Spr;
+	sf::Sprite *wallVertical1Spr;
+	sf::Sprite *wallVertical2Spr;
+	sf::Sprite *wallVertical3Spr;
+	sf::Sprite *wallVertical4Spr;
+	sf::Sprite *wallVertical5Spr;
+	sf::Sprite *wallCorner1Spr;
+	sf::Sprite *wallCorner2Spr;
+	sf::Sprite *wallCorner3Spr;
+	sf::Sprite *wallCorner4Spr;
+	sf::Sprite *wallFill1Spr;
+	sf::Sprite *wallFill2Spr;
+	sf::Sprite *wallFill3Spr;
+	sf::Sprite *wallFill4Spr;
+	sf::Sprite *wallFill5Spr;
+
+	std::vector<sf::Sprite *> floorTiles;
+	int floorTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+
+	std::vector<sf::Sprite *> wallHorizontalTiles;
+	int wallHorizontalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+
+	std::vector<sf::Sprite *> wallVerticalTiles;
+	int wallVerticalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+
+	std::vector<sf::Sprite *> wallCornerTiles;
+	int wallCornerTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+
+	std::vector<sf::Sprite *> wallFillTiles;
+	int wallFillTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+
+	void drawFloorTile(int x, int y, sf::Color tileColor);
+	void drawWallCornerTile(int x, int y, sf::Color tileColor);
+	void drawWallHorizontalTile(int x, int y, sf::Color tileColor);
+	void drawWallVerticalTile(int x, int y, sf::Color tileColor);
+	void drawWallFillTile(int x, int y, sf::Color tileColor);
+	void drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int x, int y, sf::Color tileColor);
 
 	int direction;
 	char ambientIntensity;

@@ -13,6 +13,8 @@
 
 Map::Map()
 {
+	srand((unsigned)time(NULL));
+
 	tileMapTex = new sf::Texture();
 	tileMapTex->loadFromFile("media/ddos-tiles1.png");
 
@@ -20,33 +22,96 @@ Map::Map()
 	bgTex->loadFromFile("media/ddos-bg.png");
 	bgSpr = new sf::Sprite(*bgTex);
 
-	
-
 	sf::IntRect floor           (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorMetal      (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-
-	sf::IntRect wallTopLeft     (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallTop         (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallTopRight    (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallLeft        (TILE_SIZE * 3, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV1	(TILE_SIZE * 10, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV2	(TILE_SIZE * 11, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV3	(TILE_SIZE * 12, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV4	(TILE_SIZE * 13, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV5	(TILE_SIZE * 14, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	
 	sf::IntRect wallMiddle      (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallRight       (TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallBottomLeft  (TILE_SIZE * 3, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallBottom      (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallBottomRight (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	
+	sf::IntRect wallHorizontal1 (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallHorizontal2 (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallHorizontal3 (TILE_SIZE * 6, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallHorizontal4 (TILE_SIZE * 7, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallHorizontal5 (TILE_SIZE * 8, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect wallVertical1	(TILE_SIZE * 3, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical2	(TILE_SIZE * 3, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical3	(TILE_SIZE * 3, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical4	(TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical5	(TILE_SIZE * 3, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect wallCorner1		(TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner2		(TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner3		(TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner4		(TILE_SIZE * 3, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect wallFill1		(TILE_SIZE * 2, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill2		(TILE_SIZE * 2, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill3		(TILE_SIZE * 2, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill4		(TILE_SIZE * 2, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill5		(TILE_SIZE * 2, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 
 	floorSpr           = new sf::Sprite(*tileMapTex, floor);
 	floorMetalSpr      = new sf::Sprite(*tileMapTex, floorMetal);
+	floorDamagedV1Spr  = new sf::Sprite(*tileMapTex, floorDamagedV1);
+	floorDamagedV2Spr  = new sf::Sprite(*tileMapTex, floorDamagedV2);
+	floorDamagedV3Spr  = new sf::Sprite(*tileMapTex, floorDamagedV3);
+	floorDamagedV4Spr  = new sf::Sprite(*tileMapTex, floorDamagedV4);
+	floorDamagedV5Spr  = new sf::Sprite(*tileMapTex, floorDamagedV5);
+	floorTiles.push_back(floorSpr);
+	floorTiles.push_back(floorDamagedV1Spr);
+	floorTiles.push_back(floorDamagedV2Spr);
+	floorTiles.push_back(floorDamagedV3Spr);
+	floorTiles.push_back(floorDamagedV4Spr);
+	floorTiles.push_back(floorDamagedV5Spr);
 
-	wallTopLeftSpr     = new sf::Sprite(*tileMapTex, wallTopLeft);
-	wallTopSpr         = new sf::Sprite(*tileMapTex, wallTop);
-	wallTopRightSpr    = new sf::Sprite(*tileMapTex, wallTopRight);
-	wallLeftSpr        = new sf::Sprite(*tileMapTex, wallLeft);
 	wallMiddleSpr      = new sf::Sprite(*tileMapTex, wallMiddle);
-	wallRightSpr       = new sf::Sprite(*tileMapTex, wallRight);
-	wallBottomLeftSpr  = new sf::Sprite(*tileMapTex, wallBottomLeft);
-	wallBottomSpr      = new sf::Sprite(*tileMapTex, wallBottom);
-	wallBottomRightSpr = new sf::Sprite(*tileMapTex, wallBottomRight);
+
+	wallHorizontal1Spr = new sf::Sprite(*tileMapTex, wallHorizontal1);
+	wallHorizontal2Spr = new sf::Sprite(*tileMapTex, wallHorizontal2);
+	wallHorizontal3Spr = new sf::Sprite(*tileMapTex, wallHorizontal3);
+	wallHorizontal4Spr = new sf::Sprite(*tileMapTex, wallHorizontal4);
+	wallHorizontal5Spr = new sf::Sprite(*tileMapTex, wallHorizontal5);
+	wallHorizontalTiles.push_back(wallHorizontal1Spr);
+	wallHorizontalTiles.push_back(wallHorizontal2Spr);
+	wallHorizontalTiles.push_back(wallHorizontal3Spr);
+	wallHorizontalTiles.push_back(wallHorizontal4Spr);
+	wallHorizontalTiles.push_back(wallHorizontal5Spr);
+
+	wallVertical1Spr = new sf::Sprite(*tileMapTex, wallVertical1);
+	wallVertical2Spr = new sf::Sprite(*tileMapTex, wallVertical2);
+	wallVertical3Spr = new sf::Sprite(*tileMapTex, wallVertical3);
+	wallVertical4Spr = new sf::Sprite(*tileMapTex, wallVertical4);
+	wallVertical5Spr = new sf::Sprite(*tileMapTex, wallVertical5);
+	wallVerticalTiles.push_back(wallVertical1Spr);
+	wallVerticalTiles.push_back(wallVertical2Spr);
+	wallVerticalTiles.push_back(wallVertical3Spr);
+	wallVerticalTiles.push_back(wallVertical4Spr);
+	wallVerticalTiles.push_back(wallVertical5Spr);
+
+	wallCorner1Spr = new sf::Sprite(*tileMapTex, wallCorner1);
+	wallCorner2Spr = new sf::Sprite(*tileMapTex, wallCorner2);
+	wallCorner3Spr = new sf::Sprite(*tileMapTex, wallCorner3);
+	wallCorner4Spr = new sf::Sprite(*tileMapTex, wallCorner4);
+	wallCornerTiles.push_back(wallCorner1Spr);
+	wallCornerTiles.push_back(wallCorner2Spr);
+	wallCornerTiles.push_back(wallCorner3Spr);
+	wallCornerTiles.push_back(wallCorner4Spr);
+
+	wallFill1Spr = new sf::Sprite(*tileMapTex, wallFill1);
+	wallFill2Spr = new sf::Sprite(*tileMapTex, wallFill2);
+	wallFill3Spr = new sf::Sprite(*tileMapTex, wallFill3);
+	wallFill4Spr = new sf::Sprite(*tileMapTex, wallFill4);
+	wallFill5Spr = new sf::Sprite(*tileMapTex, wallFill5);
+	wallFillTiles.push_back(wallFill1Spr);
+	wallFillTiles.push_back(wallFill2Spr);
+	wallFillTiles.push_back(wallFill3Spr);
+	wallFillTiles.push_back(wallFill4Spr);
+	wallFillTiles.push_back(wallFill5Spr);
 
 	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
 		"                                  XXXX",
@@ -101,6 +166,11 @@ Map::Map()
 		"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 	};
 	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
+		floorTilesRand[i][j]          = rand() % floorTiles.size();
+		wallHorizontalTilesRand[i][j] = rand() % wallHorizontalTiles.size();
+		wallVerticalTilesRand[i][j]	  = rand() % wallVerticalTiles.size();
+		wallCornerTilesRand[i][j]     = rand() % wallCornerTiles.size();
+		wallFillTilesRand[i][j]	      = rand() % wallFillTiles.size();
 		tiles[i][j].index = sf::Vector2i(i, j);
 		switch (_tiles[i][j]) {
 		case 'X':
@@ -137,15 +207,31 @@ Map::~Map()
 	delete bgSpr;
 	delete floorSpr;
 	delete floorMetalSpr;
-	delete wallTopLeftSpr;
-	delete wallTopSpr;
-	delete wallTopRightSpr;
-	delete wallLeftSpr;
+	delete floorDamagedV1Spr;
+	delete floorDamagedV2Spr;
+	delete floorDamagedV3Spr;
+	delete floorDamagedV4Spr;
+	delete floorDamagedV5Spr;
 	delete wallMiddleSpr;
-	delete wallRightSpr;
-	delete wallBottomLeftSpr;
-	delete wallBottomSpr;
-	delete wallBottomRightSpr;
+	delete wallHorizontal1Spr;
+	delete wallHorizontal2Spr;
+	delete wallHorizontal3Spr;
+	delete wallHorizontal4Spr;
+	delete wallHorizontal5Spr;
+	delete wallVertical1Spr;
+	delete wallVertical2Spr;
+	delete wallVertical3Spr;
+	delete wallVertical4Spr;
+	delete wallVertical5Spr;
+	delete wallCorner1Spr;
+	delete wallCorner2Spr;
+	delete wallCorner3Spr;
+	delete wallCorner4Spr;
+	delete wallFill1Spr;
+	delete wallFill2Spr;
+	delete wallFill3Spr;
+	delete wallFill4Spr;
+	delete wallFill5Spr;
 	deleteList(sources);
 }
 
@@ -228,56 +314,58 @@ void Map::renderTiles()
 			/* TODO Condense this switch case to a function. */
 			switch (direction = updateWallDirection(tiles[i][j])){
 			case 1:
-				wallTopLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallTopLeftSpr->setColor(tileColor);
-				app->draw(*wallTopLeftSpr);
+				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
+				drawWallCornerTile(i, j, tileColor);
 				break;
 			case 2:
-				wallTopSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallTopSpr->setColor(tileColor);
-				app->draw(*wallTopSpr);
+				//drawTile(wallHorizontalTiles, wallHorizontalTilesRand, i, j, tileColor);
+				drawWallHorizontalTile(i, j, tileColor); 
 				break;
 			case 3:
-				wallTopRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallTopRightSpr->setColor(tileColor);
-				app->draw(*wallTopRightSpr);
+				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
+				drawWallCornerTile(i, j, tileColor);
 				break;
 			case 4:
-				wallLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallLeftSpr->setColor(tileColor);
-				app->draw(*wallLeftSpr);
+				//drawTile(wallVerticalTiles, wallVerticalTilesRand, i, j, tileColor);
+				drawWallVerticalTile(i, j, tileColor);
 				break;
 			case 5:
-				wallMiddleSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallMiddleSpr->setColor(tileColor);
-				app->draw(*wallMiddleSpr);
+				if (checkNeighbourType(tiles[i][j], mtWall) == 11111111) {
+					//drawTile(wallFillTiles, wallFillTilesRand, i, j, tileColor);
+					drawWallFillTile(i, j, tileColor);
+				} else {
+					wallMiddleSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+					wallMiddleSpr->setColor(tileColor);
+					app->draw(*wallMiddleSpr);
+				}
 				break;
 			case 6:
-				wallRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallRightSpr->setColor(tileColor);
-				app->draw(*wallRightSpr);
+				//drawTile(wallVerticalTiles, wallVerticalTilesRand, i, j, tileColor);
+				drawWallVerticalTile(i, j, tileColor);
 				break;
 			case 7:
-				wallBottomLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallBottomLeftSpr->setColor(tileColor);
-				app->draw(*wallBottomLeftSpr);
+				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
+				drawWallCornerTile(i, j, tileColor); 
 				break;
 			case 8:
-				wallBottomSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallBottomSpr->setColor(tileColor);
-				app->draw(*wallBottomSpr);
+				//drawTile(wallHorizontalTiles, wallHorizontalTilesRand, i, j, tileColor);
+				drawWallHorizontalTile(i, j, tileColor); 
 				break;
 			case 9:
-				wallBottomRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				wallBottomRightSpr->setColor(tileColor);
-				app->draw(*wallBottomRightSpr);
+				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
+				drawWallCornerTile(i, j, tileColor); 
 				break;
 			}
 			break;
 		case mtFloor:
-			floorSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-			floorSpr->setColor(tileColor);
-			app->draw(*floorSpr);
+			if (checkNeighbourType(tiles[i][j], mtWall) > 0) {
+				floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorMetalSpr->setColor(tileColor);
+				app->draw(*floorMetalSpr);
+			} else {
+				//drawTile(floorTiles, floorTilesRand, i, j, tileColor);
+				drawFloorTile(i, j, tileColor);
+			}
 			break;
 		case mtFloorMetal:
 			floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
@@ -290,6 +378,7 @@ void Map::renderTiles()
 	}
 }
 
+<<<<<<< HEAD
 
 
 int Map::Collision(float X, float Y) {
@@ -345,4 +434,66 @@ int Map::Collision(float X, float Y) {
 	}
 	
 	return collision;
+=======
+int Map::checkNeighbourType(MapTile tile, MapTileType tileType){
+	int neighbours = 0;
+	int x = tile.index.x;
+	int y = tile.index.y;
+
+	if (tiles[x - 1][y - 1].type == tileType) { neighbours += 10000000; };
+	if (tiles[x]	[y - 1].type == tileType) { neighbours += 1000000; };
+	if (tiles[x + 1][y - 1].type == tileType) { neighbours += 100000; };
+	if (tiles[x - 1][y].type == tileType) {		neighbours += 10000; };
+	if (tiles[x + 1][y].type == tileType) {		neighbours += 1000; };
+	if (tiles[x - 1][y + 1].type == tileType) { neighbours += 100; };
+	if (tiles[x]	[y + 1].type == tileType) { neighbours += 10; };
+	if (tiles[x + 1][y + 1].type == tileType) { neighbours += 1; };
+	return neighbours;
+}
+
+void Map::drawFloorTile(int i, int j, sf::Color tileColor) {
+	int type = floorTilesRand[i][j];
+	floorTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	floorTiles[type]->setColor(tileColor);
+	app->draw(*floorTiles[type]);
+}
+
+void Map::drawWallCornerTile(int i, int j, sf::Color tileColor) {
+	int type = wallCornerTilesRand[i][j];
+	wallCornerTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	wallCornerTiles[type]->setColor(tileColor);
+	app->draw(*wallCornerTiles[type]);
+}
+
+void Map::drawWallHorizontalTile(int i, int j, sf::Color tileColor) {
+	int type = wallHorizontalTilesRand[i][j];
+	wallHorizontalTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	wallHorizontalTiles[type]->setColor(tileColor);
+	app->draw(*wallHorizontalTiles[type]);
+}
+
+void Map::drawWallVerticalTile(int i, int j, sf::Color tileColor) {
+	int type = wallVerticalTilesRand[i][j];
+	wallVerticalTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	wallVerticalTiles[type]->setColor(tileColor);
+	app->draw(*wallVerticalTiles[type]);
+}
+
+void Map::drawWallFillTile(int i, int j, sf::Color tileColor){
+	int type = wallFillTilesRand[i][j];
+	wallFillTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	wallFillTiles[type]->setColor(tileColor);
+	app->draw(*wallFillTiles[type]);
+}
+
+/* When in debug mode causes significant slowdowns.
+ * Running the program in release mode seems to work 
+ * fine. Vectors in debug mode have extra checks for
+ * safety. */
+void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int i, int j, sf::Color tileColor) {
+	int type = tileVectorRand[i][j];
+	tileVector[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+	tileVector[type]->setColor(tileColor);
+	app->draw(*tileVector[type]);
+>>>>>>> c6496200d84400890763de400edc5e98b9c3cc27
 }
