@@ -29,6 +29,7 @@ struct Game
 	void addSource();
 };
 extern float frameClock;
+extern float lastClockTmp;
 extern sf::RenderWindow *app;
 extern sf::View *playerView;
 extern sf::View *backgroundView;

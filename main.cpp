@@ -11,6 +11,7 @@
 #include <iostream>
 
 float frameClock = 0;
+float lastClockTmp = 0;
 GameState state;
 sf::RenderWindow *app;
 sf::View *playerView;
@@ -77,6 +78,7 @@ void Game::update()
 	while (running) {
 		currentClock += timer.getElapsedTime().asMilliseconds();
 		frameClock = (currentClock - lastClock) / 1000.f;
+		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
 		float positionX = mPlayerSpr->getPosition().x;
