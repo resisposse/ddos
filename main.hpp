@@ -5,6 +5,7 @@
 
 #ifndef MAIN
 #define MAIN
+#include "mapgenerator.hpp"
 
 /* Forward declarations due to cyclic dependencies */
 class Object;
@@ -17,6 +18,7 @@ struct Game
 	bool running;
 	bool focused;
 	float zoomLevel;
+	MapGenerator *mapGenerator;
 	Map *map;
 	Object *object;
 	Game();

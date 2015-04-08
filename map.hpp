@@ -22,6 +22,8 @@ for (unsigned int i = 0; i < (list).size();) { \
 #define TILE_SIZE 32
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
+#define CORRIDOR_CHANCE 25
+#define ROOM_CHANCE 75
 
 enum MapTileType
 {
@@ -46,8 +48,10 @@ struct MapTile
  * of FOW happens from 'map.cpp' while the actual implementations reside
  * in 'fog.cpp'.
  */
-struct Map
+
+class Map
 {
+public:
 	/* Lighting */
 	MapTile **lightTiles[LIGHT_MAX_LIGHTLEVEL];
 	int lightCounts[LIGHT_MAX_LIGHTLEVEL];
@@ -121,13 +125,15 @@ struct Map
 	void drawWallFillTile(int x, int y, sf::Color tileColor);
 	void drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int x, int y, sf::Color tileColor);
 
+	long oldseed;
+
 	int direction;
 	char ambientIntensity;
 	sf::Color ambientColor;
 	std::vector<StaticLightSource *> sources;
 	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
 	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
-	Map();
+	Map(char **generatedMap);
 	~Map();
 	int updateWallDirection(MapTile tile);
 	void update(StaticLightSource *tmpSource);

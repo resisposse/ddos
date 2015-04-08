@@ -3,15 +3,16 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <random>
 #include "fog.hpp"
 #include "map.hpp"
 #include "object.hpp"
 #include "main.hpp"
 #include "math.h";
-#include <iostream>
 
-Map::Map()
+Map::Map(char **generatedMap)
 {
 	srand((unsigned)time(NULL));
 
@@ -165,6 +166,7 @@ Map::Map()
 		"XX........XXXXXXXXXXXXXXXXX........XXX",
 		"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 	};
+
 	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
 		floorTilesRand[i][j]          = rand() % floorTiles.size();
 		wallHorizontalTilesRand[i][j] = rand() % wallHorizontalTiles.size();
@@ -172,25 +174,25 @@ Map::Map()
 		wallCornerTilesRand[i][j]     = rand() % wallCornerTiles.size();
 		wallFillTilesRand[i][j]	      = rand() % wallFillTiles.size();
 		tiles[i][j].index = sf::Vector2i(i, j);
-		switch (_tiles[i][j]) {
+		switch (generatedMap[i][j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
-			tiles[i][j].absorb = 35;
-			collisionMap[i][j] = 1;
+			tiles[i][j].absorb = 0; //35
+			collisionMap[i][j] = 0; //1
 			break;
 		case '.':
 			tiles[i][j].type = mtFloor;
-			tiles[i][j].absorb = 6;
+			tiles[i][j].absorb = 0; //6
 			collisionMap[i][j] = 0;
 			break;
 		case ' ':
 			tiles[i][j].type = mtAir;
-			tiles[i][j].absorb = 35;
+			tiles[i][j].absorb = 0; //35
 			collisionMap[i][j] = 0;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
-			tiles[i][j].absorb = 6;
+			tiles[i][j].absorb = 0; //6
 			collisionMap[i][j] = 0;
 		}
 	}
