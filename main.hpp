@@ -23,6 +23,7 @@ struct Game
 	Map *map;
 	Object *object;
 	Game();
+	sf::Texture *Texture4;
 	~Game();
 	int collision(float x, float y, std::string collisionType);
 	void update();
@@ -39,7 +40,6 @@ struct Game
 	std::vector<ProjectileSprite> projectiles;
 };
 extern float frameClock;
-extern float lastClockTmp;
 extern sf::RenderWindow *app;
 extern sf::View *playerView;
 extern sf::View *backgroundView;

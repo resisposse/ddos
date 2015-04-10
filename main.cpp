@@ -12,7 +12,6 @@
 #include <iostream>
 
 float frameClock = 0;
-float lastClockTmp = 0;
 GameState state;
 sf::RenderWindow *app;
 sf::View *playerView;
@@ -41,13 +40,12 @@ Game::Game()
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
 	
-	float positionX = mPlayerSpr->getPosition().x;
-	float positionY = mPlayerSpr->getPosition().y;
+	float positionPlayerX = mPlayerSpr->getPosition().x;
+	float positionPlayerY = mPlayerSpr->getPosition().y;
 	
-	playerView->setCenter(positionX, positionY);
+	playerView->setCenter(positionPlayerX, positionPlayerY);
 	playerView->setSize(sf::Vector2f(800, 608));
-	app->setView(*playerView);	
-
+	app->setView(*playerView);
 }
 
 Game::~Game()
@@ -83,7 +81,6 @@ void Game::update()
 	while (running) {
 		currentClock += timer.getElapsedTime().asMilliseconds();
 		frameClock = (currentClock - lastClock) / 1000.f;
-		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
 		float positionX = mPlayerSpr->getPosition().x;
@@ -97,19 +94,6 @@ void Game::update()
 		map->ambientColor = state.ambientColor;
 		map->ambientIntensity = state.ambientIntensity;
 
-		/*
-		int test = 0;
-		if (map->testCollision((positionX), (positionY)) == 1) {
-			//test++;
-			//std::cout << "Collision" << test << std::endl;
-			positionX = mPlayerSpr->getPosition().x;
-			positionY = mPlayerSpr->getPosition().y;
-			object->updateCollisionX(positionX, positionY);
-			//object->updateCollisionY();
-			//mPlayerSpr->move((object->updateCollisionX()), object->updateCollisionY());
-			//std::cout << "uusi position x: " << mPlayerSpr->getPosition().x << "y: " << mPlayerSpr->getPosition().y << std::endl;
-		}
-		*/
 		processEvents();
 		object->run();
 		app->clear();
@@ -122,7 +106,6 @@ void Game::update()
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(positionX, positionY);
 		app->setView(*playerView);
-		
 		app->display();
 	}
 }
@@ -137,14 +120,12 @@ void Game::processEvents()
 {
 	sf::Event event;
 	while (app->pollEvent(event)) {
+
 		processEvent(event);
 		object->processEvent(event);
 
 		if (event.type == sf::Event::Resized)
 		{
-			//sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-			//app->setView(sf::View(visibleArea));
-
 			playerView->setSize(event.size.width, event.size.height);
 			map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
 			sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
@@ -159,7 +140,7 @@ void Game::processEvents()
 	}
 	if (!app->isOpen()) {
 		running = false;
-	}
+	} 
 }
 
 void Game::processEvent(sf::Event event)
@@ -184,7 +165,6 @@ void Game::processEvent(sf::Event event)
 		}
 	}
 
-
 	case sf::Event::KeyPressed:
 	{
 		if (event.key.code == sf::Keyboard::Escape) {
@@ -202,8 +182,7 @@ void Game::processEvent(sf::Event event)
 				projectiles.push_back(BulletSprite(*bulletTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else if (ammoType == 1) {
 				projectiles.push_back(LaserSprite(*laserBeamTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
-			}
-			else {
+			} else {
 				std::cout << "AmmoType fail: " << ammoType << " std::endl";
 			}
 		break;
