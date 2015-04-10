@@ -21,7 +21,12 @@ public:
 	float updateCollisionY();
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
-	sf::Texture *mTexture;
+	sf::View fixed;
+	sf::Texture *TexturePlayer;
+	sf::Texture *TextureEnemy;
+	sf::Texture *TextureCursor;
+	sf::Sprite *spriteCursor;
+
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
@@ -29,6 +34,34 @@ public:
 	float objectX[3];
 	float objectY[3];
 	sf::Vector2i mouse;
+
+	void approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY);
+
+	explicit Object(int hitpoints);
+	void repair(int points);
+	void damage(int points);
+	void destroy();
+
+	int getHitpoints() const;
+	bool isDestroyed() const;
+
+private:
+	int mHitpoints;
 };
 extern sf::Sprite *mPlayerSpr;
+extern sf::Sprite *mEnemySpr;
 #endif
+
+struct AircraftData
+{
+	int hitpoints;
+	float speed;
+};
+
+struct Direction
+{
+	Direction(float angle, float distance);
+
+	float angle;
+	float distance;
+};
