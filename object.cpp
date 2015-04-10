@@ -46,6 +46,8 @@ Object::Object()
 	TextureCursor = new sf::Texture();
 	TextureCursor->loadFromFile("media/cursor.png");
 	spriteCursor = new sf::Sprite(*TextureCursor);
+	sf::Vector2u spriteSize = TextureCursor->getSize();
+	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
 	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
 	app->setView(fixed);
 }
