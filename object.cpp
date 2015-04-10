@@ -272,8 +272,8 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 	float EnemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + positionEnemyX);
 	float EnemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + positionEnemyY);
 
-	int enemyCollisionX = game->collision(EnemySpeedX, positionEnemyY);
-	int enemyCollisionY = game->collision(positionEnemyX, EnemySpeedY);
+	int enemyCollisionX = game->collision(EnemySpeedX, positionEnemyY, "player");
+	int enemyCollisionY = game->collision(positionEnemyX, EnemySpeedY, "player");
 
 	if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 		if (enemyCollisionX == 1) {
