@@ -94,8 +94,8 @@ void Object::update(sf::Time TimePerFrame)
 	float testY = (movement.y * TimePerFrame.asSeconds() + positionY);
 	
 
-	int collisionX = game->collision(testX, positionY);
-	int collisionY = game->collision(positionX, testY);
+	int collisionX = game->collision(testX, positionY, "player");
+	int collisionY = game->collision(positionX, testY, "player");
 
 	if (collisionX != 1 || collisionY != 1) {
 		if (collisionX == 1) {

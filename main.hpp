@@ -6,6 +6,8 @@
 #ifndef MAIN
 #define MAIN
 
+#include "projectileSprite.hpp"
+
 /* Forward declarations due to cyclic dependencies */
 class Object;
 struct Map;
@@ -17,16 +19,24 @@ struct Game
 	bool running;
 	bool focused;
 	float zoomLevel;
+	int ammoType = 0;
 	Map *map;
 	Object *object;
 	Game();
 	~Game();
-	int collision(float x, float y);
+	int collision(float x, float y, std::string collisionType);
 	void update();
 	void render();
 	void processEvents();
 	void processEvent(sf::Event event);
 	void addSource();
+	void loadProjectileTextures();
+	void updateProjectiles();
+	void checkProjectileCollisions();
+	void drawProjectiles();
+	sf::Texture *bulletTexture;
+	sf::Texture *laserBeamTexture;
+	std::vector<ProjectileSprite> projectiles;
 };
 extern float frameClock;
 extern float lastClockTmp;

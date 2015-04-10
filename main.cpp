@@ -8,6 +8,7 @@
 #include "map.hpp"
 #include "object.hpp"
 #include "main.hpp"
+#include "projectileSprite.hpp"
 #include <iostream>
 
 float frameClock = 0;
@@ -35,6 +36,8 @@ Game::Game()
 	state.ambientColor = sf::Color::White;
 	state.ambientIntensity = 5;
 
+	loadProjectileTextures();
+
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
 	
@@ -50,13 +53,15 @@ Game::Game()
 Game::~Game()
 {
 	delete map;
+	delete bulletTexture;
+	delete laserBeamTexture;
 	delete object;
 	delete app;
 	delete playerView;
 }
 
-int Game::collision(float x, float y) {
-	int i = map->Collision(x, y);
+int Game::collision(float x, float y, std::string collisionType) {
+	int i = map->Collision(x, y, collisionType);
 	return i;
 }
 
@@ -109,6 +114,10 @@ void Game::update()
 		object->run();
 		app->clear();
 		render();
+		updateProjectiles();
+		checkProjectileCollisions();
+		drawProjectiles();
+
 		playerView->setCenter(positionX, positionY);
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(positionX, positionY);
@@ -178,11 +187,26 @@ void Game::processEvent(sf::Event event)
 
 	case sf::Event::KeyPressed:
 	{
-		if (event.key.code == sf::Keyboard::Escape) app->close();
-		break;
+		if (event.key.code == sf::Keyboard::Escape) {
+			app->close();
+			break;
+		} else if (event.key.code == sf::Keyboard::E) {
+			ammoType = (ammoType + 1) % 2;
+		} else if (event.key.code == sf::Keyboard::Q) {
+			ammoType = std::abs((ammoType - 1) % 2);
+		}
 	}
-
-
+	case sf::Event::MouseButtonPressed:
+		if (event.mouseButton.button == sf::Mouse::Left)
+			if (ammoType == 0) {
+				projectiles.push_back(BulletSprite(*bulletTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+			} else if (ammoType == 1) {
+				projectiles.push_back(LaserSprite(*laserBeamTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+			}
+			else {
+				std::cout << "AmmoType fail: " << ammoType << " std::endl";
+			}
+		break;
 	case sf::Event::MouseButtonReleased:
 		if (event.mouseButton.button == sf::Mouse::Left) addSource();
 		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
@@ -227,6 +251,46 @@ void Game::addSource()
 		                        state.brush.intensity,
 		                        state.brush.sourceTime)));
 		break;
+	}
+}
+
+void Game::loadProjectileTextures() {
+
+	bulletTexture = new sf::Texture();
+	bulletTexture->loadFromFile("media/bullet.png");
+	bulletTexture->setSmooth(true);
+
+	laserBeamTexture = new sf::Texture();
+	laserBeamTexture->loadFromFile("media/laserBeam.png");
+	laserBeamTexture->setSmooth(true);
+
+	std::vector<ProjectileSprite> projectiles;
+	
+}
+
+void Game::updateProjectiles() {
+	for (unsigned int i = 0; i < projectiles.size();) {
+		projectiles[i].update(frameClock);
+		++i;
+	}
+}
+
+void Game::checkProjectileCollisions() {
+	for (unsigned int i = 0; i < projectiles.size(); i++)
+	{
+		int x, y;
+		x = projectiles[i].position.x;
+		y = projectiles[i].position.y;
+		if (collision(x, y, "projectile") == 1) {
+			projectiles.erase(projectiles.begin() + i);
+			break;
+		}
+	}
+}
+
+void Game::drawProjectiles() {
+	for (ProjectileSprite &projectile : projectiles) {
+		app->draw(projectile.sprite);
 	}
 }
 
