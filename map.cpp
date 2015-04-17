@@ -535,17 +535,23 @@ void Map::renderTiles()
 	}
 }
 
-int Map::Collision(float X, float Y) {
+int Map::Collision(float X, float Y, std::string collisionType) {
 	float x = X;
 	float y = Y;
 	int collision = 0;
+	int collisionMargin = 0;
+	
+	if (collisionType == "projectile") { 
+		collisionMargin = 2;
+	} else { collisionMargin = 10;
+	}
 
 	//top
-	int i = x - 9;
-	int j = y - 10;
+	int i = x - collisionMargin;
+	int j = y - collisionMargin;
 
 	if (collision == 0) {
-		for (i; i < x + 9; i++) {
+		for (i; i < x + collisionMargin; i++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
@@ -554,9 +560,9 @@ int Map::Collision(float X, float Y) {
 	}
 	//left
 	if (collision == 0) {
-		i = x - 10;
-		j = y - 10;
-		for (j; j < y + 10; j++) {
+		i = x - collisionMargin;
+		j = y - collisionMargin;
+		for (j; j < y + collisionMargin; j++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
@@ -564,22 +570,21 @@ int Map::Collision(float X, float Y) {
 		}
 	}
 	//right
-	if (collision == 1) {
-		i = x + 10;
-		j = y - 10;
-		for (j; j < y + 10; j++) {
+	if (collision == 0) {
+		i = x + collisionMargin;
+		j = y - collisionMargin;
+		for (j; j < y + collisionMargin; j++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
 			}
 		}
 	}
-
 	//bottom
-	if (collision == 1) {
-		j = y + 10;
-		i = x - 9;
-		for (i; i < x + 9; i++) {
+	if (collision == 0) {
+		j = y + collisionMargin;
+		i = x - collisionMargin;
+		for (i; i < x + collisionMargin; i++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
