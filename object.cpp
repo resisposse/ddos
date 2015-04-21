@@ -23,24 +23,21 @@ Object::Object()
 	mIsMovingRight = false;
 	mIsMovingLeft = false;
 
+	/* Hide standard cursor */
+	app->setMouseCursorVisible(false);
+
 	TexturePlayer = new sf::Texture();
 	TexturePlayer->loadFromFile("media/ddos-dude-guns.png");
-
 	sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
 	mPlayerSpr = new sf::Sprite(*TexturePlayer, mPlayer);
 	mPlayerSpr->setPosition(500, 200);
 
-	//enemy
 	TextureEnemy = new sf::Texture();
 	TextureEnemy->loadFromFile("media/ddos-dude-guns.png");
-
-
 	sf::IntRect mEnemy(32 * 0, 32 * 0, 32, 32);
 	mEnemySpr = new sf::Sprite(*TextureEnemy, mEnemy);
 	mEnemySpr->setPosition(700, 50);
 
-	/*Hide standard cursor*/
-	app->setMouseCursorVisible(false);
 	fixed = app->getView();
 
 	TextureCursor = new sf::Texture();
@@ -88,15 +85,18 @@ void Object::run()
 void Object::processEvent(sf::Event event)
 {
 	switch (event.type) {
-	case sf::Event::KeyPressed:
+	case sf::Event::KeyPressed: {
 		handlePlayerInput(event.key.code, true);
 		break;
-	case sf::Event::KeyReleased:
+	}
+	case sf::Event::KeyReleased: {
 		handlePlayerInput(event.key.code, false);
 		break;
-	case sf::Event::Closed:
+	}
+	case sf::Event::Closed: {
 		app->close();
 		break;
+	}
 	}
 }
 
@@ -116,26 +116,16 @@ void Object::update(sf::Time TimePerFrame)
 		movement.x += PlayerSpeed;
 	}
 
-	//Your position
 	float positionPlayerX = mPlayerSpr->getPosition().x;
 	float positionPlayerY = mPlayerSpr->getPosition().y;
+	float playerSpeedX = (movement.x * TimePerFrame.asSeconds() + positionPlayerX);
+	float playerSpeedY = (movement.y * TimePerFrame.asSeconds() + positionPlayerY);
 
-	//You
-	float speedX = (movement.x * TimePerFrame.asSeconds() + positionPlayerX);
-	float speedY = (movement.y * TimePerFrame.asSeconds() + positionPlayerY);
-
-	//enemy position
 	float positionEnemyX = mEnemySpr->getPosition().x;
 	float positionEnemyY = mEnemySpr->getPosition().y;
 
-	//enemy
-	float EnemySpeedX = (movement.x * TimePerFrame.asSeconds() + positionEnemyX);
-	float EnemySpeedY = (movement.y * TimePerFrame.asSeconds() + positionEnemyY);
-
-	//you
-	int collisionX = game->collision(speedX, positionPlayerY, "player");
-	int collisionY = game->collision(positionPlayerX, speedY, "player");
-
+	int collisionX = game->collision(playerSpeedX, positionPlayerY, "player");
+	int collisionY = game->collision(positionPlayerX, playerSpeedY, "player");
 
 	if (collisionX != 1 || collisionY != 1) {
 		if (collisionX == 1) {
@@ -148,15 +138,10 @@ void Object::update(sf::Time TimePerFrame)
 		mPlayerSpr->move(movement * TimePerFrame.asSeconds());
 		positionPlayerX = mPlayerSpr->getPosition().x;
 		positionPlayerY = mPlayerSpr->getPosition().y;
-
-		//enemy
-		positionEnemyX = mEnemySpr->getPosition().x;
-		positionEnemyY = mEnemySpr->getPosition().y;
-
-		/*Enemy appraoching*/
-		approach(positionEnemyX, positionEnemyY, positionPlayerX, positionPlayerY);
-
 	}
+
+	/* Make enemies approach the player */
+	approach(positionEnemyX, positionEnemyY, positionPlayerX, positionPlayerY);
 }
 
 void Object::render()
@@ -164,7 +149,7 @@ void Object::render()
 	app->draw(*mPlayerSpr);
 	app->draw(*mEnemySpr);
 	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
-	/*Draw custom cursor*/
+	/* Draw custom cursor */
 	app->draw(*spriteCursor);
 }
 
@@ -184,16 +169,15 @@ void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 	}
 }
 
-float Object::updateCollisionY() {
-
+float Object::updateCollisionY()
+{
 	std::cout << "updatecollision old y; " << objectY[0];
 	float Y = objectY[1];
 	std::cout << "updatecollision y: " << Y << std::endl;
-
 	return Y;
 }
 
-//Enemy handling
+/* Handle enemy movement by approaching the player and check for collisions */
 void Object::approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY)
 {
 	float enemySpeed = 50;
@@ -201,10 +185,10 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 	sf::Vector2f enemyMovement(0.f, 0.f);
 	float distanceX, distanceY, distance, angle;
 	double x, y;
-	/*abs = absolute value*/
-	distanceX = abs(positionPlayerX - positionEnemyX); 
-	distanceY = abs(positionPlayerY - positionEnemyY);
 
+	/* abs = absolute value */
+	distanceX = abs(positionPlayerX - positionEnemyX);
+	distanceY = abs(positionPlayerY - positionEnemyY);
 	float distanceXTest = positionPlayerX - positionEnemyX;
 	float distanceYTest = positionPlayerY - positionEnemyY;
 
@@ -222,12 +206,10 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 	}
 
 	distance = sqrt(distanceX * 2 + distanceY * 2);
-
-	float EnemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + positionEnemyX);
-	float EnemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + positionEnemyY);
-
-	int enemyCollisionX = game->collision(EnemySpeedX, positionEnemyY, "player");
-	int enemyCollisionY = game->collision(positionEnemyX, EnemySpeedY, "player");
+	float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + positionEnemyX);
+	float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + positionEnemyY);
+	int enemyCollisionX = game->collision(enemySpeedX, positionEnemyY, "player");
+	int enemyCollisionY = game->collision(positionEnemyX, enemySpeedY, "player");
 
 	if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 		collisionFlag = 0;
@@ -239,9 +221,7 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 		}
 	}
 
-
 	if (distance < 20 && distance > 5 && collisionFlag == 0) {
-
 		mEnemySpr->setOrigin(16, 16);
 		x = positionPlayerX - (positionEnemyX);
 		y = positionPlayerY - (positionEnemyY);

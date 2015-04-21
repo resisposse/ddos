@@ -1,3 +1,8 @@
+/*
+ * Project Name
+ * 2015 © Project Team (see: LICENSE)
+ */
+
 #ifndef PROJECTILESPRITE_HPP
 #define PROJECTILESPRITE_HPP
 

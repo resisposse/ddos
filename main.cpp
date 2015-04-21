@@ -40,10 +40,10 @@ Game::Game()
 
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
-	
+
 	float positionPlayerX = mPlayerSpr->getPosition().x;
 	float positionPlayerY = mPlayerSpr->getPosition().y;
-	
+
 	playerView->setCenter(positionPlayerX, positionPlayerY);
 	playerView->setSize(sf::Vector2f(800, 608));
 	app->setView(*playerView);
@@ -142,33 +142,27 @@ void Game::processEvents()
 	}
 	if (!app->isOpen()) {
 		running = false;
-	} 
+	}
 }
 
 void Game::processEvent(sf::Event event)
 {
 	switch(event.type) {
-
-	case sf::Event::MouseWheelMoved:
-	{
-		if (event.mouseWheel.delta < 0)
-		{
+	case sf::Event::MouseWheelMoved: {
+		if (event.mouseWheel.delta < 0) {
 			if (zoomLevel < 2.0f) {
 				playerView->zoom(2.0f);
 				zoomLevel *= 2.0f;
 			}
-		}
-		else
-		{
+		} else {
 			if (zoomLevel > 0.25f) {
 				playerView->zoom(0.5f);
 				zoomLevel *= 0.5f;
 			}
 		}
+		break;
 	}
-
-	case sf::Event::KeyPressed:
-	{
+	case sf::Event::KeyPressed: {
 		if (event.key.code == sf::Keyboard::Escape) {
 			app->close();
 			break;
@@ -177,8 +171,9 @@ void Game::processEvent(sf::Event event)
 		} else if (event.key.code == sf::Keyboard::Q) {
 			ammoType = std::abs((ammoType - 1) % 2);
 		}
+		break;
 	}
-	case sf::Event::MouseButtonPressed:
+	case sf::Event::MouseButtonPressed: {
 		if (event.mouseButton.button == sf::Mouse::Left)
 			if (ammoType == 0) {
 				projectiles.push_back(BulletSprite(*bulletTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
@@ -188,13 +183,16 @@ void Game::processEvent(sf::Event event)
 				std::cout << "AmmoType fail: " << ammoType << " std::endl";
 			}
 		break;
-	case sf::Event::MouseButtonReleased:
+	}
+	case sf::Event::MouseButtonReleased: {
 		if (event.mouseButton.button == sf::Mouse::Left) addSource();
 		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
 		break;
-	case sf::Event::Closed:
+	}
+	case sf::Event::Closed: {
 		running = false;
 		break;
+	}
 	}
 }
 
@@ -235,8 +233,8 @@ void Game::addSource()
 	}
 }
 
-void Game::loadProjectileTextures() {
-
+void Game::loadProjectileTextures()
+{
 	bulletTexture = new sf::Texture();
 	bulletTexture->loadFromFile("media/bullet.png");
 	bulletTexture->setSmooth(true);
@@ -246,19 +244,19 @@ void Game::loadProjectileTextures() {
 	laserBeamTexture->setSmooth(true);
 
 	std::vector<ProjectileSprite> projectiles;
-	
 }
 
-void Game::updateProjectiles() {
+void Game::updateProjectiles()
+{
 	for (unsigned int i = 0; i < projectiles.size();) {
 		projectiles[i].update(frameClock);
 		++i;
 	}
 }
 
-void Game::checkProjectileCollisions() {
-	for (unsigned int i = 0; i < projectiles.size(); i++)
-	{
+void Game::checkProjectileCollisions()
+{
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		int x, y;
 		x = projectiles[i].position.x;
 		y = projectiles[i].position.y;
@@ -269,7 +267,8 @@ void Game::checkProjectileCollisions() {
 	}
 }
 
-void Game::drawProjectiles() {
+void Game::drawProjectiles()
+{
 	for (ProjectileSprite &projectile : projectiles) {
 		app->draw(projectile.sprite);
 	}

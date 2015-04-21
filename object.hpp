@@ -44,13 +44,11 @@ public:
 
 	int getHitpoints() const;
 	bool isDestroyed() const;
-
 private:
 	int mHitpoints;
 };
 extern sf::Sprite *mPlayerSpr;
 extern sf::Sprite *mEnemySpr;
-#endif
 
 struct AircraftData
 {
@@ -65,3 +63,5 @@ struct Direction
 	float angle;
 	float distance;
 };
+
+#endif
