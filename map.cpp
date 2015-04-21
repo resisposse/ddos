@@ -3,14 +3,16 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <random>
 #include "fog.hpp"
 #include "map.hpp"
 #include "object.hpp"
 #include "main.hpp"
 #include "math.h"
 
-Map::Map()
+Map::Map(char **generatedMap)
 {
 	srand((unsigned)time(NULL));
 
@@ -176,7 +178,7 @@ Map::Map()
 	wallFillTiles.push_back(wallFill3Spr);
 	wallFillTiles.push_back(wallFill4Spr);
 	wallFillTiles.push_back(wallFill5Spr);
-
+	
 	lava1Spr = new sf::Sprite(*lavaTex, lavaFrame1);
 	lava2Spr = new sf::Sprite(*lavaTex, lavaFrame2);
 	lava3Spr = new sf::Sprite(*lavaTex, lavaFrame3);
@@ -193,7 +195,8 @@ Map::Map()
 	lavaFrames.push_back(lava6Spr);
 	lavaFrames.push_back(lava7Spr);
 	lavaFrames.push_back(lava8Spr);
-
+	
+	/*TODO delete this in final release*/
 	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
 		"                                  XXXX",
 		"      XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXX",
@@ -246,6 +249,7 @@ Map::Map()
 		"XX........XXXXXXXXXXXXXXXXX........XXX",
 		"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 	};
+
 	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
 		
 		floorTilesRand[i][j]          = rand() % floorTiles.size();
@@ -256,7 +260,7 @@ Map::Map()
 		
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
-		switch (_tiles[i][j]) {
+		switch (generatedMap[i][j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
 			tiles[i][j].absorb = 35;
@@ -657,17 +661,6 @@ void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_
 	tileVector[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	tileVector[type]->setColor(tileColor);
 	app->draw(*tileVector[type]);
-}
-
-int Map::randBellCurve(int max) {
-	int x = max;
-	int y;
-
-	y = ((rand() % x + rand() % x) / 2);
-	if (y < 0) {
-		y = 0;
-	}
-	return y;
 }
 
 int Map::getCorrectFrame(int totFrames, float duration) {

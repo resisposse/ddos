@@ -47,10 +47,10 @@ struct MapTile
  * of FOW happens from 'map.cpp' while the actual implementations reside
  * in 'fog.cpp'.
  */
-struct Map
-{
-	int randBellCurve(int max);
 
+class Map
+{
+public:
 	/* Lighting */
 	MapTile **lightTiles[LIGHT_MAX_LIGHTLEVEL];
 	int lightCounts[LIGHT_MAX_LIGHTLEVEL];
@@ -157,7 +157,7 @@ struct Map
 	std::vector<StaticLightSource *> sources;
 	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
 	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
-	Map();
+	Map(char **generatedMap);
 	~Map();
 	int updateWallDirection(MapTile tile);
 	void update(StaticLightSource *tmpSource);

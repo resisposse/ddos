@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
+#include "mapgenerator.hpp"
 #include "object.hpp"
 #include "main.hpp"
 #include <iostream>
@@ -26,7 +27,8 @@ Game::Game()
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 	object = new Object;
-	map = new Map;
+	mapGenerator = new MapGenerator;
+	map = new Map(mapGenerator->generateMap());
 	app->setFramerateLimit(60);
 	state.brush.type = stStatic;
 	state.brush.color = sf::Color::Red;
@@ -50,6 +52,7 @@ Game::Game()
 Game::~Game()
 {
 	delete map;
+	delete mapGenerator;
 	delete object;
 	delete app;
 	delete playerView;
