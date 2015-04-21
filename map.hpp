@@ -165,7 +165,7 @@ public:
 	void render();
 	void renderTiles();
 	int testCollision(int x, int y);
-	int Collision(float X, float Y);
+	int Collision(float X, float Y, std::string collisionType);
 	void clear() {
 		deleteList(sources);
 	};
