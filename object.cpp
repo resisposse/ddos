@@ -36,7 +36,7 @@ Object::Object()
 	TextureEnemy->loadFromFile("media/ddos-dude-guns.png");
 	sf::IntRect mEnemy(32 * 0, 32 * 0, 32, 32);
 	mEnemySpr = new sf::Sprite(*TextureEnemy, mEnemy);
-	mEnemySpr->setPosition(700, 50);
+	mEnemySpr->setPosition(700, 250);
 
 	fixed = app->getView();
 

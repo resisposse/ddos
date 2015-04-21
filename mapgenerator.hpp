@@ -9,7 +9,7 @@
 
 #include "random.hpp"
 
-enum class Direction
+enum class CardinalDirection
 {
 	north = 0,
 	east = 1,
@@ -33,12 +33,12 @@ public:
 	char getTile(int x, int y);
 	int fillTiles(char tileType);
 	int getRand(int min, int max);
-	Direction getRandDirection();
-	bool generateRoom(int x, int y, int xLength, int yLength, Direction direction);
-	bool generateCorridor(int x, int y, int maxLength, Direction direction);
+	CardinalDirection getRandDirection();
+	bool generateRoom(int x, int y, int xLength, int yLength, CardinalDirection direction);
+	bool generateCorridor(int x, int y, int maxLength, CardinalDirection direction);
 	bool eliminateDeadEnds();
 	bool generateFeature();
-	bool generateFeature(int x, int y, int xOffset, int yOffset, Direction direction);
+	bool generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction);
 	char** generateMap();
 	bool isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	bool isAdjacent(int x, int y, char type);

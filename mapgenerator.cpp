@@ -51,8 +51,8 @@ char MapGenerator::getTile(int x, int y) {
 	return dungeonTiles_[x][y];
 }
 
-Direction MapGenerator::getRandDirection() {
-	return Direction(random->generate(0, 3));
+CardinalDirection MapGenerator::getRandDirection() {
+	return CardinalDirection(random->generate(0, 3));
 }
 
 bool MapGenerator::isInBounds(int x, int y) const {
@@ -103,7 +103,7 @@ unsigned int MapGenerator::checkNeighbourType(int x, int y, char tileType) {
 	return neighbours;
 }
 
-bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, Direction direction) {
+bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, CardinalDirection direction) {
 	int xLength = random->generate(6, xMaxLength);
 	int yLength = random->generate(6, yMaxLength);
 
@@ -113,22 +113,22 @@ bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, Di
 	int xEnd = x;
 	int yEnd = y;
 
-	if (direction == Direction::north) {
+	if (direction == CardinalDirection::north) {
 		xStart = x - xLength / 2;
 		yStart = y - yLength;
 		xEnd = x + (xLength + 1) / 2;
 	}
-	else if (direction == Direction::east) {
+	else if (direction == CardinalDirection::east) {
 		yStart = y - yLength / 2;
 		xEnd = x + xLength;
 		yEnd = y + (yLength + 1) / 2;
 	}
-	else if (direction == Direction::south) {
+	else if (direction == CardinalDirection::south) {
 		xStart = x - xLength / 2;
 		xEnd = x + (xLength + 1) / 2;
 		yEnd = y + yLength;
 	}
-	else if (direction == Direction::west) {
+	else if (direction == CardinalDirection::west) {
 		xStart = x - xLength;
 		yStart = y - yLength / 2;
 		yEnd = y + (yLength + 1) / 2;
@@ -146,7 +146,7 @@ bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, Di
 	return true;
 }
 
-bool MapGenerator::generateCorridor(int x, int y, int maxLength, Direction direction) {
+bool MapGenerator::generateCorridor(int x, int y, int maxLength, CardinalDirection direction) {
 	int length = random->generate(4, maxLength);
 	int width = 2;
 	int offset = 2;
@@ -162,25 +162,25 @@ bool MapGenerator::generateCorridor(int x, int y, int maxLength, Direction direc
 	int xEndOffset = 0;
 	int yEndOffset = 0;
 
-	if (direction == Direction::north) {
+	if (direction == CardinalDirection::north) {
 		xEnd = x + width;
 		yStart = y - length;
 		xStartOffset = -offset;
 		xEndOffset = offset;
 	}
-	else if (direction == Direction::east) {
+	else if (direction == CardinalDirection::east) {
 		xEnd = x + length;
 		yEnd = y + width;
 		yStartOffset = -offset;
 		yEndOffset = offset;
 	}
-	else if (direction == Direction::south) {
+	else if (direction == CardinalDirection::south) {
 		xEnd = x + width;
 		yEnd = y + length;
 		xStartOffset = -offset;
 		xEndOffset = offset;
 	}
-	else if (direction == Direction::west) {
+	else if (direction == CardinalDirection::west) {
 		xStart = x - length;
 		yEnd = y + width;
 		yStartOffset = -offset;
@@ -212,22 +212,22 @@ bool MapGenerator::generateFeature() {
 		}
 
 		if (dungeonTiles_[x][y + 1] == '.') {
-			if (generateFeature(x, y, 0, -1, Direction::north)) {
+			if (generateFeature(x, y, 0, -1, CardinalDirection::north)) {
 				return true;
 			}
 		}
 		else if (dungeonTiles_[x - 1][y] == '.') {
-			if (generateFeature(x, y, 1, 0, Direction::east)) {
+			if (generateFeature(x, y, 1, 0, CardinalDirection::east)) {
 				return true;
 			}
 		}
 		else if (dungeonTiles_[x][y - 1] == '.') {
-			if (generateFeature(x, y, 0, 1, Direction::south)) {
+			if (generateFeature(x, y, 0, 1, CardinalDirection::south)) {
 				return true;
 			}
 		}
 		else if (dungeonTiles_[x + 1][y] == '.') {
-			if (generateFeature(x, y, -1, 0, Direction::west)) {
+			if (generateFeature(x, y, -1, 0, CardinalDirection::west)) {
 				return true;
 			}
 		}
@@ -235,7 +235,7 @@ bool MapGenerator::generateFeature() {
 	return false;
 }
 
-bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, Direction direction) {
+bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction) {
 	int roll = random->generate(0, 100);
 
 	if (roll <= CORRIDOR_CHANCE) {
