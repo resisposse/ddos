@@ -114,6 +114,7 @@ Map::Map(char **generatedMap)
 	wallFillTiles.push_back(wallFill4Spr);
 	wallFillTiles.push_back(wallFill5Spr);
 
+	/*TODO delete this in final release*/
 	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
 		"                                  XXXX",
 		"      XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXX",
@@ -177,22 +178,22 @@ Map::Map(char **generatedMap)
 		switch (generatedMap[i][j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
-			tiles[i][j].absorb = 0; //35
-			collisionMap[i][j] = 0; //1
+			tiles[i][j].absorb = 35;
+			collisionMap[i][j] = 1;
 			break;
 		case '.':
 			tiles[i][j].type = mtFloor;
-			tiles[i][j].absorb = 0; //6
+			tiles[i][j].absorb = 6;
 			collisionMap[i][j] = 0;
 			break;
 		case ' ':
 			tiles[i][j].type = mtAir;
-			tiles[i][j].absorb = 0; //35
+			tiles[i][j].absorb = 35;
 			collisionMap[i][j] = 0;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
-			tiles[i][j].absorb = 0; //6
+			tiles[i][j].absorb = 6;
 			collisionMap[i][j] = 0;
 		}
 	}

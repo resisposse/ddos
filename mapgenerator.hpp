@@ -4,8 +4,10 @@
 
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
-#define CORRIDOR_CHANCE 5
+#define CORRIDOR_CHANCE 10
 #define ROOM_CHANCE 75
+
+#include "random.hpp"
 
 enum class Direction
 {
@@ -25,6 +27,7 @@ public:
 	MapGenerator();
 	~MapGenerator();
 	bool isInBounds(int x, int y) const;
+	unsigned int checkNeighbourType(int x, int y, char tileType);
 	int setTile(int x, int y, char tileType);
 	int setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	char getTile(int x, int y);
@@ -41,11 +44,12 @@ public:
 	bool isAdjacent(int x, int y, char type);
 	int MapGenerator::writeMapFile(char(&mapArray)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1]);
 private:
-	int seed_;
 	int maxFeatures_;
+	int maxTries_;
 	int roomChance_;
 	int corridorChance_;
 	char **dungeonTiles_;
+	Random *random;
 };
 
 #endif
