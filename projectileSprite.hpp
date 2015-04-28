@@ -36,3 +36,4 @@ public:
 	LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition);
 };
 #endif // PROJECTILESPRITE_HPP
+

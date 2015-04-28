@@ -27,7 +27,8 @@ Game::Game()
 	                           sf::Style::Resize | sf::Style::Close);
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
-	object = new Object;
+	player = new Player;
+	enemy = new EnemyMelee;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 	app->setFramerateLimit(60);
@@ -57,7 +58,8 @@ Game::~Game()
 	delete mapGenerator;
 	delete bulletTexture;
 	delete laserBeamTexture;
-	delete object;
+	delete player;
+	delete enemy;
 	delete app;
 	delete playerView;
 }
@@ -100,7 +102,9 @@ void Game::update()
 		map->ambientIntensity = state.ambientIntensity;
 
 		processEvents();
-		object->run();
+		//object->run();
+		player->run();
+		enemy->run();
 		app->clear();
 		render();
 		updateProjectiles();
@@ -118,7 +122,8 @@ void Game::update()
 void Game::render()
 {
 	map->update(&state.tmpSource);
-	object->render();
+	player->render();
+	enemy->render();
 }
 
 void Game::processEvents()
@@ -127,7 +132,8 @@ void Game::processEvents()
 	while (app->pollEvent(event)) {
 
 		processEvent(event);
-		object->processEvent(event);
+		player->processEvent(event);
+		enemy->processEvent(event);
 
 		if (event.type == sf::Event::Resized)
 		{
@@ -188,7 +194,7 @@ void Game::processEvent(sf::Event event)
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
-		if (event.mouseButton.button == sf::Mouse::Left) addSource();
+		//if (event.mouseButton.button == sf::Mouse::Left) addSource();
 		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
 		break;
 	}

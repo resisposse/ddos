@@ -22,8 +22,7 @@ public:
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
 	sf::View fixed;
-	sf::Texture *TexturePlayer;
-	sf::Texture *TextureEnemy;
+	sf::Texture *ObjectTex;
 	sf::Texture *TextureCursor;
 	sf::Sprite *spriteCursor;
 
@@ -43,6 +42,7 @@ public:
 	void destroy();
 
 	int getHitpoints() const;
+	void setHitpoints(int hp);
 	bool isDestroyed() const;
 private:
 	int mHitpoints;
@@ -65,3 +65,15 @@ struct Direction
 };
 
 #endif
+
+class Player : public Object {
+public:
+	Player();
+	~Player();
+};
+
+class EnemyMelee : public Object {
+public:
+	EnemyMelee();
+	~EnemyMelee();
+};

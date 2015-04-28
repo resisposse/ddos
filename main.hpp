@@ -10,7 +10,8 @@
 #include "projectileSprite.hpp"
 
 /* Forward declarations due to cyclic dependencies */
-class Object;
+class Player;
+class EnemyMelee;
 struct Map;
 
 struct Game
@@ -23,7 +24,8 @@ struct Game
 	int ammoType = 0;
 	MapGenerator *mapGenerator;
 	Map *map;
-	Object *object;
+	Player *player;
+	EnemyMelee *enemy;
 	Game();
 	sf::Texture *Texture4;
 	~Game();

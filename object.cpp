@@ -25,19 +25,6 @@ Object::Object()
 
 	/* Hide standard cursor */
 	app->setMouseCursorVisible(false);
-
-	TexturePlayer = new sf::Texture();
-	TexturePlayer->loadFromFile("media/ddos-dude-guns.png");
-	sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
-	mPlayerSpr = new sf::Sprite(*TexturePlayer, mPlayer);
-	mPlayerSpr->setPosition(500, 200);
-
-	TextureEnemy = new sf::Texture();
-	TextureEnemy->loadFromFile("media/ddos-dude-guns.png");
-	sf::IntRect mEnemy(32 * 0, 32 * 0, 32, 32);
-	mEnemySpr = new sf::Sprite(*TextureEnemy, mEnemy);
-	mEnemySpr->setPosition(700, 250);
-
 	fixed = app->getView();
 
 	TextureCursor = new sf::Texture();
@@ -51,11 +38,8 @@ Object::Object()
 
 Object::~Object()
 {
-	delete TexturePlayer;
-	delete TextureEnemy;
+	delete ObjectTex;
 	delete TextureCursor;
-	delete mPlayerSpr;
-	delete mEnemySpr;
 	delete spriteCursor;
 }
 
@@ -229,4 +213,38 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 		mEnemySpr->setRotation(angle);
 		mEnemySpr->move(enemyMovement * TimePerFrame.asSeconds());
 	}
+}
+
+int Object::getHitpoints() const{
+	return mHitpoints;
+}
+
+void Object::setHitpoints(int hp){
+	mHitpoints = hp;
+}
+
+Player::Player(){
+	ObjectTex = new sf::Texture();
+	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
+	sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
+	mPlayerSpr = new sf::Sprite(*ObjectTex, mPlayer);
+	mPlayerSpr->setPosition(500, 200);
+	setHitpoints(100);
+}
+
+Player::~Player(){
+	delete mPlayerSpr;
+}
+
+EnemyMelee::EnemyMelee(){
+	ObjectTex = new sf::Texture();
+	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
+	sf::IntRect mEnemy(32 * 0, 32 * 0, 32, 32);
+	mEnemySpr = new sf::Sprite(*ObjectTex, mEnemy);
+	mEnemySpr->setPosition(700, 250);
+	setHitpoints(50);
+}
+
+EnemyMelee::~EnemyMelee() {
+	delete mEnemySpr;
 }
