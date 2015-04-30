@@ -42,7 +42,7 @@ public:
 	char** generateMap();
 	bool isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	bool isAdjacent(int x, int y, char type);
-	int MapGenerator::writeMapFile(char(&mapArray)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1]);
+	int writeMapFile(char(&mapArray)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1]);
 private:
 	int maxFeatures_;
 	int maxTries_;

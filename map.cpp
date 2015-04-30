@@ -28,11 +28,32 @@ Map::Map(char **generatedMap)
 
 	sf::IntRect floor           (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorMetal      (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateVer   (TILE_SIZE * 15, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateHor   (TILE_SIZE * 16, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTop   (TILE_SIZE * 15, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTopEmpty(TILE_SIZE * 15, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateBottomEmpty(TILE_SIZE * 16, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateLeft  (TILE_SIZE * 16, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTopRight(TILE_SIZE * 18, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorDamagedV1	(TILE_SIZE * 10, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorDamagedV2	(TILE_SIZE * 11, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorDamagedV3	(TILE_SIZE * 12, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorDamagedV4	(TILE_SIZE * 13, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorDamagedV5	(TILE_SIZE * 14, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar1       (TILE_SIZE * 15, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar2       (TILE_SIZE * 16, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar3       (TILE_SIZE * 17, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar4       (TILE_SIZE * 18, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar5       (TILE_SIZE * 15, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar6       (TILE_SIZE * 16, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar7       (TILE_SIZE * 17, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar8       (TILE_SIZE * 18, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar9       (TILE_SIZE * 15, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar10      (TILE_SIZE * 16, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar11      (TILE_SIZE * 17, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar12      (TILE_SIZE * 18, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar13      (TILE_SIZE * 15, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar14      (TILE_SIZE * 16, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorTopLeft    (TILE_SIZE * 4, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorTop        (TILE_SIZE * 5, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorTopRight   (TILE_SIZE * 6, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
@@ -83,11 +104,32 @@ Map::Map(char **generatedMap)
 	floorSpr           = new sf::Sprite(*tileMapTex, floor);
 	floorSprCpy        = new sf::Sprite(*tileMapTex, floor);
 	floorMetalSpr      = new sf::Sprite(*tileMapTex, floorMetal);
+	floorGrateHorSpr   = new sf::Sprite(*tileMapTex, floorGrateHor);
+	floorGrateVerSpr   = new sf::Sprite(*tileMapTex, floorGrateVer);
+	floorGrateTopSpr   = new sf::Sprite(*tileMapTex, floorGrateTop);
+	floorGrateTopEmptySpr = new sf::Sprite(*tileMapTex, floorGrateTopEmpty);
+	floorGrateBottomEmptySpr = new sf::Sprite(*tileMapTex, floorGrateBottomEmpty);
+	floorGrateLeftSpr  = new sf::Sprite(*tileMapTex, floorGrateLeft);
+	floorGrateTopRightSpr = new sf::Sprite(*tileMapTex, floorGrateTopRight);
 	floorDamagedV1Spr  = new sf::Sprite(*tileMapTex, floorDamagedV1);
 	floorDamagedV2Spr  = new sf::Sprite(*tileMapTex, floorDamagedV2);
 	floorDamagedV3Spr  = new sf::Sprite(*tileMapTex, floorDamagedV3);
 	floorDamagedV4Spr  = new sf::Sprite(*tileMapTex, floorDamagedV4);
 	floorDamagedV5Spr  = new sf::Sprite(*tileMapTex, floorDamagedV5);
+	floorVar1Spr       = new sf::Sprite(*tileMapTex, floorVar1);
+	floorVar2Spr       = new sf::Sprite(*tileMapTex, floorVar2);
+	floorVar3Spr       = new sf::Sprite(*tileMapTex, floorVar3);
+	floorVar4Spr       = new sf::Sprite(*tileMapTex, floorVar4);
+	floorVar5Spr       = new sf::Sprite(*tileMapTex, floorVar5);
+	floorVar6Spr       = new sf::Sprite(*tileMapTex, floorVar6);
+	floorVar7Spr       = new sf::Sprite(*tileMapTex, floorVar7);
+	floorVar8Spr       = new sf::Sprite(*tileMapTex, floorVar8);
+	floorVar9Spr       = new sf::Sprite(*tileMapTex, floorVar9);
+	floorVar10Spr      = new sf::Sprite(*tileMapTex, floorVar10);
+	floorVar11Spr      = new sf::Sprite(*tileMapTex, floorVar11);
+	floorVar12Spr      = new sf::Sprite(*tileMapTex, floorVar12);
+	floorVar13Spr      = new sf::Sprite(*tileMapTex, floorVar13);
+	floorVar14Spr      = new sf::Sprite(*tileMapTex, floorVar14);
 	floorTopLeftSpr    = new sf::Sprite(*tileMapTex, floorTopLeft);
 	floorTopSpr        = new sf::Sprite(*tileMapTex, floorTop);
 	floorTopRightSpr   = new sf::Sprite(*tileMapTex, floorTopRight);
@@ -134,6 +176,20 @@ Map::Map(char **generatedMap)
 	floorTiles.push_back(floorDamagedV3Spr);
 	floorTiles.push_back(floorDamagedV4Spr);
 	floorTiles.push_back(floorDamagedV5Spr);
+	floorTiles.push_back(floorVar1Spr);
+	floorTiles.push_back(floorVar2Spr);
+	floorTiles.push_back(floorVar3Spr);
+	floorTiles.push_back(floorVar4Spr);
+	floorTiles.push_back(floorVar5Spr);
+	floorTiles.push_back(floorVar6Spr);
+	floorTiles.push_back(floorVar7Spr);
+	floorTiles.push_back(floorVar8Spr);
+	floorTiles.push_back(floorVar9Spr);
+	floorTiles.push_back(floorVar10Spr);
+	floorTiles.push_back(floorVar11Spr);
+	floorTiles.push_back(floorVar12Spr);
+	floorTiles.push_back(floorVar13Spr);
+	floorTiles.push_back(floorVar14Spr);
 
 	wallMiddleSpr      = new sf::Sprite(*tileMapTex, wallMiddle);
 
@@ -301,11 +357,32 @@ Map::~Map()
 	delete floorSpr;
 	delete floorSprCpy;
 	delete floorMetalSpr;
+	delete floorGrateHorSpr;
+	delete floorGrateVerSpr;
+	delete floorGrateTopSpr;
+	delete floorGrateTopEmptySpr;
+	delete floorGrateBottomEmptySpr;
+	delete floorGrateLeftSpr;
+	delete floorGrateTopRightSpr;
 	delete floorDamagedV1Spr;
 	delete floorDamagedV2Spr;
 	delete floorDamagedV3Spr;
 	delete floorDamagedV4Spr;
 	delete floorDamagedV5Spr;
+	delete floorVar1Spr;
+	delete floorVar2Spr;
+	delete floorVar3Spr;
+	delete floorVar4Spr;
+	delete floorVar5Spr;
+	delete floorVar6Spr;
+	delete floorVar7Spr;
+	delete floorVar8Spr;
+	delete floorVar9Spr;
+	delete floorVar10Spr;
+	delete floorVar11Spr;
+	delete floorVar12Spr;
+	delete floorVar13Spr;
+	delete floorVar14Spr;
 	delete floorTopLeftSpr;
 	delete floorTopSpr;
 	delete floorTopRightSpr;
@@ -480,18 +557,54 @@ void Map::renderTiles()
 				floorTopRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorTopRightSpr->setColor(tileColor);
 				app->draw(*floorTopRightSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 66) == 66) {
+				floorGrateHorSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateHorSpr->setColor(tileColor);
+				app->draw(*floorGrateHorSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 97) == 97) {
+				floorGrateTopRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateTopRightSpr->setColor(tileColor);
+				app->draw(*floorGrateTopRightSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 64) == 64) {
 				floorTopSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorTopSpr->setColor(tileColor);
 				app->draw(*floorTopSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 34) == 34) {
+				floorBottomRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorBottomRightSpr->setColor(tileColor);
+				app->draw(*floorBottomRightSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 24) == 24) {
+				floorGrateVerSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateVerSpr->setColor(tileColor);
+				app->draw(*floorGrateVerSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 18) == 18) {
 				floorBottomLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorBottomLeftSpr->setColor(tileColor);
 				app->draw(*floorBottomLeftSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 48) == 48) {
+				floorGrateTopEmptySpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateTopEmptySpr->setColor(tileColor);
+				app->draw(*floorGrateTopEmptySpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 34) == 34) {
+				floorBottomRightCornerSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorBottomRightCornerSpr->setColor(tileColor);
+				app->draw(*floorBottomRightCornerSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 17) == 17) {
+				floorGrateBottomEmptySpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateBottomEmptySpr->setColor(tileColor);
+				app->draw(*floorGrateBottomEmptySpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 16) == 16) {
 				floorLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorLeftSpr->setColor(tileColor);
 				app->draw(*floorLeftSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 13) == 13) {
+				floorBottomRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorBottomRightSpr->setColor(tileColor);
+				app->draw(*floorBottomRightSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 12) == 12) {
+				floorBottomRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorBottomRightSpr->setColor(tileColor);
+				app->draw(*floorBottomRightSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 10) == 10) {
 				floorBottomRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorBottomRightSpr->setColor(tileColor);
@@ -504,14 +617,30 @@ void Map::renderTiles()
 				floorBottomSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorBottomSpr->setColor(tileColor);
 				app->draw(*floorBottomSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 160) == 160) {
+				floorGrateTopSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateTopSpr->setColor(tileColor);
+				app->draw(*floorGrateTopSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 132) == 132) {
+				floorGrateLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorGrateLeftSpr->setColor(tileColor);
+				app->draw(*floorGrateLeftSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 128) == 128) {
 				floorTopLeftCornerSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorTopLeftCornerSpr->setColor(tileColor);
 				app->draw(*floorTopLeftCornerSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 33) == 33) {
+				floorRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorRightSpr->setColor(tileColor);
+				app->draw(*floorRightSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 32) == 32) {
 				floorTopRightCornerSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorTopRightCornerSpr->setColor(tileColor);
 				app->draw(*floorTopRightCornerSpr);
+			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 5) == 5) {
+				floorBottomSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				floorBottomSpr->setColor(tileColor);
+				app->draw(*floorBottomSpr);
 			} else if ((checkNeighbourType(tiles[i][j], mtWall) & 4) == 4) {
 				floorBottomLeftCornerSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 				floorBottomLeftCornerSpr->setColor(tileColor);
