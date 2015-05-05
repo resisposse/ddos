@@ -1,44 +1,42 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
 #ifndef MAIN
 #define MAIN
-#include "mapgenerator.hpp"
 
-#include "projectileSprite.hpp"
+#include "mapgenerator.hpp"
+#include "projectile.hpp"
 
 /* Forward declarations due to cyclic dependencies */
 class Player;
 class EnemyMelee;
 struct Map;
 
-struct Game
+class Game
 {
+public:
 	long currentClock = 0;
 	long lastClock = 0;
 	bool running;
 	bool focused;
 	float zoomLevel;
+	float playerPositionX;
+	float playerPositionY;
 	int ammoType = 0;
+
 	MapGenerator *mapGenerator;
 	Map *map;
 	Player *player;
 	EnemyMelee *enemy;
+
 	Game();
-	sf::Texture *Texture4;
 	~Game();
-
-	sf::Vector2i mouse;
-	sf::View fixed;
-	sf::Texture *TextureCursor;
-	sf::Sprite *spriteCursor;
-
 	int collision(float x, float y, std::string collisionType);
 	void update();
 	void render();
-	void processEvents();
+	void parseEvents();
 	void processEvent(sf::Event event);
 	void addSource();
 	void loadCursorTexture();
@@ -51,8 +49,19 @@ struct Game
 	void drawEnemies();
 	void drawPlayer();
 	void drawCursor();
+	void initializeView();
+	void initializeLighting();
+	void refreshLighting();
+
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
+	sf::Texture *TextureCursor;
+	sf::Sprite *spriteCursor;
+	sf::View *playerView;
+	sf::View *backgroundView;
+	sf::View fixed;
+	sf::Vector2i mouse;
+
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<EnemyMelee> enemies;
 
@@ -62,8 +71,6 @@ struct Game
 extern float frameClock;
 extern float lastClockTmp;
 extern sf::RenderWindow *app;
-extern sf::View *playerView;
-extern sf::View *backgroundView;
 extern Game *game;
 extern sf::Clock timer;
 

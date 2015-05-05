@@ -1,8 +1,14 @@
+/*
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
+ */
+
 #include "mapgenerator.hpp"
 #include <iostream>
 #include <fstream>
 
-MapGenerator::MapGenerator() {
+MapGenerator::MapGenerator()
+{
 	maxFeatures_ = 10000;
 	maxTries_ = 5000;
 	roomChance_ = 75;
@@ -16,7 +22,8 @@ MapGenerator::MapGenerator() {
 	}
 }
 
-MapGenerator::~MapGenerator() {
+MapGenerator::~MapGenerator()
+{
 	for (int i = 0; i < MAP_SIZE_X + 1; i++) {
 		delete [] dungeonTiles_[i];
 	}
@@ -24,12 +31,14 @@ MapGenerator::~MapGenerator() {
 	delete [] dungeonTiles_;
 }
 
-int MapGenerator::setTile(int x, int y, char tileType) {
+int MapGenerator::setTile(int x, int y, char tileType)
+{
 	dungeonTiles_[x][y] = tileType;
 	return 0;
 }
 
-int MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType) {
+int MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType)
+{
 	for (int i = xStart; i != xEnd + 1; ++i) {
 		for (int j = yStart; j != yEnd + 1; ++j) {
 			dungeonTiles_[i][j] = tileType;
@@ -38,7 +47,8 @@ int MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tile
 	return 0;
 }
 
-int MapGenerator::fillTiles(char tileType) {
+int MapGenerator::fillTiles(char tileType)
+{
 	for (int i = 0; i < MAP_SIZE_X; i++) {
 		for (int j = 0; j < MAP_SIZE_Y; j++) {
 			dungeonTiles_[i][j] = tileType;
@@ -47,19 +57,23 @@ int MapGenerator::fillTiles(char tileType) {
 	return 0;
 }
 
-char MapGenerator::getTile(int x, int y) {
+char MapGenerator::getTile(int x, int y)
+{
 	return dungeonTiles_[x][y];
 }
 
-CardinalDirection MapGenerator::getRandDirection() {
+CardinalDirection MapGenerator::getRandDirection()
+{
 	return CardinalDirection(random->generate(0, 3));
 }
 
-bool MapGenerator::isInBounds(int x, int y) const {
+bool MapGenerator::isInBounds(int x, int y) const
+{
 	return x >= 1 && x < MAP_SIZE_X - 1 && y >= 1 && y < MAP_SIZE_Y - 1;
 }
 
-bool MapGenerator::isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType) {
+bool MapGenerator::isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType)
+{
 	if (!isInBounds(xStart, yStart)) {
 		return false;
 	}
@@ -77,7 +91,8 @@ bool MapGenerator::isAreaType(int xStart, int yStart, int xEnd, int yEnd, char t
 	return true;
 }
 
-bool MapGenerator::isAdjacent(int x, int y, char tileType){
+bool MapGenerator::isAdjacent(int x, int y, char tileType)
+{
 	int i = x;
 	int j = y;
 	if (dungeonTiles_[i][j - 1] == tileType ||
@@ -89,27 +104,29 @@ bool MapGenerator::isAdjacent(int x, int y, char tileType){
 		return false;
 }
 
-unsigned int MapGenerator::checkNeighbourType(int x, int y, char tileType) {
+unsigned int MapGenerator::checkNeighbourType(int x, int y, char tileType)
+{
 	unsigned int neighbours = 0;
 
 	if (dungeonTiles_[x - 1][y - 1] == tileType) { neighbours += 128; };
 	if (dungeonTiles_[x]	[y - 1] == tileType) { neighbours += 64; };
 	if (dungeonTiles_[x + 1][y - 1] == tileType) { neighbours += 32; };
-	if (dungeonTiles_[x - 1]	[y] == tileType) { neighbours += 16; };
-	if (dungeonTiles_[x + 1]	[y] == tileType) { neighbours += 8; };
+	if (dungeonTiles_[x - 1]    [y] == tileType) { neighbours += 16; };
+	if (dungeonTiles_[x + 1]    [y] == tileType) { neighbours += 8; };
 	if (dungeonTiles_[x - 1][y + 1] == tileType) { neighbours += 4; };
 	if (dungeonTiles_[x]	[y + 1] == tileType) { neighbours += 2; };
 	if (dungeonTiles_[x + 1][y + 1] == tileType) { neighbours += 1; };
 	return neighbours;
 }
 
-bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, CardinalDirection direction) {
+bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, CardinalDirection direction)
+{
 	int xLength = random->generate(6, xMaxLength);
 	int yLength = random->generate(6, yMaxLength);
 
 	int xStart = x;
 	int yStart = y;
-	
+
 	int xEnd = x;
 	int yEnd = y;
 
@@ -146,7 +163,8 @@ bool MapGenerator::generateRoom(int x, int y, int xMaxLength, int yMaxLength, Ca
 	return true;
 }
 
-bool MapGenerator::generateCorridor(int x, int y, int maxLength, CardinalDirection direction) {
+bool MapGenerator::generateCorridor(int x, int y, int maxLength, CardinalDirection direction)
+{
 	int length = random->generate(4, maxLength);
 	int width = 2;
 	int offset = 2;
@@ -195,11 +213,12 @@ bool MapGenerator::generateCorridor(int x, int y, int maxLength, CardinalDirecti
 	return true;
 }
 
-bool MapGenerator::generateFeature() {
+bool MapGenerator::generateFeature()
+{
 	int x = 0;
 	int y = 0;
 
-	/*Pick a wall adjacent to a room*/
+	/* Pick a wall adjacent to a room */
 	for (int tries = 0; tries != maxTries_; ++tries) {
 		x = random->generate(1, MAP_SIZE_X - 1);
 		y = random->generate(1, MAP_SIZE_Y - 1);
@@ -235,7 +254,8 @@ bool MapGenerator::generateFeature() {
 	return false;
 }
 
-bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction) {
+bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction)
+{
 	int roll = random->generate(0, 100);
 
 	if (roll <= CORRIDOR_CHANCE) {
@@ -254,8 +274,8 @@ bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, Cardi
 	}
 }
 
-
-char** MapGenerator::generateMap() {
+char** MapGenerator::generateMap()
+{
 	fillTiles('X');
 	setTile(MAP_SIZE_X / 2, MAP_SIZE_Y / 2, '.');
 	generateRoom(MAP_SIZE_X / 2, MAP_SIZE_Y / 2, random->generate(6,10), random->generate(6,10), getRandDirection());
@@ -268,7 +288,8 @@ char** MapGenerator::generateMap() {
 	return dungeonTiles_;
 }
 
-int MapGenerator::writeMapFile(char (&dungeonTiles_)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1]) {
+int MapGenerator::writeMapFile(char (&dungeonTiles_)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1])
+{
 	std::ofstream out;
 	out.open("map.dat");
 	for (int i = 0; i < MAP_SIZE_X; i++) {

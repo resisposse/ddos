@@ -1,22 +1,21 @@
 /*
- * Project Name
- * 2015 ? Project Team (see: LICENSE)
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
  */
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
 #include "object.hpp"
 #include "main.hpp"
-#include "projectileSprite.hpp"
-#include <iostream>
+#include "projectile.hpp"
 
 float frameClock = 0;
 float lastClockTmp = 0;
 GameState state;
 sf::RenderWindow *app;
-sf::View *playerView;
 Game *game;
 sf::Clock timer;
 
@@ -31,31 +30,18 @@ Game::Game()
 	                           sf::Style::Resize | sf::Style::Close);
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
+
 	player = new Player;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
-	app->setFramerateLimit(60);
-	state.brush.type = stStatic;
-	state.brush.color = sf::Color::Red;
-	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
-	state.brush.sourceTime = 2.0f;
-	state.ambientColor = sf::Color::White;
-	state.ambientIntensity = 5;
 
 	loadCursorTexture();
 	loadProjectileTextures();
-
 	spawnEnemies(5);
-
-	this->zoomLevel = 1.0f;
-	playerView = new sf::View;
-
-	float positionPlayerX = player->sprite.getPosition().x;
-	float positionPlayerY = player->sprite.getPosition().y;
-
-	playerView->setCenter(positionPlayerX, positionPlayerY);
-	playerView->setSize(sf::Vector2f(800, 608));
-	app->setView(*playerView);
+	app->setFramerateLimit(60);
+	initializeLighting();
+	initializeView();
+	loadProjectileTextures();
 }
 
 Game::~Game()
@@ -69,44 +55,16 @@ Game::~Game()
 	delete playerView;
 }
 
-int Game::collision(float x, float y, std::string collisionType) {
-	int i = map->Collision(x, y, collisionType);
-	return i;
-}
-
 void Game::update()
 {
-	state.ambientIntensity = 0;
-	state.ambientColor.r = 0;
-	state.ambientColor.g = 0;
-	state.ambientColor.b = 0;
-	state.brush.intensity = 100;
-	state.brush.color.r = 150;
-	state.brush.color.g = 150;
-	state.brush.color.b = 150;
-	state.brush.sourceTime = 2.0f;
-
-	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stPulsing;
-
 	while (running) {
 		currentClock += timer.getElapsedTime().asMilliseconds();
 		frameClock = (currentClock - lastClock) / 1000.f;
 		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
-		float positionX = player->sprite.getPosition().x;
-		float positionY = player->sprite.getPosition().y;
-		
-		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
-		                                    (int)positionY / TILE_SIZE);
-		state.tmpSource = StaticLightSource(state.brush.position,
-		                                    state.brush.color,
-		                                    state.brush.intensity);
-		map->ambientColor = state.ambientColor;
-		map->ambientIntensity = state.ambientIntensity;
-
-		processEvents();
+		refreshLighting();
+		parseEvents();
 		player->run();
 		app->clear();
 
@@ -116,9 +74,9 @@ void Game::update()
 
 		render();
 		
-		playerView->setCenter(positionX, positionY);
+		playerView->setCenter(playerPositionX, playerPositionY);
 		map->bgSpr->setOrigin(400, 300);
-		map->bgSpr->setPosition(positionX, positionY);
+		map->bgSpr->setPosition(playerPositionX, playerPositionY);
 		app->setView(*playerView);
 		app->display();
 	}
@@ -133,27 +91,68 @@ void Game::render()
 	drawCursor();
 }
 
-void Game::processEvents()
+void Game::initializeLighting()
+{
+	state.brush.type = stStatic;
+	state.brush.intensity = 100;
+	state.brush.color = sf::Color::Red;
+	state.brush.color.r = 150;
+	state.brush.color.g = 150;
+	state.brush.color.b = 150;
+	state.brush.sourceTime = 2.0f;
+	state.ambientIntensity = 0;
+	state.ambientColor = sf::Color::White;
+	state.ambientColor.r = 0;
+	state.ambientColor.g = 0;
+	state.ambientColor.b = 0;
+
+	/* Options are: stStatic, stPulsing, stFading, stTest */
+	state.brush.type = stPulsing;
+}
+
+void Game::initializeView()
+{
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+
+	this->zoomLevel = 1.0f;
+	playerView = new sf::View;
+	playerView->setCenter(playerPositionX, playerPositionY);
+	playerView->setSize(sf::Vector2f(800, 608));
+	app->setView(*playerView);
+}
+
+/*
+ * Keep realigning the center of the light (fog of war) with
+ * the player and then reread the light's attributes on the
+ * off chance that they were changed.
+ */
+void Game::refreshLighting()
+{
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
+	                                    (int)playerPositionY / TILE_SIZE);
+	state.tmpSource = StaticLightSource(state.brush.position,
+	                                    state.brush.color,
+	                                    state.brush.intensity);
+	map->ambientColor = state.ambientColor;
+	map->ambientIntensity = state.ambientIntensity;
+}
+
+/*
+ * A lot of events are handled separately and thus we have numerous
+ * event processing functions of the same name. It might or might not
+ * be easier to handle this way.
+ *
+ * http://bit.ly/1niVeJF
+ */
+void Game::parseEvents()
 {
 	sf::Event event;
 	while (app->pollEvent(event)) {
-
-		processEvent(event);
+		game->processEvent(event);
 		player->processEvent(event);
-
-		if (event.type == sf::Event::Resized)
-		{
-			playerView->setSize(event.size.width, event.size.height);
-			map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
-			sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
-			pos *= 0.5f;
-			pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
-
-			map->bgSpr->setScale(
-				float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
-				float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
-			break;
-		}
 	}
 	if (!app->isOpen()) {
 		running = false;
@@ -209,6 +208,17 @@ void Game::processEvent(sf::Event event)
 		running = false;
 		break;
 	}
+	case sf::Event::Resized: {
+		playerView->setSize(event.size.width, event.size.height);
+		map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
+		sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
+		pos *= 0.5f;
+		pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
+		map->bgSpr->setScale(
+			float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
+			float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
+		break;
+	}
 	}
 }
 
@@ -247,6 +257,12 @@ void Game::addSource()
 		                        state.brush.sourceTime)));
 		break;
 	}
+}
+
+int Game::collision(float x, float y, std::string collisionType)
+{
+	int i = map->Collision(x, y, collisionType);
+	return i;
 }
 
 void Game::loadCursorTexture()

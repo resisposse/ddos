@@ -1,10 +1,10 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
-#ifndef PROJECTILESPRITE_HPP
-#define PROJECTILESPRITE_HPP
+#ifndef PROJECTILE
+#define PROJECTILE
 
 #include <cmath>
 #include <SFML/Graphics.hpp>
@@ -35,5 +35,5 @@ class LaserSprite : public ProjectileSprite
 public:
 	LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition);
 };
-#endif // PROJECTILESPRITE_HPP
 
+#endif

@@ -1,7 +1,7 @@
 /*
-* Project Name
-* 2015 © Project Team (see: LICENSE)
-*/
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
+ */
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -244,3 +244,4 @@ EnemyMelee::~EnemyMelee() {
 	delete mEnemySpr;
 }
 */
+

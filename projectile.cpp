@@ -1,9 +1,9 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
-#include "projectileSprite.hpp"
+#include "projectile.hpp"
 
 ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition)
 {
