@@ -10,12 +10,15 @@ class Object
 {
 public:
 	Object();
-	~Object();
+	//~Object();
 	void run();
 	void processEvent(sf::Event event);
+	void update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY);
 	void update(sf::Time TimePerFrame);
 	void render();
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+
+	sf::Sprite sprite;
 
 	float updateCollisionX(float X, float Y);
 	float updateCollisionY();
@@ -69,11 +72,12 @@ struct Direction
 class Player : public Object {
 public:
 	Player();
-	~Player();
+	//~Player();
 };
 
 class EnemyMelee : public Object {
 public:
 	EnemyMelee();
-	~EnemyMelee();
+	//~EnemyMelee();
 };
+

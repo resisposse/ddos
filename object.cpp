@@ -22,26 +22,15 @@ Object::Object()
 	mIsMovingDown = false;
 	mIsMovingRight = false;
 	mIsMovingLeft = false;
-
-	/* Hide standard cursor */
-	app->setMouseCursorVisible(false);
-	fixed = app->getView();
-
-	TextureCursor = new sf::Texture();
-	TextureCursor->loadFromFile("media/cursor.png");
-	spriteCursor = new sf::Sprite(*TextureCursor);
-	sf::Vector2u spriteSize = TextureCursor->getSize();
-	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
-	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
-	app->setView(fixed);
 }
-
+/*
 Object::~Object()
 {
 	delete ObjectTex;
 	delete TextureCursor;
 	delete spriteCursor;
 }
+*/
 
 void Object::run()
 {
@@ -49,14 +38,14 @@ void Object::run()
 	double a, b;
 
 	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	float positionPlayerX = mPlayerSpr->getPosition().x;
-	float positionPlayerY = mPlayerSpr->getPosition().y;
-	mPlayerSpr->setOrigin(16, 16);
+	float positionPlayerX = sprite.getPosition().x;
+	float positionPlayerY = sprite.getPosition().y;
+	sprite.setOrigin(16, 16);
 
 	a = mouse.x - (positionPlayerX);
 	b = mouse.y - (positionPlayerY);
 	angle = -atan2(a, b) * 180 / 3.141593;
-	mPlayerSpr->setRotation(angle);
+	sprite.setRotation(angle);
 
 	sf::Time elapsedTime = timer.restart();
 	timeSinceLastUpdate += elapsedTime;
@@ -84,6 +73,17 @@ void Object::processEvent(sf::Event event)
 	}
 }
 
+void Object::update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY)
+{
+	float positionPlayerX = playerPosX;
+	float positionPlayerY = playerPosY;
+	float positionEnemyX = enemyPosX;
+	float positionEnemyY = enemyPosY;
+
+	/* Make enemies approach the player */
+	approach(positionEnemyX, positionEnemyY, positionPlayerX, positionPlayerY);
+}
+
 void Object::update(sf::Time TimePerFrame)
 {
 	sf::Vector2f movement(0.f, 0.f);
@@ -100,13 +100,10 @@ void Object::update(sf::Time TimePerFrame)
 		movement.x += PlayerSpeed;
 	}
 
-	float positionPlayerX = mPlayerSpr->getPosition().x;
-	float positionPlayerY = mPlayerSpr->getPosition().y;
+	float positionPlayerX = sprite.getPosition().x;
+	float positionPlayerY = sprite.getPosition().y;
 	float playerSpeedX = (movement.x * TimePerFrame.asSeconds() + positionPlayerX);
 	float playerSpeedY = (movement.y * TimePerFrame.asSeconds() + positionPlayerY);
-
-	float positionEnemyX = mEnemySpr->getPosition().x;
-	float positionEnemyY = mEnemySpr->getPosition().y;
 
 	int collisionX = game->collision(playerSpeedX, positionPlayerY, "player");
 	int collisionY = game->collision(positionPlayerX, playerSpeedY, "player");
@@ -119,22 +116,10 @@ void Object::update(sf::Time TimePerFrame)
 			movement.y = 0.f;
 		}
 
-		mPlayerSpr->move(movement * TimePerFrame.asSeconds());
-		positionPlayerX = mPlayerSpr->getPosition().x;
-		positionPlayerY = mPlayerSpr->getPosition().y;
+		sprite.move(movement * TimePerFrame.asSeconds());
+		positionPlayerX = sprite.getPosition().x;
+		positionPlayerY = sprite.getPosition().y;
 	}
-
-	/* Make enemies approach the player */
-	approach(positionEnemyX, positionEnemyY, positionPlayerX, positionPlayerY);
-}
-
-void Object::render()
-{
-	app->draw(*mPlayerSpr);
-	app->draw(*mEnemySpr);
-	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
-	/* Draw custom cursor */
-	app->draw(*spriteCursor);
 }
 
 void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
@@ -206,12 +191,12 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 	}
 
 	if (distance < 20 && distance > 5 && collisionFlag == 0) {
-		mEnemySpr->setOrigin(16, 16);
+		this->sprite.setOrigin(16, 16);
 		x = positionPlayerX - (positionEnemyX);
 		y = positionPlayerY - (positionEnemyY);
 		angle = -atan2(x, y) * 180 / 3.141593;
-		mEnemySpr->setRotation(angle);
-		mEnemySpr->move(enemyMovement * TimePerFrame.asSeconds());
+		this->sprite.setRotation(angle);
+		this->sprite.move(enemyMovement * TimePerFrame.asSeconds());
 	}
 }
 
@@ -223,28 +208,40 @@ void Object::setHitpoints(int hp){
 	mHitpoints = hp;
 }
 
-Player::Player(){
+Player::Player()
+{
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
 	sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
-	mPlayerSpr = new sf::Sprite(*ObjectTex, mPlayer);
-	mPlayerSpr->setPosition(500, 200);
+
+	sprite.setTexture(*ObjectTex);
+	sprite.setTextureRect(mPlayer);
+	sprite.setOrigin(16, 16);
+	sprite.setPosition(500, 200);
+
 	setHitpoints(100);
 }
-
+/*
 Player::~Player(){
 	delete mPlayerSpr;
 }
-
-EnemyMelee::EnemyMelee(){
+*/
+EnemyMelee::EnemyMelee()
+{
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
 	sf::IntRect mEnemy(32 * 0, 32 * 0, 32, 32);
-	mEnemySpr = new sf::Sprite(*ObjectTex, mEnemy);
-	mEnemySpr->setPosition(700, 250);
+
+	sprite.setTexture(*ObjectTex);
+	sprite.setTextureRect(mEnemy);
+	sprite.setOrigin(16, 16);
+	sprite.setPosition(rand() % 300 + 400, rand() % 300 + 200);
+
 	setHitpoints(50);
 }
-
+/*
 EnemyMelee::~EnemyMelee() {
 	delete mEnemySpr;
 }
+*/
+

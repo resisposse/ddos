@@ -39,20 +39,34 @@ public:
 	void parseEvents();
 	void processEvent(sf::Event event);
 	void addSource();
+	void loadCursorTexture();
 	void loadProjectileTextures();
 	void updateProjectiles();
 	void checkProjectileCollisions();
 	void drawProjectiles();
+	void spawnEnemies(int amount);
+	void updateEnemies();
+	void drawEnemies();
+	void drawPlayer();
+	void drawCursor();
 	void initializeView();
 	void initializeLighting();
 	void refreshLighting();
 
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
+	sf::Texture *TextureCursor;
+	sf::Sprite *spriteCursor;
 	sf::View *playerView;
 	sf::View *backgroundView;
+	sf::View fixed;
+	sf::Vector2i mouse;
 
 	std::vector<ProjectileSprite> projectiles;
+	std::vector<EnemyMelee> enemies;
+
+	/* Temporary time fix, check this from main.cpp */
+	static const sf::Time TimePerFrameTmp;
 };
 extern float frameClock;
 extern float lastClockTmp;

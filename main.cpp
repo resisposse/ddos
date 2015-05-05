@@ -19,6 +19,10 @@ sf::RenderWindow *app;
 Game *game;
 sf::Clock timer;
 
+/* Object.update takes type Time, change to use float frameCLock */
+//sf::Time timeSinceLastUpdate = sf::Time::Zero;
+const sf::Time Game::TimePerFrameTmp = sf::seconds(1.f / 60.f);
+
 Game::Game()
 {
 	app = new sf::RenderWindow(sf::VideoMode(800, 608, 32),
@@ -28,10 +32,12 @@ Game::Game()
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
 	player = new Player;
-	enemy = new EnemyMelee;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 
+	loadCursorTexture();
+	loadProjectileTextures();
+	spawnEnemies(5);
 	app->setFramerateLimit(60);
 	initializeLighting();
 	initializeView();
@@ -45,7 +51,6 @@ Game::~Game()
 	delete bulletTexture;
 	delete laserBeamTexture;
 	delete player;
-	delete enemy;
 	delete app;
 	delete playerView;
 }
@@ -61,16 +66,18 @@ void Game::update()
 		refreshLighting();
 		parseEvents();
 		player->run();
-		enemy->run();
 		app->clear();
-		render();
+
 		updateProjectiles();
 		checkProjectileCollisions();
-		drawProjectiles();
+		updateEnemies();
+
+		render();
+		
 		playerView->setCenter(playerPositionX, playerPositionY);
-		app->setView(*playerView);
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(playerPositionX, playerPositionY);
+		app->setView(*playerView);
 		app->display();
 	}
 }
@@ -78,8 +85,10 @@ void Game::update()
 void Game::render()
 {
 	map->update(&state.tmpSource);
-	player->render();
-	enemy->render();
+	drawPlayer();
+	drawProjectiles();
+	drawEnemies();
+	drawCursor();
 }
 
 void Game::initializeLighting()
@@ -103,8 +112,8 @@ void Game::initializeLighting()
 
 void Game::initializeView()
 {
-	playerPositionX = mPlayerSpr->getPosition().x;
-	playerPositionY = mPlayerSpr->getPosition().y;
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
 
 	this->zoomLevel = 1.0f;
 	playerView = new sf::View;
@@ -120,8 +129,8 @@ void Game::initializeView()
  */
 void Game::refreshLighting()
 {
-	playerPositionX = mPlayerSpr->getPosition().x;
-	playerPositionY = mPlayerSpr->getPosition().y;
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
 	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
 	                                    (int)playerPositionY / TILE_SIZE);
 	state.tmpSource = StaticLightSource(state.brush.position,
@@ -144,7 +153,6 @@ void Game::parseEvents()
 	while (app->pollEvent(event)) {
 		game->processEvent(event);
 		player->processEvent(event);
-		enemy->processEvent(event);
 	}
 	if (!app->isOpen()) {
 		running = false;
@@ -181,10 +189,11 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::MouseButtonPressed: {
 		if (event.mouseButton.button == sf::Mouse::Left)
+			//spawnEnemies(1);
 			if (ammoType == 0) {
-				projectiles.push_back(BulletSprite(*bulletTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+				projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else if (ammoType == 1) {
-				projectiles.push_back(LaserSprite(*laserBeamTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+				projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else {
 				std::cout << "AmmoType fail: " << ammoType << std::endl;
 			}
@@ -256,6 +265,20 @@ int Game::collision(float x, float y, std::string collisionType)
 	return i;
 }
 
+void Game::loadCursorTexture()
+{
+	app->setMouseCursorVisible(false);
+	fixed = app->getView();
+
+	TextureCursor = new sf::Texture();
+	TextureCursor->loadFromFile("media/cursor.png");
+	spriteCursor = new sf::Sprite(*TextureCursor);
+	sf::Vector2u spriteSize = TextureCursor->getSize();
+	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
+	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
+	app->setView(fixed);
+}
+
 void Game::loadProjectileTextures()
 {
 	bulletTexture = new sf::Texture();
@@ -293,6 +316,51 @@ void Game::drawProjectiles()
 	for (ProjectileSprite &projectile : projectiles) {
 		app->draw(projectile.sprite);
 	}
+}
+
+void Game::spawnEnemies(int amount)
+{
+	for (int i = 0; i < amount; i++) {
+		enemies.push_back(EnemyMelee());
+		std::cout << "Enemy Spawned" << std::endl;
+		//std::cout << enemies.size() << std::endl;
+		//enemies.back->setPosition(rand() % 800, rand() % 600);
+	}
+}
+
+void Game::updateEnemies()
+{
+	for (unsigned int i = 0; i <  enemies.size();) {
+		enemies[i].update(TimePerFrameTmp, enemies[i].sprite.getPosition().x, enemies[i].sprite.getPosition().y,
+						player->sprite.getPosition().x, player->sprite.getPosition().y);
+		//std::cout << "UpdateEnemy: " << i << std::endl;
+		++i;
+	}
+}
+
+void Game::drawEnemies()
+{
+	for (Object &enemies : enemies) {
+		app->draw(enemies.sprite);
+	}
+}
+/*
+void Game::updatePlayer()
+{
+	player->update(TimePerFrameTmp);
+}
+*/
+void Game::drawPlayer()
+{
+	app->draw(player->sprite);
+}
+
+void Game::drawCursor()
+{
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
+	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
+	/* Draw custom cursor */
+	app->draw(*spriteCursor);
 }
 
 int main()
