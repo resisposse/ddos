@@ -1,6 +1,6 @@
 /*
- * Project Name
- * 2015 ? Project Team (see: LICENSE)
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
  */
 
 #include <iostream>
@@ -16,7 +16,6 @@ float frameClock = 0;
 float lastClockTmp = 0;
 GameState state;
 sf::RenderWindow *app;
-sf::View *playerView;
 Game *game;
 sf::Clock timer;
 
@@ -51,66 +50,15 @@ Game::~Game()
 	delete playerView;
 }
 
-int Game::collision(float x, float y, std::string collisionType)
-{
-	int i = map->Collision(x, y, collisionType);
-	return i;
-}
-
-void Game::initializeLighting()
-{
-	state.brush.type = stStatic;
-	state.brush.color = sf::Color::Red;
-	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
-	state.brush.sourceTime = 2.0f;
-	state.ambientColor = sf::Color::White;
-	state.ambientIntensity = 5;
-}
-
-void Game::initializeView()
-{
-	float positionPlayerX = mPlayerSpr->getPosition().x;
-	float positionPlayerY = mPlayerSpr->getPosition().y;
-
-	this->zoomLevel = 1.0f;
-	playerView = new sf::View;
-	playerView->setCenter(positionPlayerX, positionPlayerY);
-	playerView->setSize(sf::Vector2f(800, 608));
-	app->setView(*playerView);
-}
-
 void Game::update()
 {
-	state.ambientIntensity = 0;
-	state.ambientColor.r = 0;
-	state.ambientColor.g = 0;
-	state.ambientColor.b = 0;
-	state.brush.intensity = 100;
-	state.brush.color.r = 150;
-	state.brush.color.g = 150;
-	state.brush.color.b = 150;
-	state.brush.sourceTime = 2.0f;
-
-	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stPulsing;
-
 	while (running) {
 		currentClock += timer.getElapsedTime().asMilliseconds();
 		frameClock = (currentClock - lastClock) / 1000.f;
 		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
-		float positionX = mPlayerSpr->getPosition().x;
-		float positionY = mPlayerSpr->getPosition().y;
-
-		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
-		                                    (int)positionY / TILE_SIZE);
-		state.tmpSource = StaticLightSource(state.brush.position,
-		                                    state.brush.color,
-		                                    state.brush.intensity);
-		map->ambientColor = state.ambientColor;
-		map->ambientIntensity = state.ambientIntensity;
-
+		refreshLighting();
 		parseEvents();
 		player->run();
 		enemy->run();
@@ -119,11 +67,10 @@ void Game::update()
 		updateProjectiles();
 		checkProjectileCollisions();
 		drawProjectiles();
-
-		playerView->setCenter(positionX, positionY);
-		map->bgSpr->setOrigin(400, 300);
-		map->bgSpr->setPosition(positionX, positionY);
+		playerView->setCenter(playerPositionX, playerPositionY);
 		app->setView(*playerView);
+		map->bgSpr->setOrigin(400, 300);
+		map->bgSpr->setPosition(playerPositionX, playerPositionY);
 		app->display();
 	}
 }
@@ -133,6 +80,55 @@ void Game::render()
 	map->update(&state.tmpSource);
 	player->render();
 	enemy->render();
+}
+
+void Game::initializeLighting()
+{
+	state.brush.type = stStatic;
+	state.brush.intensity = 100;
+	state.brush.color = sf::Color::Red;
+	state.brush.color.r = 150;
+	state.brush.color.g = 150;
+	state.brush.color.b = 150;
+	state.brush.sourceTime = 2.0f;
+	state.ambientIntensity = 0;
+	state.ambientColor = sf::Color::White;
+	state.ambientColor.r = 0;
+	state.ambientColor.g = 0;
+	state.ambientColor.b = 0;
+
+	/* Options are: stStatic, stPulsing, stFading, stTest */
+	state.brush.type = stPulsing;
+}
+
+void Game::initializeView()
+{
+	playerPositionX = mPlayerSpr->getPosition().x;
+	playerPositionY = mPlayerSpr->getPosition().y;
+
+	this->zoomLevel = 1.0f;
+	playerView = new sf::View;
+	playerView->setCenter(playerPositionX, playerPositionY);
+	playerView->setSize(sf::Vector2f(800, 608));
+	app->setView(*playerView);
+}
+
+/*
+ * Keep realigning the center of the light (fog of war) with
+ * the player and then reread the light's attributes on the
+ * off chance that they were changed.
+ */
+void Game::refreshLighting()
+{
+	playerPositionX = mPlayerSpr->getPosition().x;
+	playerPositionY = mPlayerSpr->getPosition().y;
+	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
+	                                    (int)playerPositionY / TILE_SIZE);
+	state.tmpSource = StaticLightSource(state.brush.position,
+	                                    state.brush.color,
+	                                    state.brush.intensity);
+	map->ambientColor = state.ambientColor;
+	map->ambientIntensity = state.ambientIntensity;
 }
 
 /*
@@ -254,6 +250,12 @@ void Game::addSource()
 	}
 }
 
+int Game::collision(float x, float y, std::string collisionType)
+{
+	int i = map->Collision(x, y, collisionType);
+	return i;
+}
+
 void Game::loadProjectileTextures()
 {
 	bulletTexture = new sf::Texture();
@@ -263,8 +265,6 @@ void Game::loadProjectileTextures()
 	laserBeamTexture = new sf::Texture();
 	laserBeamTexture->loadFromFile("media/laserBeam.png");
 	laserBeamTexture->setSmooth(true);
-
-	std::vector<ProjectileSprite> projectiles;
 }
 
 void Game::updateProjectiles()

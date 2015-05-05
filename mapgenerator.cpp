@@ -1,3 +1,8 @@
+/*
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
+ */
+
 #include "mapgenerator.hpp"
 #include <iostream>
 #include <fstream>

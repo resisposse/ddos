@@ -1,5 +1,5 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 

@@ -1,5 +1,5 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
@@ -26,123 +26,127 @@ Map::Map(char **generatedMap)
 	bgTex->loadFromFile("media/ddos-bg.png");
 	bgSpr = new sf::Sprite(*bgTex);
 
-	sf::IntRect floor           (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorMetal      (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateVer   (TILE_SIZE * 15, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateHor   (TILE_SIZE * 16, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateTop   (TILE_SIZE * 15, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateTopEmpty(TILE_SIZE * 15, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateBottomEmpty(TILE_SIZE * 16, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateLeft  (TILE_SIZE * 16, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorGrateTopRight(TILE_SIZE * 18, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorDamagedV1	(TILE_SIZE * 10, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorDamagedV2	(TILE_SIZE * 11, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorDamagedV3	(TILE_SIZE * 12, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorDamagedV4	(TILE_SIZE * 13, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorDamagedV5	(TILE_SIZE * 14, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar1       (TILE_SIZE * 15, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar2       (TILE_SIZE * 16, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar3       (TILE_SIZE * 17, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar4       (TILE_SIZE * 18, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar5       (TILE_SIZE * 15, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar6       (TILE_SIZE * 16, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar7       (TILE_SIZE * 17, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar8       (TILE_SIZE * 18, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar9       (TILE_SIZE * 15, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar10      (TILE_SIZE * 16, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar11      (TILE_SIZE * 17, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar12      (TILE_SIZE * 18, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar13      (TILE_SIZE * 15, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorVar14      (TILE_SIZE * 16, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorTopLeft    (TILE_SIZE * 4, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorTop        (TILE_SIZE * 5, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorTopRight   (TILE_SIZE * 6, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorLeft       (TILE_SIZE * 4, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorRight      (TILE_SIZE * 6, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorBottomLeft (TILE_SIZE * 4, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorBottom     (TILE_SIZE * 5, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect floorBottomRight(TILE_SIZE * 6, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floor      (TILE_SIZE * 5, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorMetal (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect floorGrateVer         (TILE_SIZE * 15, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateHor         (TILE_SIZE * 16, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTop         (TILE_SIZE * 15, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTopEmpty    (TILE_SIZE * 15, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateBottomEmpty (TILE_SIZE * 16, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateLeft        (TILE_SIZE * 16, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorGrateTopRight    (TILE_SIZE * 18, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect floorDamagedV1 (TILE_SIZE * 10, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV2 (TILE_SIZE * 11, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV3 (TILE_SIZE * 12, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV4 (TILE_SIZE * 13, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorDamagedV5 (TILE_SIZE * 14, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect floorVar1  (TILE_SIZE * 15, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar2  (TILE_SIZE * 16, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar3  (TILE_SIZE * 17, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar4  (TILE_SIZE * 18, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar5  (TILE_SIZE * 15, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar6  (TILE_SIZE * 16, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar7  (TILE_SIZE * 17, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar8  (TILE_SIZE * 18, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar9  (TILE_SIZE * 15, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar10 (TILE_SIZE * 16, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar11 (TILE_SIZE * 17, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar12 (TILE_SIZE * 18, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar13 (TILE_SIZE * 15, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorVar14 (TILE_SIZE * 16, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect floorTopLeft     (TILE_SIZE * 4,  TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorTop         (TILE_SIZE * 5,  TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorTopRight    (TILE_SIZE * 6,  TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorLeft        (TILE_SIZE * 4,  TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorRight       (TILE_SIZE * 6,  TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorBottomLeft  (TILE_SIZE * 4,  TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorBottom      (TILE_SIZE * 5,  TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect floorBottomRight (TILE_SIZE * 6,  TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+
 	sf::IntRect floorTopLeftCorner     (TILE_SIZE * 7, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorTopRightCorner    (TILE_SIZE * 8, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorBottomLeftCorner  (TILE_SIZE * 7, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
 	sf::IntRect floorBottomRightCorner (TILE_SIZE * 8, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	
-	sf::IntRect wallMiddle      (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	
+
+	sf::IntRect wallMiddle (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+
 	sf::IntRect wallHorizontal1 (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect wallHorizontal2 (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect wallHorizontal3 (TILE_SIZE * 6, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect wallHorizontal4 (TILE_SIZE * 7, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect wallHorizontal5 (TILE_SIZE * 8, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 
-	sf::IntRect wallVertical1	(TILE_SIZE * 3, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallVertical2	(TILE_SIZE * 3, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallVertical3	(TILE_SIZE * 3, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallVertical4	(TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallVertical5	(TILE_SIZE * 3, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical1 (TILE_SIZE * 3, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical2 (TILE_SIZE * 3, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical3 (TILE_SIZE * 3, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical4 (TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallVertical5 (TILE_SIZE * 3, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 
-	sf::IntRect wallCorner1		(TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallCorner2		(TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallCorner3		(TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallCorner4		(TILE_SIZE * 3, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner1	(TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner2 (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner3 (TILE_SIZE * 2, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallCorner4 (TILE_SIZE * 3, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 
-	sf::IntRect wallFill1		(TILE_SIZE * 2, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallFill2		(TILE_SIZE * 2, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallFill3		(TILE_SIZE * 2, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallFill4		(TILE_SIZE * 2, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
-	sf::IntRect wallFill5		(TILE_SIZE * 2, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill1 (TILE_SIZE * 2, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill2 (TILE_SIZE * 2, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill3 (TILE_SIZE * 2, TILE_SIZE * 4, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill4 (TILE_SIZE * 2, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect wallFill5 (TILE_SIZE * 2, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 
-	sf::IntRect lavaFrame1      (TILE_SIZE * 0, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame2      (TILE_SIZE * 1, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame3      (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame4      (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame5      (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame6      (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame7      (TILE_SIZE * 6, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
-	sf::IntRect lavaFrame8      (TILE_SIZE * 7, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame1 (TILE_SIZE * 0, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame2 (TILE_SIZE * 1, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame3 (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame4 (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame5 (TILE_SIZE * 4, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame6 (TILE_SIZE * 5, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame7 (TILE_SIZE * 6, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect lavaFrame8 (TILE_SIZE * 7, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 
-	floorSpr           = new sf::Sprite(*tileMapTex, floor);
-	floorSprCpy        = new sf::Sprite(*tileMapTex, floor);
-	floorMetalSpr      = new sf::Sprite(*tileMapTex, floorMetal);
-	floorGrateHorSpr   = new sf::Sprite(*tileMapTex, floorGrateHor);
-	floorGrateVerSpr   = new sf::Sprite(*tileMapTex, floorGrateVer);
-	floorGrateTopSpr   = new sf::Sprite(*tileMapTex, floorGrateTop);
+	floorSpr = new sf::Sprite(*tileMapTex, floor);
+	floorSprCpy = new sf::Sprite(*tileMapTex, floor);
+	floorMetalSpr = new sf::Sprite(*tileMapTex, floorMetal);
+	floorGrateHorSpr = new sf::Sprite(*tileMapTex, floorGrateHor);
+	floorGrateVerSpr = new sf::Sprite(*tileMapTex, floorGrateVer);
+	floorGrateTopSpr = new sf::Sprite(*tileMapTex, floorGrateTop);
 	floorGrateTopEmptySpr = new sf::Sprite(*tileMapTex, floorGrateTopEmpty);
 	floorGrateBottomEmptySpr = new sf::Sprite(*tileMapTex, floorGrateBottomEmpty);
-	floorGrateLeftSpr  = new sf::Sprite(*tileMapTex, floorGrateLeft);
+	floorGrateLeftSpr = new sf::Sprite(*tileMapTex, floorGrateLeft);
 	floorGrateTopRightSpr = new sf::Sprite(*tileMapTex, floorGrateTopRight);
-	floorDamagedV1Spr  = new sf::Sprite(*tileMapTex, floorDamagedV1);
-	floorDamagedV2Spr  = new sf::Sprite(*tileMapTex, floorDamagedV2);
-	floorDamagedV3Spr  = new sf::Sprite(*tileMapTex, floorDamagedV3);
-	floorDamagedV4Spr  = new sf::Sprite(*tileMapTex, floorDamagedV4);
-	floorDamagedV5Spr  = new sf::Sprite(*tileMapTex, floorDamagedV5);
-	floorVar1Spr       = new sf::Sprite(*tileMapTex, floorVar1);
-	floorVar2Spr       = new sf::Sprite(*tileMapTex, floorVar2);
-	floorVar3Spr       = new sf::Sprite(*tileMapTex, floorVar3);
-	floorVar4Spr       = new sf::Sprite(*tileMapTex, floorVar4);
-	floorVar5Spr       = new sf::Sprite(*tileMapTex, floorVar5);
-	floorVar6Spr       = new sf::Sprite(*tileMapTex, floorVar6);
-	floorVar7Spr       = new sf::Sprite(*tileMapTex, floorVar7);
-	floorVar8Spr       = new sf::Sprite(*tileMapTex, floorVar8);
-	floorVar9Spr       = new sf::Sprite(*tileMapTex, floorVar9);
-	floorVar10Spr      = new sf::Sprite(*tileMapTex, floorVar10);
-	floorVar11Spr      = new sf::Sprite(*tileMapTex, floorVar11);
-	floorVar12Spr      = new sf::Sprite(*tileMapTex, floorVar12);
-	floorVar13Spr      = new sf::Sprite(*tileMapTex, floorVar13);
-	floorVar14Spr      = new sf::Sprite(*tileMapTex, floorVar14);
-	floorTopLeftSpr    = new sf::Sprite(*tileMapTex, floorTopLeft);
-	floorTopSpr        = new sf::Sprite(*tileMapTex, floorTop);
-	floorTopRightSpr   = new sf::Sprite(*tileMapTex, floorTopRight);
-	floorLeftSpr       = new sf::Sprite(*tileMapTex, floorLeft);
-	floorRightSpr      = new sf::Sprite(*tileMapTex, floorRight);
+	floorDamagedV1Spr = new sf::Sprite(*tileMapTex, floorDamagedV1);
+	floorDamagedV2Spr = new sf::Sprite(*tileMapTex, floorDamagedV2);
+	floorDamagedV3Spr = new sf::Sprite(*tileMapTex, floorDamagedV3);
+	floorDamagedV4Spr = new sf::Sprite(*tileMapTex, floorDamagedV4);
+	floorDamagedV5Spr = new sf::Sprite(*tileMapTex, floorDamagedV5);
+	floorVar1Spr = new sf::Sprite(*tileMapTex, floorVar1);
+	floorVar2Spr = new sf::Sprite(*tileMapTex, floorVar2);
+	floorVar3Spr = new sf::Sprite(*tileMapTex, floorVar3);
+	floorVar4Spr = new sf::Sprite(*tileMapTex, floorVar4);
+	floorVar5Spr = new sf::Sprite(*tileMapTex, floorVar5);
+	floorVar6Spr = new sf::Sprite(*tileMapTex, floorVar6);
+	floorVar7Spr = new sf::Sprite(*tileMapTex, floorVar7);
+	floorVar8Spr = new sf::Sprite(*tileMapTex, floorVar8);
+	floorVar9Spr = new sf::Sprite(*tileMapTex, floorVar9);
+	floorVar10Spr = new sf::Sprite(*tileMapTex, floorVar10);
+	floorVar11Spr = new sf::Sprite(*tileMapTex, floorVar11);
+	floorVar12Spr = new sf::Sprite(*tileMapTex, floorVar12);
+	floorVar13Spr = new sf::Sprite(*tileMapTex, floorVar13);
+	floorVar14Spr = new sf::Sprite(*tileMapTex, floorVar14);
+	floorTopLeftSpr = new sf::Sprite(*tileMapTex, floorTopLeft);
+	floorTopSpr = new sf::Sprite(*tileMapTex, floorTop);
+	floorTopRightSpr = new sf::Sprite(*tileMapTex, floorTopRight);
+	floorLeftSpr = new sf::Sprite(*tileMapTex, floorLeft);
+	floorRightSpr = new sf::Sprite(*tileMapTex, floorRight);
 	floorBottomLeftSpr = new sf::Sprite(*tileMapTex, floorBottomLeft);
-	floorBottomSpr     = new sf::Sprite(*tileMapTex, floorBottom);
+	floorBottomSpr = new sf::Sprite(*tileMapTex, floorBottom);
 	floorBottomRightSpr = new sf::Sprite(*tileMapTex, floorBottomRight);
-	floorTopLeftCornerSpr     = new sf::Sprite(*tileMapTex, floorTopLeftCorner);
-	floorTopRightCornerSpr    = new sf::Sprite(*tileMapTex, floorTopRightCorner);
-	floorBottomLeftCornerSpr  = new sf::Sprite(*tileMapTex, floorBottomLeftCorner);
+	floorTopLeftCornerSpr = new sf::Sprite(*tileMapTex, floorTopLeftCorner);
+	floorTopRightCornerSpr = new sf::Sprite(*tileMapTex, floorTopRightCorner);
+	floorBottomLeftCornerSpr = new sf::Sprite(*tileMapTex, floorBottomLeftCorner);
 	floorBottomRightCornerSpr = new sf::Sprite(*tileMapTex, floorBottomRightCorner);
-
 	floorTiles.push_back(floorMetalSpr);
 	floorTiles.push_back(floorMetalSpr);
 	floorTiles.push_back(floorMetalSpr);
@@ -191,7 +195,7 @@ Map::Map(char **generatedMap)
 	floorTiles.push_back(floorVar13Spr);
 	floorTiles.push_back(floorVar14Spr);
 
-	wallMiddleSpr      = new sf::Sprite(*tileMapTex, wallMiddle);
+	wallMiddleSpr = new sf::Sprite(*tileMapTex, wallMiddle);
 
 	wallHorizontal1Spr = new sf::Sprite(*tileMapTex, wallHorizontal1);
 	wallHorizontal2Spr = new sf::Sprite(*tileMapTex, wallHorizontal2);
@@ -234,7 +238,7 @@ Map::Map(char **generatedMap)
 	wallFillTiles.push_back(wallFill3Spr);
 	wallFillTiles.push_back(wallFill4Spr);
 	wallFillTiles.push_back(wallFill5Spr);
-	
+
 	lava1Spr = new sf::Sprite(*lavaTex, lavaFrame1);
 	lava2Spr = new sf::Sprite(*lavaTex, lavaFrame2);
 	lava3Spr = new sf::Sprite(*lavaTex, lavaFrame3);
@@ -251,69 +255,14 @@ Map::Map(char **generatedMap)
 	lavaFrames.push_back(lava6Spr);
 	lavaFrames.push_back(lava7Spr);
 	lavaFrames.push_back(lava8Spr);
-	
-	/*TODO delete this in final release*/
-	char _tiles[MAP_SIZE_X][MAP_SIZE_Y + 1] = {
-		"                                  XXXX",
-		"      XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXX",
-		"      XLLLL....XXXXXXXXXXXXXXXXXXXXXXX",
-		"      XLLL........X..............XXXXX",
-		"      XL..........X..............XXXXX",
-		"      X.......XX..XXXXXXXXXXXXX..XXXXX",
-		"XXXXXXX..XXXXXXX..XXXXXXXXXX.......XXX",
-		"XXXXXXX..XXXXXXX..XXXXXXXXXX.......XXX",
-		"X........XXXXXXX..X   XXXXXX.......XXX",
-		"X..XXXX..XXXXX X..X    XXXXX.......XXX",
-		"X..X  X..XXX   X..X     XXXX.......XXX",
-		"X..X  X..XXXX  X..X   XXXXXX.......XXX",
-		"X..XXXX...XXXXXX..XXXXXXXXXX.......XXX",
-		"X.........XXXXXX..XXXXXXXXXX.......XXX",
-		"X.................X................XXX",
-		"X.................X................XXX",
-		"X.........XXXXXXXXXXXXXXXXXX.......XXX",
-		"X.........XXX   XXX....XXXXXXX.....XXX",
-		"X.........XXXXXXXXX....XXXXXXX.....XXX",
-		"X....XXXXXXX....XXX....XXXXXXX.....XXX",
-		"X....X..........XXX....XXXXXXX.....XXX",
-		"X....X..........XXX....XXXXXXX.....XXX",
-		"X........XXXX...XXX....XXXXXXX.....XXX",
-		"X........XXXXXXXXXX................XXX",
-		"XXXXXXXXXXXXXXXXXXX................XXX",
-		"X.........XXXXXXXXX................XXX",
-		"X.........XXXXXXXXX....XXXXXXX.....XXX",
-		"X......................XXXXXXX.....XXX",
-		"X......................XXXXXXX.....XXX",
-		"X......................XXXXXXX0000.XXX",
-		"X.........XXXXXXXXXXXXXXXXXXXX.....XXX",
-		"X.........XXXXXXXXXXXXXXXXXXXX.....XXX",
-		"XXXXXXXXXXXXXXXXXXXXXXXXXXX........XXX",
-		"XXXXXXXXXXXXXXXXXXXXXXXXXXX........XXX",
-		"XX........XXXXX.....XXXXXXX........XXX",
-		"XX........XXXXX....................XXX",
-		"XX........XXXXX....................XXX",
-		"XX........XXXXX.............000....XXX",
-		"XX..00....XXXXX.....XXXXXXX........XXX",
-		"XX........XXXXX.....XXXXXXX........XXX",
-		"XX........XXXXX.....XXXXXXX........XXX",
-		"XX..00....XXXXX.....XXXXXXX........XXX",
-		"XX........XXXXXXXXXXXXXXXXX....00..XXX",
-		"XX........XXXXXXXXXXXXXXXXX........XXX",
-		"XX..0000.......0000................XXX",
-		"XX.............0000................XXX",
-		"XX.................................XXX",
-		"XX........XXXXXXXXXXXXXXXXX........XXX",
-		"XX........XXXXXXXXXXXXXXXXX........XXX",
-		"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-	};
 
 	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
-		
 		floorTilesRand[i][j]          = rand() % floorTiles.size();
 		wallHorizontalTilesRand[i][j] = rand() % wallHorizontalTiles.size();
-		wallVerticalTilesRand[i][j]	  = rand() % wallVerticalTiles.size();
+		wallVerticalTilesRand[i][j]   = rand() % wallVerticalTiles.size();
 		wallCornerTilesRand[i][j]     = rand() % wallCornerTiles.size();
 		wallFillTilesRand[i][j]	      = rand() % wallFillTiles.size();
-		
+
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
 		switch (generatedMap[i][j]) {
@@ -426,7 +375,6 @@ Map::~Map()
 	deleteList(sources);
 }
 
-/* TODO Add more types of wall types, like T-shaped etc. */
 int Map::updateWallDirection(MapTile tile)
 {
 	/*
@@ -473,14 +421,9 @@ void Map::update(StaticLightSource *tmpSource)
 {
 	updateList(sources);
 	resetLight();
-	render();
+	renderTiles();
 	checkSources(tmpSource);
 	light();
-}
-
-void Map::render()
-{
-	renderTiles();
 }
 
 void Map::checkSources(StaticLightSource *tmpSource)
@@ -510,7 +453,7 @@ void Map::renderTiles()
 				break;
 			case 2:
 				//drawTile(wallHorizontalTiles, wallHorizontalTilesRand, i, j, tileColor);
-				drawWallHorizontalTile(i, j, tileColor); 
+				drawWallHorizontalTile(i, j, tileColor);
 				break;
 			case 3:
 				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
@@ -536,15 +479,15 @@ void Map::renderTiles()
 				break;
 			case 7:
 				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
-				drawWallCornerTile(i, j, tileColor); 
+				drawWallCornerTile(i, j, tileColor);
 				break;
 			case 8:
 				//drawTile(wallHorizontalTiles, wallHorizontalTilesRand, i, j, tileColor);
-				drawWallHorizontalTile(i, j, tileColor); 
+				drawWallHorizontalTile(i, j, tileColor);
 				break;
 			case 9:
 				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);
-				drawWallCornerTile(i, j, tileColor); 
+				drawWallCornerTile(i, j, tileColor);
 				break;
 			}
 			break;
@@ -668,18 +611,19 @@ void Map::renderTiles()
 	}
 }
 
-int Map::Collision(float X, float Y, std::string collisionType) {
+int Map::Collision(float X, float Y, std::string collisionType)
+{
 	float x = X;
 	float y = Y;
 	int collision = 0;
 	int collisionMargin = 0;
-	
-	if (collisionType == "projectile") { 
+
+	if (collisionType == "projectile") {
 		collisionMargin = 2;
 	} else { collisionMargin = 10;
 	}
 
-	//top
+	/* Top */
 	int i = x - collisionMargin;
 	int j = y - collisionMargin;
 
@@ -691,7 +635,8 @@ int Map::Collision(float X, float Y, std::string collisionType) {
 			}
 		}
 	}
-	//left
+
+	/* Left */
 	if (collision == 0) {
 		i = x - collisionMargin;
 		j = y - collisionMargin;
@@ -702,7 +647,8 @@ int Map::Collision(float X, float Y, std::string collisionType) {
 			}
 		}
 	}
-	//right
+
+	/* Right */
 	if (collision == 0) {
 		i = x + collisionMargin;
 		j = y - collisionMargin;
@@ -713,7 +659,8 @@ int Map::Collision(float X, float Y, std::string collisionType) {
 			}
 		}
 	}
-	//bottom
+
+	/* Bottom */
 	if (collision == 0) {
 		j = y + collisionMargin;
 		i = x - collisionMargin;
@@ -728,7 +675,8 @@ int Map::Collision(float X, float Y, std::string collisionType) {
 	return collision;
 }
 
-unsigned int Map::checkNeighbourType(MapTile tile, MapTileType tileType){
+unsigned int Map::checkNeighbourType(MapTile tile, MapTileType tileType)
+{
 	unsigned int neighbours = 0;
 	int x = tile.index.x;
 	int y = tile.index.y;
@@ -744,60 +692,70 @@ unsigned int Map::checkNeighbourType(MapTile tile, MapTileType tileType){
 	return neighbours;
 }
 
-void Map::drawFloorTile(int i, int j, sf::Color tileColor) {
+void Map::drawFloorTile(int i, int j, sf::Color tileColor)
+{
 	int type = floorTilesRand[i][j];
 	floorTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	floorTiles[type]->setColor(tileColor);
 	app->draw(*floorTiles[type]);
 }
 
-void Map::drawWallCornerTile(int i, int j, sf::Color tileColor) {
+void Map::drawWallCornerTile(int i, int j, sf::Color tileColor)
+{
 	int type = wallCornerTilesRand[i][j];
 	wallCornerTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	wallCornerTiles[type]->setColor(tileColor);
 	app->draw(*wallCornerTiles[type]);
 }
 
-void Map::drawWallHorizontalTile(int i, int j, sf::Color tileColor) {
+void Map::drawWallHorizontalTile(int i, int j, sf::Color tileColor)
+{
 	int type = wallHorizontalTilesRand[i][j];
 	wallHorizontalTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	wallHorizontalTiles[type]->setColor(tileColor);
 	app->draw(*wallHorizontalTiles[type]);
 }
 
-void Map::drawWallVerticalTile(int i, int j, sf::Color tileColor) {
+void Map::drawWallVerticalTile(int i, int j, sf::Color tileColor)
+{
 	int type = wallVerticalTilesRand[i][j];
 	wallVerticalTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	wallVerticalTiles[type]->setColor(tileColor);
 	app->draw(*wallVerticalTiles[type]);
 }
 
-void Map::drawWallFillTile(int i, int j, sf::Color tileColor){
+void Map::drawWallFillTile(int i, int j, sf::Color tileColor)
+{
 	int type = wallFillTilesRand[i][j];
 	wallFillTiles[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	wallFillTiles[type]->setColor(tileColor);
 	app->draw(*wallFillTiles[type]);
 }
 
-void Map::drawLavaFrame(int i, int j, sf::Color tileColor, float frameDuration) {
+void Map::drawLavaFrame(int i, int j, sf::Color tileColor, float frameDuration)
+{
 	int frame = getCorrectFrame(lavaFrames.size(), frameDuration);
 	lavaFrames[frame]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	lavaFrames[frame]->setColor(tileColor);
 	app->draw(*lavaFrames[frame]);
 }
 
-/* When in debug mode causes significant slowdowns.
- * Running the program in release mode seems to work 
+/*
+ * When in debug mode causes significant slowdowns.
+ * Running the program in release mode seems to work
  * fine. Vectors in debug mode have extra checks for
- * safety. */
-void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int i, int j, sf::Color tileColor) {
+ * safety.
+ */
+void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int i, int j, sf::Color tileColor)
+{
 	int type = tileVectorRand[i][j];
 	tileVector[type]->setPosition(i * TILE_SIZE, j * TILE_SIZE);
 	tileVector[type]->setColor(tileColor);
 	app->draw(*tileVector[type]);
 }
 
-int Map::getCorrectFrame(int totFrames, float duration) {
+int Map::getCorrectFrame(int totFrames, float duration)
+{
 	int frame = 0;
 	if (int((lastClockTmp + frameClock) / duration) > int(lastClockTmp / duration)) {
 		/* Calculate the frame number */
