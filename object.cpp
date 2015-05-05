@@ -5,10 +5,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 #include "object.hpp"
 #include "main.hpp"
 #include "map.hpp"
-#include <math.h>
 
 const float Object::PlayerSpeed = 100.f;
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
