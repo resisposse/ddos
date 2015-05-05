@@ -9,7 +9,7 @@ MapGenerator::MapGenerator() {
 	corridorChance_ = 25;
 
 	random = new Random();
-
+	std::cout << "Seed: " << random->getSeed() << std::endl;
 	dungeonTiles_ = new char*[MAP_SIZE_X + 1];
 	for (int i = 0; i < MAP_SIZE_X + 1; i++) {
 		dungeonTiles_[i] = new char[MAP_SIZE_Y];

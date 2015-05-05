@@ -29,19 +29,35 @@ struct Game
 	Game();
 	sf::Texture *Texture4;
 	~Game();
+
+	sf::Vector2i mouse;
+	sf::View fixed;
+	sf::Texture *TextureCursor;
+	sf::Sprite *spriteCursor;
+
 	int collision(float x, float y, std::string collisionType);
 	void update();
 	void render();
 	void processEvents();
 	void processEvent(sf::Event event);
 	void addSource();
+	void loadCursorTexture();
 	void loadProjectileTextures();
 	void updateProjectiles();
 	void checkProjectileCollisions();
 	void drawProjectiles();
+	void spawnEnemies(int amount);
+	void updateEnemies();
+	void drawEnemies();
+	void drawPlayer();
+	void drawCursor();
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
 	std::vector<ProjectileSprite> projectiles;
+	std::vector<EnemyMelee> enemies;
+
+	/* Temporary time fix, check this from main.cpp */
+	static const sf::Time TimePerFrameTmp;
 };
 extern float frameClock;
 extern float lastClockTmp;
