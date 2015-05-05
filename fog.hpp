@@ -24,8 +24,9 @@ enum SourceType
 	stTest
 };
 
-struct StaticLightSource
+class StaticLightSource
 {
+public:
 	sf::Vector2i position;
 	sf::Color color;
 	char intensity;
@@ -43,8 +44,9 @@ struct StaticLightSource
 	}
 };
 
-struct FadingLightSource : StaticLightSource
+class FadingLightSource : StaticLightSource
 {
+public:
 	float lifetime;
 	float life = 0;
 	FadingLightSource(sf::Vector2i _position, sf::Color _color,
@@ -55,8 +57,9 @@ struct FadingLightSource : StaticLightSource
 	}
 };
 
-struct PulsingLightSource : StaticLightSource
+class PulsingLightSource : StaticLightSource
 {
+public:
 	float period;
 	float life = 0;
 	PulsingLightSource(sf::Vector2i _position, sf::Color _color,
@@ -67,8 +70,9 @@ struct PulsingLightSource : StaticLightSource
 	}
 };
 
-struct TestLightSource : StaticLightSource
+class TestLightSource : StaticLightSource
 {
+public:
 	float period;
 	float life = 0;
 	TestLightSource(sf::Vector2i _position, sf::Color _color,
@@ -79,15 +83,20 @@ struct TestLightSource : StaticLightSource
 	}
 };
 
-struct GameState
+class Brush
 {
-	struct {
-		SourceType type;
-		sf::Color color;
-		sf::Vector2i position;
-		char intensity;
-		float sourceTime;
-	} brush;
+public:
+	SourceType type;
+	sf::Color color;
+	sf::Vector2i position;
+	char intensity;
+	float sourceTime;
+};
+
+class GameState
+{
+public:
+	Brush brush;
 	char ambientIntensity;
 	sf::Color ambientColor;
 	StaticLightSource tmpSource;

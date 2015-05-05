@@ -3,14 +3,14 @@
  * 2015 ? Project Team (see: LICENSE)
  */
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "fog.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
 #include "object.hpp"
 #include "main.hpp"
-#include "projectileSprite.hpp"
-#include <iostream>
+#include "projectile.hpp"
 
 float frameClock = 0;
 float lastClockTmp = 0;
@@ -27,29 +27,16 @@ Game::Game()
 	                           sf::Style::Resize | sf::Style::Close);
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
+
 	player = new Player;
 	enemy = new EnemyMelee;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
+
 	app->setFramerateLimit(60);
-	state.brush.type = stStatic;
-	state.brush.color = sf::Color::Red;
-	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
-	state.brush.sourceTime = 2.0f;
-	state.ambientColor = sf::Color::White;
-	state.ambientIntensity = 5;
-
+	initializeLighting();
+	initializeView();
 	loadProjectileTextures();
-
-	this->zoomLevel = 1.0f;
-	playerView = new sf::View;
-
-	float positionPlayerX = mPlayerSpr->getPosition().x;
-	float positionPlayerY = mPlayerSpr->getPosition().y;
-
-	playerView->setCenter(positionPlayerX, positionPlayerY);
-	playerView->setSize(sf::Vector2f(800, 608));
-	app->setView(*playerView);
 }
 
 Game::~Game()
@@ -64,9 +51,32 @@ Game::~Game()
 	delete playerView;
 }
 
-int Game::collision(float x, float y, std::string collisionType) {
+int Game::collision(float x, float y, std::string collisionType)
+{
 	int i = map->Collision(x, y, collisionType);
 	return i;
+}
+
+void Game::initializeLighting()
+{
+	state.brush.type = stStatic;
+	state.brush.color = sf::Color::Red;
+	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
+	state.brush.sourceTime = 2.0f;
+	state.ambientColor = sf::Color::White;
+	state.ambientIntensity = 5;
+}
+
+void Game::initializeView()
+{
+	float positionPlayerX = mPlayerSpr->getPosition().x;
+	float positionPlayerY = mPlayerSpr->getPosition().y;
+
+	this->zoomLevel = 1.0f;
+	playerView = new sf::View;
+	playerView->setCenter(positionPlayerX, positionPlayerY);
+	playerView->setSize(sf::Vector2f(800, 608));
+	app->setView(*playerView);
 }
 
 void Game::update()
@@ -92,7 +102,7 @@ void Game::update()
 
 		float positionX = mPlayerSpr->getPosition().x;
 		float positionY = mPlayerSpr->getPosition().y;
-		
+
 		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
 		                                    (int)positionY / TILE_SIZE);
 		state.tmpSource = StaticLightSource(state.brush.position,
@@ -101,8 +111,7 @@ void Game::update()
 		map->ambientColor = state.ambientColor;
 		map->ambientIntensity = state.ambientIntensity;
 
-		processEvents();
-		//object->run();
+		parseEvents();
 		player->run();
 		enemy->run();
 		app->clear();
@@ -126,28 +135,20 @@ void Game::render()
 	enemy->render();
 }
 
-void Game::processEvents()
+/*
+ * A lot of events are handled separately and thus we have numerous
+ * event processing functions of the same name. It might or might not
+ * be easier to handle this way.
+ *
+ * http://bit.ly/1niVeJF
+ */
+void Game::parseEvents()
 {
 	sf::Event event;
 	while (app->pollEvent(event)) {
-
-		processEvent(event);
+		game->processEvent(event);
 		player->processEvent(event);
 		enemy->processEvent(event);
-
-		if (event.type == sf::Event::Resized)
-		{
-			playerView->setSize(event.size.width, event.size.height);
-			map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
-			sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
-			pos *= 0.5f;
-			pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
-
-			map->bgSpr->setScale(
-				float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
-				float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
-			break;
-		}
 	}
 	if (!app->isOpen()) {
 		running = false;
@@ -200,6 +201,17 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::Closed: {
 		running = false;
+		break;
+	}
+	case sf::Event::Resized: {
+		playerView->setSize(event.size.width, event.size.height);
+		map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
+		sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
+		pos *= 0.5f;
+		pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
+		map->bgSpr->setScale(
+			float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
+			float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
 		break;
 	}
 	}

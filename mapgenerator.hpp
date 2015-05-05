@@ -1,4 +1,3 @@
-
 #ifndef MAPGENERATOR
 #define MAPGENERATOR
 

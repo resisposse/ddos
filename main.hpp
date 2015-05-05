@@ -5,17 +5,18 @@
 
 #ifndef MAIN
 #define MAIN
-#include "mapgenerator.hpp"
 
-#include "projectileSprite.hpp"
+#include "mapgenerator.hpp"
+#include "projectile.hpp"
 
 /* Forward declarations due to cyclic dependencies */
 class Player;
 class EnemyMelee;
 struct Map;
 
-struct Game
+class Game
 {
+public:
 	long currentClock = 0;
 	long lastClock = 0;
 	bool running;
@@ -32,13 +33,15 @@ struct Game
 	int collision(float x, float y, std::string collisionType);
 	void update();
 	void render();
-	void processEvents();
+	void parseEvents();
 	void processEvent(sf::Event event);
 	void addSource();
 	void loadProjectileTextures();
 	void updateProjectiles();
 	void checkProjectileCollisions();
 	void drawProjectiles();
+	void initializeView();
+	void initializeLighting();
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
 	std::vector<ProjectileSprite> projectiles;
