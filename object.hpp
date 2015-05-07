@@ -9,49 +9,40 @@
 class Object
 {
 public:
-	Object();
-	//~Object();
-	void run();
-	void processEvent(sf::Event event);
-	void update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY);
-	void update(sf::Time TimePerFrame);
-	void render();
-	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-
-	sf::Sprite sprite;
-
-	float updateCollisionX(float X, float Y);
-	float updateCollisionY();
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
-	sf::View fixed;
-	sf::Texture *ObjectTex;
-	sf::Texture *TextureCursor;
-	sf::Sprite *spriteCursor;
-
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
-	float objectX[3];
-	float objectY[3];
-	sf::Vector2i mouse;
 
-	void approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY);
+	Object();
+	void run();
+	void processEvent(sf::Event event);
+	void render();
+	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+	void update(sf::Time TimePerFrame);
+	void update(float enemyPositionX, float enemyPositionY,
+	            float playerPositionX, float playerPositionY);
+	void approach(float enemyPositionX, float enemyPositionY,
+	              float playerPositionX, float playerPositionY);
 
-	explicit Object(int hitpoints);
 	void repair(int points);
 	void damage(int points);
 	void destroy();
-
 	int getHitpoints() const;
 	void setHitpoints(int hp);
 	bool isDestroyed() const;
+
+	sf::Sprite sprite;
+	sf::Sprite *spriteCursor;
+	sf::Texture *ObjectTex;
+	sf::Texture *TextureCursor;
+	sf::View fixed;
+	sf::Vector2i mouse;
 private:
 	int mHitpoints;
 };
-extern sf::Sprite *mPlayerSpr;
-extern sf::Sprite *mEnemySpr;
 
 struct AircraftData
 {
@@ -67,17 +58,14 @@ struct Direction
 	float distance;
 };
 
-#endif
-
 class Player : public Object {
 public:
 	Player();
-	//~Player();
 };
 
 class EnemyMelee : public Object {
 public:
 	EnemyMelee();
-	//~EnemyMelee();
 };
 
+#endif

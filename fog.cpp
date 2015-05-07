@@ -4,7 +4,7 @@
  */
 
 #include <SFML/Graphics.hpp>
-#include <math.h>
+#include <cmath>
 #include "fog.hpp"
 #include "map.hpp"
 #include "main.hpp"

@@ -51,7 +51,7 @@ public:
 	void drawCursor();
 	void initializeView();
 	void initializeLighting();
-	void refreshLighting();
+	void updateLighting();
 
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;

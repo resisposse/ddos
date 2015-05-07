@@ -3,9 +3,9 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
-#include "mapgenerator.hpp"
 #include <iostream>
 #include <fstream>
+#include "mapgenerator.hpp"
 
 MapGenerator::MapGenerator()
 {
@@ -185,20 +185,17 @@ bool MapGenerator::generateCorridor(int x, int y, int maxLength, CardinalDirecti
 		yStart = y - length;
 		xStartOffset = -offset;
 		xEndOffset = offset;
-	}
-	else if (direction == CardinalDirection::east) {
+	} else if (direction == CardinalDirection::east) {
 		xEnd = x + length;
 		yEnd = y + width;
 		yStartOffset = -offset;
 		yEndOffset = offset;
-	}
-	else if (direction == CardinalDirection::south) {
+	} else if (direction == CardinalDirection::south) {
 		xEnd = x + width;
 		yEnd = y + length;
 		xStartOffset = -offset;
 		xEndOffset = offset;
-	}
-	else if (direction == CardinalDirection::west) {
+	} else if (direction == CardinalDirection::west) {
 		xStart = x - length;
 		yEnd = y + width;
 		yStartOffset = -offset;
@@ -263,8 +260,7 @@ bool MapGenerator::generateFeature(int x, int y, int xOffset, int yOffset, Cardi
 				return true;
 			}
 		return false;
-	}
-	else {
+	} else {
 		if (generateRoom(x + xOffset, y + yOffset, 10, 10, direction)) {
 			dungeonTiles_[x][y] = '.';
 				dungeonTiles_[x + xOffset][y + yOffset] = '.';
