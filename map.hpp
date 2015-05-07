@@ -157,7 +157,7 @@ public:
 	std::vector<StaticLightSource *> sources;
 	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
 	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
-	Map(char **generatedMap);
+	Map(char *generatedMap);
 	~Map();
 	int updateWallDirection(MapTile tile);
 	void update(StaticLightSource *tmpSource);

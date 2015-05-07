@@ -12,7 +12,7 @@
 #include "main.hpp"
 #include "math.h"
 
-Map::Map(char **generatedMap)
+Map::Map(char *generatedMap)
 {
 	srand((unsigned)time(NULL));
 
@@ -260,7 +260,7 @@ Map::Map(char **generatedMap)
 		
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
-		switch (generatedMap[i][j]) {
+		switch (generatedMap[i + MAP_SIZE_X * j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
 			tiles[i][j].absorb = 35;
