@@ -1,10 +1,10 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
 #include <SFML/Graphics.hpp>
-#include <math.h>
+#include <cmath>
 #include "fog.hpp"
 #include "map.hpp"
 #include "main.hpp"

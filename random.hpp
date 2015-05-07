@@ -1,6 +1,11 @@
+/*
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
+ */
 
 #ifndef RANDOM
 #define RANDOM
+
 #include <random>
 
 typedef	std::random_device RandomDevice;

@@ -1,11 +1,12 @@
 /*
- * Project Name
+ * Dark Domains Of Space
  * 2015 © Project Team (see: LICENSE)
  */
 
-#include "fog.hpp"
 #ifndef MAP
 #define MAP
+
+#include "fog.hpp"
 
 #define deleteList(list) \
 for (; !(list).empty(); delete (list).back(), (list).pop_back())
@@ -42,12 +43,11 @@ struct MapTile
 };
 
 /*
- * The fog of war effect is very much integrated into drawing the map
+ * The Fog Of War effect is very much integrated into drawing the map
  * so we have some prototypes mixed in here. Editing the attributes
  * of FOW happens from 'map.cpp' while the actual implementations reside
  * in 'fog.cpp'.
  */
-
 class Map
 {
 public:
@@ -75,11 +75,32 @@ public:
 	sf::Sprite *floorSpr;
 	sf::Sprite *floorSprCpy;
 	sf::Sprite *floorMetalSpr;
+	sf::Sprite *floorGrateHorSpr;
+	sf::Sprite *floorGrateVerSpr;
+	sf::Sprite *floorGrateTopSpr;
+	sf::Sprite *floorGrateTopEmptySpr;
+	sf::Sprite *floorGrateBottomEmptySpr;
+	sf::Sprite *floorGrateLeftSpr;
+	sf::Sprite *floorGrateTopRightSpr;
 	sf::Sprite *floorDamagedV1Spr;
 	sf::Sprite *floorDamagedV2Spr;
 	sf::Sprite *floorDamagedV3Spr;
 	sf::Sprite *floorDamagedV4Spr;
 	sf::Sprite *floorDamagedV5Spr;
+	sf::Sprite *floorVar1Spr;
+	sf::Sprite *floorVar2Spr;
+	sf::Sprite *floorVar3Spr;
+	sf::Sprite *floorVar4Spr;
+	sf::Sprite *floorVar5Spr;
+	sf::Sprite *floorVar6Spr;
+	sf::Sprite *floorVar7Spr;
+	sf::Sprite *floorVar8Spr;
+	sf::Sprite *floorVar9Spr;
+	sf::Sprite *floorVar10Spr;
+	sf::Sprite *floorVar11Spr;
+	sf::Sprite *floorVar12Spr;
+	sf::Sprite *floorVar13Spr;
+	sf::Sprite *floorVar14Spr;
 	sf::Sprite *floorTopLeftSpr;
 	sf::Sprite *floorTopSpr;
 	sf::Sprite *floorTopRightSpr;
@@ -126,21 +147,15 @@ public:
 
 	std::vector<sf::Sprite *> floorTiles;
 	int floorTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-
 	std::vector<sf::Sprite *> wallHorizontalTiles;
 	int wallHorizontalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-
 	std::vector<sf::Sprite *> wallVerticalTiles;
 	int wallVerticalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-
 	std::vector<sf::Sprite *> wallCornerTiles;
 	int wallCornerTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-
 	std::vector<sf::Sprite *> wallFillTiles;
 	int wallFillTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-
 	std::vector<sf::Sprite *> lavaFrames;
-
 	int getCorrectFrame(int totFrames, float duration);
 
 	void drawFloorTile          (int x, int y, sf::Color tileColor);
@@ -162,9 +177,7 @@ public:
 	int updateWallDirection(MapTile tile);
 	void update(StaticLightSource *tmpSource);
 	void checkSources(StaticLightSource *tmpSource);
-	void render();
 	void renderTiles();
-	int testCollision(int x, int y);
 	int Collision(float X, float Y, std::string collisionType);
 	void clear() {
 		deleteList(sources);

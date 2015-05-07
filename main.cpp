@@ -1,24 +1,27 @@
 /*
- * Project Name
- * 2015 ? Project Team (see: LICENSE)
+ * Dark Domains Of Space
+ * 2015 © Project Team (see: LICENSE)
  */
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "fog.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
 #include "object.hpp"
 #include "main.hpp"
-#include "projectileSprite.hpp"
-#include <iostream>
+#include "projectile.hpp"
 
 float frameClock = 0;
 float lastClockTmp = 0;
 GameState state;
 sf::RenderWindow *app;
-sf::View *playerView;
 Game *game;
 sf::Clock timer;
+
+/* Object.update takes type Time, change to use float frameCLock */
+//sf::Time timeSinceLastUpdate = sf::Time::Zero;
+const sf::Time Game::TimePerFrameTmp = sf::seconds(1.f / 60.f);
 
 Game::Game()
 {
@@ -27,28 +30,19 @@ Game::Game()
 	                           sf::Style::Resize | sf::Style::Close);
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
-	object = new Object;
+
+	player = new Player;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
-	app->setFramerateLimit(60);
-	state.brush.type = stStatic;
-	state.brush.color = sf::Color::Red;
-	state.brush.intensity = LIGHT_MAX_LIGHTLEVEL;
-	state.brush.sourceTime = 2.0f;
-	state.ambientColor = sf::Color::White;
-	state.ambientIntensity = 5;
 
+	app->setFramerateLimit(60);
+
+	initializeLighting();
+	initializeView();
+	loadCursorTexture();
 	loadProjectileTextures();
 
-	this->zoomLevel = 1.0f;
-	playerView = new sf::View;
-
-	float positionPlayerX = mPlayerSpr->getPosition().x;
-	float positionPlayerY = mPlayerSpr->getPosition().y;
-
-	playerView->setCenter(positionPlayerX, positionPlayerY);
-	playerView->setSize(sf::Vector2f(800, 608));
-	app->setView(*playerView);
+	spawnEnemies(5);
 }
 
 Game::~Game()
@@ -57,59 +51,33 @@ Game::~Game()
 	delete mapGenerator;
 	delete bulletTexture;
 	delete laserBeamTexture;
-	delete object;
+	delete player;
 	delete app;
 	delete playerView;
 }
 
-int Game::collision(float x, float y, std::string collisionType) {
-	int i = map->Collision(x, y, collisionType);
-	return i;
-}
-
 void Game::update()
 {
-	state.ambientIntensity = 0;
-	state.ambientColor.r = 0;
-	state.ambientColor.g = 0;
-	state.ambientColor.b = 0;
-	state.brush.intensity = 100;
-	state.brush.color.r = 150;
-	state.brush.color.g = 150;
-	state.brush.color.b = 150;
-	state.brush.sourceTime = 2.0f;
-
-	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stPulsing;
-
 	while (running) {
 		currentClock += timer.getElapsedTime().asMilliseconds();
 		frameClock = (currentClock - lastClock) / 1000.f;
 		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
-		float positionX = mPlayerSpr->getPosition().x;
-		float positionY = mPlayerSpr->getPosition().y;
-		
-		state.brush.position = sf::Vector2i((int)positionX / TILE_SIZE,
-		                                    (int)positionY / TILE_SIZE);
-		state.tmpSource = StaticLightSource(state.brush.position,
-		                                    state.brush.color,
-		                                    state.brush.intensity);
-		map->ambientColor = state.ambientColor;
-		map->ambientIntensity = state.ambientIntensity;
-
-		processEvents();
-		object->run();
+		parseEvents();
+		player->run();
 		app->clear();
-		render();
-		updateProjectiles();
-		checkProjectileCollisions();
-		drawProjectiles();
 
-		playerView->setCenter(positionX, positionY);
+		updateLighting();
+		updateProjectiles();
+		updateEnemies();
+		checkProjectileCollisions();
+
+		render();
+
+		playerView->setCenter(playerPositionX, playerPositionY);
 		map->bgSpr->setOrigin(400, 300);
-		map->bgSpr->setPosition(positionX, positionY);
+		map->bgSpr->setPosition(playerPositionX, playerPositionY);
 		app->setView(*playerView);
 		app->display();
 	}
@@ -118,30 +86,74 @@ void Game::update()
 void Game::render()
 {
 	map->update(&state.tmpSource);
-	object->render();
+	drawPlayer();
+	drawProjectiles();
+	drawEnemies();
+	drawCursor();
 }
 
-void Game::processEvents()
+void Game::initializeLighting()
+{
+	state.brush.type = stStatic;
+	state.brush.intensity = 100;
+	state.brush.color = sf::Color::Red;
+	state.brush.color.r = 150;
+	state.brush.color.g = 150;
+	state.brush.color.b = 150;
+	state.brush.sourceTime = 2.0f;
+	state.ambientIntensity = 0;
+	state.ambientColor = sf::Color::White;
+	state.ambientColor.r = 0;
+	state.ambientColor.g = 0;
+	state.ambientColor.b = 0;
+
+	/* Options are: stStatic, stPulsing, stFading, stTest */
+	state.brush.type = stPulsing;
+}
+
+void Game::initializeView()
+{
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+
+	this->zoomLevel = 1.0f;
+	playerView = new sf::View;
+	playerView->setCenter(playerPositionX, playerPositionY);
+	playerView->setSize(sf::Vector2f(800, 608));
+	app->setView(*playerView);
+}
+
+/*
+ * Keep realigning the center of the light (fog of war) with
+ * the player and then reread the light's attributes on the
+ * off chance that they were changed.
+ */
+void Game::updateLighting()
+{
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
+	                                    (int)playerPositionY / TILE_SIZE);
+	state.tmpSource = StaticLightSource(state.brush.position,
+	                                    state.brush.color,
+	                                    state.brush.intensity);
+	map->ambientColor = state.ambientColor;
+	map->ambientIntensity = state.ambientIntensity;
+}
+
+/*
+ * A lot of events are handled separately and thus we have numerous
+ * event processing functions of the same name. It might or might not
+ * be easier to handle this way.
+ *
+ * http://bit.ly/1niVeJF
+ */
+void Game::parseEvents()
 {
 	sf::Event event;
 	while (app->pollEvent(event)) {
-
-		processEvent(event);
-		object->processEvent(event);
-
-		if (event.type == sf::Event::Resized)
-		{
-			playerView->setSize(event.size.width, event.size.height);
-			map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
-			sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
-			pos *= 0.5f;
-			pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
-
-			map->bgSpr->setScale(
-				float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
-				float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
-			break;
-		}
+		game->processEvent(event);
+		player->processEvent(event);
 	}
 	if (!app->isOpen()) {
 		running = false;
@@ -178,22 +190,34 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::MouseButtonPressed: {
 		if (event.mouseButton.button == sf::Mouse::Left)
+			//spawnEnemies(1);
 			if (ammoType == 0) {
-				projectiles.push_back(BulletSprite(*bulletTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+				projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else if (ammoType == 1) {
-				projectiles.push_back(LaserSprite(*laserBeamTexture, mPlayerSpr->getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
+				projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else {
 				std::cout << "AmmoType fail: " << ammoType << std::endl;
 			}
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
-		if (event.mouseButton.button == sf::Mouse::Left) addSource();
+		//if (event.mouseButton.button == sf::Mouse::Left) addSource();
 		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
 		break;
 	}
 	case sf::Event::Closed: {
 		running = false;
+		break;
+	}
+	case sf::Event::Resized: {
+		playerView->setSize(event.size.width, event.size.height);
+		map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
+		sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
+		pos *= 0.5f;
+		pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
+		map->bgSpr->setScale(
+			float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
+			float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
 		break;
 	}
 	}
@@ -236,6 +260,26 @@ void Game::addSource()
 	}
 }
 
+int Game::collision(float x, float y, std::string collisionType)
+{
+	int i = map->Collision(x, y, collisionType);
+	return i;
+}
+
+void Game::loadCursorTexture()
+{
+	app->setMouseCursorVisible(false);
+	fixed = app->getView();
+
+	TextureCursor = new sf::Texture();
+	TextureCursor->loadFromFile("media/cursor.png");
+	spriteCursor = new sf::Sprite(*TextureCursor);
+	sf::Vector2u spriteSize = TextureCursor->getSize();
+	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
+	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
+	app->setView(fixed);
+}
+
 void Game::loadProjectileTextures()
 {
 	bulletTexture = new sf::Texture();
@@ -245,8 +289,6 @@ void Game::loadProjectileTextures()
 	laserBeamTexture = new sf::Texture();
 	laserBeamTexture->loadFromFile("media/laserBeam.png");
 	laserBeamTexture->setSmooth(true);
-
-	std::vector<ProjectileSprite> projectiles;
 }
 
 void Game::updateProjectiles()
@@ -275,6 +317,51 @@ void Game::drawProjectiles()
 	for (ProjectileSprite &projectile : projectiles) {
 		app->draw(projectile.sprite);
 	}
+}
+
+void Game::spawnEnemies(int amount)
+{
+	for (int i = 0; i < amount; i++) {
+		enemies.push_back(EnemyMelee());
+		std::cout << "Enemy Spawned" << std::endl;
+	}
+}
+
+void Game::updateEnemies()
+{
+	for (unsigned int i = 0; i <  enemies.size();) {
+		enemies[i].update(enemies[i].sprite.getPosition().x,
+		                  enemies[i].sprite.getPosition().y,
+		                  player->sprite.getPosition().x,
+		                  player->sprite.getPosition().y);
+		i++;
+	}
+}
+
+void Game::drawEnemies()
+{
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		app->draw(enemies[i].sprite);
+	}
+}
+
+/*
+void Game::updatePlayer()
+{
+	player->update(TimePerFrameTmp);
+}
+*/
+
+void Game::drawPlayer()
+{
+	app->draw(player->sprite);
+}
+
+void Game::drawCursor()
+{
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
+	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
+	app->draw(*spriteCursor);
 }
 
 int main()
