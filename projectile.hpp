@@ -6,9 +6,6 @@
 #ifndef PROJECTILE
 #define PROJECTILE
 
-#include <cmath>
-#include <SFML/Graphics.hpp>
-
 class ProjectileSprite
 {
 public:

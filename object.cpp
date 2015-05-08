@@ -5,10 +5,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 #include "object.hpp"
 #include "main.hpp"
 #include "map.hpp"
-#include <math.h>
 
 const float Object::PlayerSpeed = 100.f;
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -33,12 +33,12 @@ void Object::run()
 	double a, b;
 
 	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	float positionPlayerX = sprite.getPosition().x;
-	float positionPlayerY = sprite.getPosition().y;
+	float playerPositionX = sprite.getPosition().x;
+	float playerPositionY = sprite.getPosition().y;
 	sprite.setOrigin(16, 16);
 
-	a = mouse.x - (positionPlayerX);
-	b = mouse.y - (positionPlayerY);
+	a = mouse.x - (playerPositionX);
+	b = mouse.y - (playerPositionY);
 	angle = -atan2(a, b) * 180 / 3.141593;
 	sprite.setRotation(angle);
 
@@ -68,15 +68,10 @@ void Object::processEvent(sf::Event event)
 	}
 }
 
-void Object::update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY)
+void Object::update(float enemyPositionX, float enemyPositionY,
+                    float playerPositionX, float playerPositionY)
 {
-	float positionPlayerX = playerPosX;
-	float positionPlayerY = playerPosY;
-	float positionEnemyX = enemyPosX;
-	float positionEnemyY = enemyPosY;
-
-	/* Make enemies approach the player */
-	approach(positionEnemyX, positionEnemyY, positionPlayerX, positionPlayerY);
+	approach(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
 }
 
 void Object::update(sf::Time TimePerFrame)
@@ -121,60 +116,46 @@ void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	if (key == sf::Keyboard::W) {
 		mIsMovingUp = isPressed;
-	}
-	else if (key == sf::Keyboard::S) {
+	} else if (key == sf::Keyboard::S) {
 		mIsMovingDown = isPressed;
-	}
-	else if (key == sf::Keyboard::A) {
+	} else if (key == sf::Keyboard::A) {
 		mIsMovingLeft = isPressed;
-	}
-	else if (key == sf::Keyboard::D) {
+	} else if (key == sf::Keyboard::D) {
 		mIsMovingRight = isPressed;
 	}
 }
 
-float Object::updateCollisionY()
-{
-	std::cout << "updatecollision old y; " << objectY[0];
-	float Y = objectY[1];
-	std::cout << "updatecollision y: " << Y << std::endl;
-	return Y;
-}
-
 /* Handle enemy movement by approaching the player and check for collisions */
-void Object::approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY)
+void Object::approach(float enemyPositionX, float enemyPositionY,
+                      float playerPositionX, float playerPositionY)
 {
-	float enemySpeed = 50.f;
 	int collisionFlag = 1;
+	float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
+	float absoluteDistanceY = abs(playerPositionY - enemyPositionY);
+	float distanceFromPlayer = sqrt(absoluteDistanceX * 2 + absoluteDistanceY * 2);
+	float enemySpeed = 50;
+	float angle;
 	sf::Vector2f enemyMovement(0.f, 0.f);
-	float distanceX, distanceY, distance, angle;
-	double x, y;
 
-	/* abs = absolute value */
-	distanceX = abs(positionPlayerX - positionEnemyX);
-	distanceY = abs(positionPlayerY - positionEnemyY);
-	float distanceXTest = positionPlayerX - positionEnemyX;
-	float distanceYTest = positionPlayerY - positionEnemyY;
-
-	if (distanceXTest > 2) {
+	float distanceX = playerPositionX - enemyPositionX;
+	float distanceY = playerPositionY - enemyPositionY;
+	if (distanceX > 2) {
 		enemyMovement.x += enemySpeed;
 	}
-	if (distanceXTest < -2) {
+	if (distanceX < -2) {
 		enemyMovement.x -= enemySpeed;
 	}
-	if (distanceYTest > 2) {
+	if (distanceY > 2) {
 		enemyMovement.y += enemySpeed;
 	}
-	if (distanceYTest < -2) {
+	if (distanceY < -2) {
 		enemyMovement.y -= enemySpeed;
 	}
 
-	distance = sqrt(distanceX * 2 + distanceY * 2);
-	//distance = sqrt(distanceX * distanceX + distanceY * distanceY);
-	float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + positionEnemyX);
-	float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + positionEnemyY);
-	int enemyCollisionX = game->collision(enemySpeedX, positionEnemyY, "player");
-	int enemyCollisionY = game->collision(positionEnemyX, enemySpeedY, "player");
+	float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + enemyPositionX);
+	float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + enemyPositionY);
+	int enemyCollisionX = game->collision(enemySpeedX,    enemyPositionY, "player");
+	int enemyCollisionY = game->collision(enemyPositionX, enemySpeedY,    "player");
 
 	if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 		collisionFlag = 0;
@@ -186,21 +167,22 @@ void Object::approach(float positionEnemyX, float positionEnemyY, float position
 		}
 	}
 
-	if (distance < 20 && distance > 5 && collisionFlag == 0) {
+	/* Start approaching when player is close enough to the enemy */
+	if (distanceFromPlayer < 20 && distanceFromPlayer > 5 && collisionFlag == 0) {
+		angle = -atan2(distanceX, distanceY) * 180 / 3.141593;
 		this->sprite.setOrigin(16, 16);
-		x = positionPlayerX - (positionEnemyX);
-		y = positionPlayerY - (positionEnemyY);
-		angle = -atan2(x, y) * 180 / 3.141593;
 		this->sprite.setRotation(angle);
 		this->sprite.move(enemyMovement * TimePerFrame.asSeconds());
 	}
 }
 
-int Object::getHitpoints() const{
+int Object::getHitpoints() const
+{
 	return mHitpoints;
 }
 
-void Object::setHitpoints(int hp){
+void Object::setHitpoints(int hp)
+{
 	mHitpoints = hp;
 }
 
@@ -235,4 +217,3 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture) : Object(objectTexture)
 	
 	setHitpoints(50);
 }
-

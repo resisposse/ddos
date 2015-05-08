@@ -52,7 +52,7 @@ public:
 	void drawCursor();
 	void initializeView();
 	void initializeLighting();
-	void refreshLighting();
+	void updateLighting();
 
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;

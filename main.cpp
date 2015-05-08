@@ -3,8 +3,8 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "fog.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
@@ -31,18 +31,18 @@ Game::Game()
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
-	//player = new Player(*playerTexture);
+	loadCharacterTextures();
+	loadCursorTexture();
+	loadProjectileTextures();
+
+	player = new Player(*playerTexture);
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 
-	loadCharacterTextures();
-	player = new Player(*playerTexture);
-	loadCursorTexture();
-	loadProjectileTextures();
-	spawnEnemies(5);
 	app->setFramerateLimit(60);
 	initializeLighting();
 	initializeView();
+	spawnEnemies(5);
 }
 
 Game::~Game()
@@ -66,17 +66,17 @@ void Game::update()
 		lastClockTmp = lastClock / 1000.f;
 		lastClock = currentClock;
 
-		refreshLighting();
 		parseEvents();
 		player->run();
 		app->clear();
 
+		updateLighting();
 		updateProjectiles();
-		checkProjectileCollisions();
 		updateEnemies();
+		checkProjectileCollisions();
 
 		render();
-		
+
 		playerView->setCenter(playerPositionX, playerPositionY);
 		map->bgSpr->setOrigin(400, 300);
 		map->bgSpr->setPosition(playerPositionX, playerPositionY);
@@ -130,7 +130,7 @@ void Game::initializeView()
  * the player and then reread the light's attributes on the
  * off chance that they were changed.
  */
-void Game::refreshLighting()
+void Game::updateLighting()
 {
 	playerPositionX = player->sprite.getPosition().x;
 	playerPositionY = player->sprite.getPosition().y;
@@ -337,32 +337,34 @@ void Game::spawnEnemies(int amount)
 	for (int i = 0; i < amount; i++) {
 		enemies.push_back(EnemyMelee(*enemyMeleeTexture));
 		std::cout << "Enemy Spawned" << std::endl;
-		//std::cout << enemies.size() << std::endl;
 	}
 }
 
 void Game::updateEnemies()
 {
 	for (unsigned int i = 0; i <  enemies.size();) {
-		enemies[i].update(TimePerFrameTmp, enemies[i].sprite.getPosition().x, enemies[i].sprite.getPosition().y,
-						player->sprite.getPosition().x, player->sprite.getPosition().y);
-		//std::cout << "UpdateEnemy: " << i << std::endl;
-		++i;
+		enemies[i].update(enemies[i].sprite.getPosition().x,
+		                  enemies[i].sprite.getPosition().y,
+		                  player->sprite.getPosition().x,
+		                  player->sprite.getPosition().y);
+		i++;
 	}
 }
 
 void Game::drawEnemies()
 {
-	for (Object &enemies : enemies) {
-		app->draw(enemies.sprite);
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		app->draw(enemies[i].sprite);
 	}
 }
+
 /*
 void Game::updatePlayer()
 {
 	player->update(TimePerFrameTmp);
 }
 */
+
 void Game::drawPlayer()
 {
 	app->draw(player->sprite);

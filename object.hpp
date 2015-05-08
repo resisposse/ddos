@@ -9,40 +9,32 @@
 class Object
 {
 public:
-	Object(sf::Texture& objectTexture);
-	void run();
-	void processEvent(sf::Event event);
-	void update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY);
-	void update(sf::Time TimePerFrame);
-	void render();
-	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-
-	sf::Sprite sprite;
-
-	float updateCollisionX(float X, float Y);
-	float updateCollisionY();
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
-	sf::View fixed;
-
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
-	float objectX[3];
-	float objectY[3];
-	sf::Vector2i mouse;
 
-	void approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY);
-
-	explicit Object(int hitpoints);
-	//void repair(int points);
-	void damage(int points);
-	//void destroy();
-
+	Object(sf::Texture& objectTexture);
+	void run();
+	void processEvent(sf::Event event);
+	void render();
+	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+	void update(sf::Time TimePerFrame);
+	void update(float enemyPositionX, float enemyPositionY,
+	            float playerPositionX, float playerPositionY);
+	void approach(float enemyPositionX, float enemyPositionY,
+	              float playerPositionX, float playerPositionY);
 	int getHitpoints() const;
 	void setHitpoints(int hp);
-	//bool isDestroyed() const;
+
+	sf::Sprite sprite;
+	sf::Sprite *spriteCursor;
+	sf::Texture *ObjectTex;
+	sf::Texture *TextureCursor;
+	sf::View fixed;
+	sf::Vector2i mouse;
 private:
 	int mHitpoints;
 };

@@ -25,6 +25,18 @@ enum class CardinalDirection
 	northWest = 7
 };
 
+class Point
+{
+public:
+	Point() : x(NULL), y(NULL) {};
+	Point(int x0, int y0) {
+		int x = x0;
+		int y = y0;
+	};
+	int x;
+	int y;
+};
+
 class MapGenerator
 {
 public:
@@ -38,21 +50,35 @@ public:
 	int fillTiles(char tileType);
 	int getRand(int min, int max);
 	CardinalDirection getRandDirection();
-	bool generateRoom(int x, int y, int xLength, int yLength, CardinalDirection direction);
-	bool generateCorridor(int x, int y, int maxLength, CardinalDirection direction);
+	bool generateRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction);
+	bool generateCorridor(int x, int y, int width, int length, int wallWidth, CardinalDirection direction);
 	bool eliminateDeadEnds();
 	bool generateFeature();
 	bool generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction);
-	char** generateMap();
+	char* generateMap();
 	bool isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType);
+	bool adjustPosition(int &x, int &y, int xStart, int yStart, int xEnd, int yEnd, char tileType, CardinalDirection direction);
+	Point checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd);
 	bool isAdjacent(int x, int y, char type);
-	int writeMapFile(char(&mapArray)[MAP_SIZE_Y + 1][MAP_SIZE_Y + 1]);
+	int writeMapFile();
 private:
 	int maxFeatures_;
 	int maxTries_;
 	int roomChance_;
 	int corridorChance_;
-	char **dungeonTiles_;
+	int minCorridorWidth_;
+	int maxCorridorWidth_;
+	int minCorridorLength_;
+	int maxCorridorLength_;
+	int minRoomWidth_;
+	int maxRoomWidth_;
+	int minRoomHeight_;
+	int maxRoomHeight_;
+	int minRoomWall_;
+	int maxRoomWall_;
+	int minCorridorWall_;
+	int maxCorridorWall_;
+	char *dungeonTiles_;
 	Random *random;
 };
 

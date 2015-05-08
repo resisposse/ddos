@@ -3,8 +3,8 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <random>
 #include "fog.hpp"
 #include "map.hpp"
@@ -12,7 +12,7 @@
 #include "main.hpp"
 #include "math.h"
 
-Map::Map(char **generatedMap)
+Map::Map(char *generatedMap)
 {
 	srand((unsigned)time(NULL));
 
@@ -265,7 +265,7 @@ Map::Map(char **generatedMap)
 
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
-		switch (generatedMap[i][j]) {
+		switch (generatedMap[i + MAP_SIZE_X * j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
 			tiles[i][j].absorb = 35;
@@ -611,24 +611,23 @@ void Map::renderTiles()
 	}
 }
 
-int Map::Collision(float X, float Y, std::string collisionType)
+int Map::Collision(float x, float y, std::string collisionType)
 {
-	float x = X;
-	float y = Y;
+	int i, j;
 	int collision = 0;
 	int collisionMargin = 0;
 
 	if (collisionType == "projectile") {
 		collisionMargin = 2;
-	} else { collisionMargin = 10;
+	} else {
+		collisionMargin = 10;
 	}
 
 	/* Top */
-	int i = x - collisionMargin;
-	int j = y - collisionMargin;
-
 	if (collision == 0) {
-		for (i; i < x + collisionMargin; i++) {
+		i = x - collisionMargin;
+		j = y - collisionMargin;
+		for (; i < x + collisionMargin; i++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
@@ -640,7 +639,7 @@ int Map::Collision(float X, float Y, std::string collisionType)
 	if (collision == 0) {
 		i = x - collisionMargin;
 		j = y - collisionMargin;
-		for (j; j < y + collisionMargin; j++) {
+		for (; j < y + collisionMargin; j++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
@@ -652,7 +651,7 @@ int Map::Collision(float X, float Y, std::string collisionType)
 	if (collision == 0) {
 		i = x + collisionMargin;
 		j = y - collisionMargin;
-		for (j; j < y + collisionMargin; j++) {
+		for (; j < y + collisionMargin; j++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
@@ -664,7 +663,7 @@ int Map::Collision(float X, float Y, std::string collisionType)
 	if (collision == 0) {
 		j = y + collisionMargin;
 		i = x - collisionMargin;
-		for (i; i < x + collisionMargin; i++) {
+		for (; i < x + collisionMargin; i++) {
 			if (collisionMap[i / TILE_SIZE][j / TILE_SIZE] == 1){
 				collision = 1;
 				break;
