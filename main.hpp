@@ -39,6 +39,7 @@ public:
 	void parseEvents();
 	void processEvent(sf::Event event);
 	void addSource();
+	void loadCharacterTextures();
 	void loadCursorTexture();
 	void loadProjectileTextures();
 	void updateProjectiles();
@@ -53,6 +54,8 @@ public:
 	void initializeLighting();
 	void refreshLighting();
 
+	sf::Texture *playerTexture;
+	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
 	sf::Texture *TextureCursor;

@@ -31,17 +31,18 @@ Game::Game()
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
-	player = new Player;
+	//player = new Player(*playerTexture);
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 
+	loadCharacterTextures();
+	player = new Player(*playerTexture);
 	loadCursorTexture();
 	loadProjectileTextures();
 	spawnEnemies(5);
 	app->setFramerateLimit(60);
 	initializeLighting();
 	initializeView();
-	loadProjectileTextures();
 }
 
 Game::~Game()
@@ -50,6 +51,8 @@ Game::~Game()
 	delete mapGenerator;
 	delete bulletTexture;
 	delete laserBeamTexture;
+	delete playerTexture;
+	delete enemyMeleeTexture;
 	delete player;
 	delete app;
 	delete playerView;
@@ -265,6 +268,17 @@ int Game::collision(float x, float y, std::string collisionType)
 	return i;
 }
 
+void Game::loadCharacterTextures()
+{
+	playerTexture = new sf::Texture();
+	playerTexture->loadFromFile("media/ddos-dude-guns.png");
+	playerTexture->setSmooth(true);
+
+	enemyMeleeTexture = new sf::Texture();
+	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
+	enemyMeleeTexture->setSmooth(true);
+}
+
 void Game::loadCursorTexture()
 {
 	app->setMouseCursorVisible(false);
@@ -321,10 +335,9 @@ void Game::drawProjectiles()
 void Game::spawnEnemies(int amount)
 {
 	for (int i = 0; i < amount; i++) {
-		enemies.push_back(EnemyMelee());
+		enemies.push_back(EnemyMelee(*enemyMeleeTexture));
 		std::cout << "Enemy Spawned" << std::endl;
 		//std::cout << enemies.size() << std::endl;
-		//enemies.back->setPosition(rand() % 800, rand() % 600);
 	}
 }
 
@@ -359,7 +372,6 @@ void Game::drawCursor()
 {
 	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
 	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
-	/* Draw custom cursor */
 	app->draw(*spriteCursor);
 }
 

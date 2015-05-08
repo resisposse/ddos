@@ -9,8 +9,7 @@
 class Object
 {
 public:
-	Object();
-	//~Object();
+	Object(sf::Texture& objectTexture);
 	void run();
 	void processEvent(sf::Event event);
 	void update(sf::Time TimePerFrame, float enemyPosX, float enemyPosY, float playerPosX, float playerPosY);
@@ -25,9 +24,6 @@ public:
 	static const float PlayerSpeed;
 	static const sf::Time TimePerFrame;
 	sf::View fixed;
-	sf::Texture *ObjectTex;
-	sf::Texture *TextureCursor;
-	sf::Sprite *spriteCursor;
 
 	bool mIsMovingUp;
 	bool mIsMovingDown;
@@ -40,44 +36,25 @@ public:
 	void approach(float positionEnemyX, float positionEnemyY, float positionPlayerX, float positionPlayerY);
 
 	explicit Object(int hitpoints);
-	void repair(int points);
+	//void repair(int points);
 	void damage(int points);
-	void destroy();
+	//void destroy();
 
 	int getHitpoints() const;
 	void setHitpoints(int hp);
-	bool isDestroyed() const;
+	//bool isDestroyed() const;
 private:
 	int mHitpoints;
 };
-extern sf::Sprite *mPlayerSpr;
-extern sf::Sprite *mEnemySpr;
-
-struct AircraftData
-{
-	int hitpoints;
-	float speed;
-};
-
-struct Direction
-{
-	Direction(float angle, float distance);
-
-	float angle;
-	float distance;
-};
-
-#endif
 
 class Player : public Object {
 public:
-	Player();
-	//~Player();
+	Player(sf::Texture& objectTexture);
 };
 
 class EnemyMelee : public Object {
 public:
-	EnemyMelee();
-	//~EnemyMelee();
+	EnemyMelee(sf::Texture& objectTexture);
 };
 
+#endif
