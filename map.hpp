@@ -8,21 +8,32 @@
 
 #include "fog.hpp"
 
-#define deleteList(list) \
-for (; !(list).empty(); delete (list).back(), (list).pop_back())
-#define updateList(list) \
-for (unsigned int i = 0; i < (list).size();) { \
-	if (!(list)[i]->update()) { \
-		delete (list)[i]; \
-		(list).erase((list).begin() + i); \
-		} else { \
-		i++; \
-		} \
-}
-
 #define TILE_SIZE 32
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
+
+/*
+ * Because of the 'one definition' rule for inline functions, an identical
+ * definition for the function must exist in every translation unit that uses
+ * it. The easiest way to achieve this is by putting the definition in a header
+ * file.
+ */
+inline void deleteList(std::vector<StaticLightSource *> list)
+{
+	for (; !(list).empty(); delete (list).back(), (list).pop_back());
+}
+
+inline void updateList(std::vector<StaticLightSource *> list)
+{
+	for (unsigned int i = 0; i < (list).size();) {
+		if (!(list)[i]->update()) {
+			delete (list)[i];
+			(list).erase((list).begin() + i);
+		} else {
+			i++;
+		}
+	}
+}
 
 enum MapTileType
 {
@@ -33,8 +44,9 @@ enum MapTileType
 	mtLava
 };
 
-struct MapTile
+class MapTile
 {
+public:
 	MapTileType type;
 	sf::Color light;
 	sf::Vector2i index;
@@ -167,21 +179,21 @@ public:
 	void drawTile               (std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int x, int y, sf::Color tileColor);
 
 	int direction;
-	char ambientIntensity;
-	sf::Color ambientColor;
-	std::vector<StaticLightSource *> sources;
-	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
 	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
+	char ambientIntensity;
+	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
+
 	Map(char *generatedMap);
 	~Map();
 	int updateWallDirection(MapTile tile);
+	int collision(float X, float Y, std::string collisionType);
 	void update(StaticLightSource *tmpSource);
 	void checkSources(StaticLightSource *tmpSource);
 	void renderTiles();
-	int Collision(float X, float Y, std::string collisionType);
-	void clear() {
-		deleteList(sources);
-	};
+	void clear() { deleteList(sources); };
+
+	sf::Color ambientColor;
+	std::vector<StaticLightSource *> sources;
 };
 
 #endif

@@ -12,7 +12,7 @@
 /* Forward declarations due to cyclic dependencies */
 class Player;
 class EnemyMelee;
-struct Map;
+class Map;
 
 class Game
 {

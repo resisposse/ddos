@@ -65,6 +65,9 @@ void Object::processEvent(sf::Event event)
 		app->close();
 		break;
 	}
+	default: {
+		break;
+	}
 	}
 }
 
@@ -198,7 +201,7 @@ Player::Player(sf::Texture& objectTexture) : Object(objectTexture)
 	sprite.setTextureRect(mPlayer);
 	sprite.setOrigin(16, 16);
 	sprite.setPosition(500, 200);
-	
+
 	setHitpoints(100);
 }
 
@@ -214,6 +217,6 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture) : Object(objectTexture)
 	sprite.setTextureRect(mEnemy);
 	sprite.setOrigin(16, 16);
 	sprite.setPosition(rand() % 300 + 400, rand() % 300 + 200);
-	
+
 	setHitpoints(50);
 }

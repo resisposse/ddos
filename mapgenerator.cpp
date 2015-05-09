@@ -136,7 +136,7 @@ unsigned int MapGenerator::checkNeighbourType(int x, int y, char tileType)
 	return neighbours;
 }
 
-bool MapGenerator::adjustPosition(int &x, int &y, int xStart, int yStart, int xEnd, int yEnd, char tileType, CardinalDirection direction) 
+bool MapGenerator::adjustPosition(int &x, int &y, int xStart, int yStart, int xEnd, int yEnd, char tileType, CardinalDirection direction)
 {
 	Point point = checkTiles(tileType, xStart, yStart, xEnd, yEnd);
 	while (point.x != NULL) {
@@ -302,14 +302,14 @@ bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wal
 	}
 
 	setTiles(xStart, yStart, xEnd, yEnd, '.');
-	//std::cout << "Corridor created between [" << xStart << "," << yStart << "] and [" << xEnd << "," << yEnd << "]." << std::endl; 
+	//std::cout << "Corridor created between [" << xStart << "," << yStart << "] and [" << xEnd << "," << yEnd << "]." << std::endl;
 	//std::cout << "  Width: " << width << ", Length: " << length << "." << std::endl;
 	return true;
 }
 
 /*
  * Due to a bug, all features facing north or west are drawn 1 tile to far from the target, this has been patched with a workaround in setTiles function
- * 
+ *
  * This function will first pick a random wall tile that is adjacent to a room or corridor.
  * Then it will create a feature facing either north, east, south or west, depending on which side of the room or corridor that wall is.
  */
@@ -384,7 +384,7 @@ char* MapGenerator::generateMap()
 {
 	fillTiles('X');
 	generateRoom(MAP_SIZE_X / 2, MAP_SIZE_Y / 2, random->generate(minRoomWidth_, maxRoomWidth_), random->generate(maxRoomHeight_, maxRoomHeight_), random->generate(minRoomWall_, maxRoomWall_), getRandDirection());
-	
+
 	/*for (int i = 0; i < 1; i++) {
 		if (!generateFeature()) {
 			break;

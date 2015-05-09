@@ -6,11 +6,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <random>
+#include <cmath>
 #include "fog.hpp"
 #include "map.hpp"
 #include "object.hpp"
 #include "main.hpp"
-#include "math.h"
 
 Map::Map(char *generatedMap)
 {
@@ -611,7 +611,7 @@ void Map::renderTiles()
 	}
 }
 
-int Map::Collision(float x, float y, std::string collisionType)
+int Map::collision(float x, float y, std::string collisionType)
 {
 	int i, j;
 	int collision = 0;

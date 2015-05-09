@@ -126,9 +126,8 @@ void Game::initializeView()
 }
 
 /*
- * Keep realigning the center of the light (fog of war) with
- * the player and then reread the light's attributes on the
- * off chance that they were changed.
+ * Keep realigning the center of the light (fog of war) with the player and then
+ * reread the light's attributes on the off chance that they were changed.
  */
 void Game::updateLighting()
 {
@@ -144,9 +143,9 @@ void Game::updateLighting()
 }
 
 /*
- * A lot of events are handled separately and thus we have numerous
- * event processing functions of the same name. It might or might not
- * be easier to handle this way.
+ * A lot of events are handled separately and thus we have numerous event
+ * processing functions of the same name. It might or might not be easier to
+ * handle this way.
  *
  * http://bit.ly/1niVeJF
  */
@@ -186,13 +185,12 @@ void Game::processEvent(sf::Event event)
 		} else if (event.key.code == sf::Keyboard::E) {
 			ammoType = (ammoType + 1) % 2;
 		} else if (event.key.code == sf::Keyboard::Q) {
-			ammoType = std::abs((ammoType - 1) % 2);
+			ammoType = abs((ammoType - 1) % 2);
 		}
 		break;
 	}
 	case sf::Event::MouseButtonPressed: {
-		if (event.mouseButton.button == sf::Mouse::Left)
-			//spawnEnemies(1);
+		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (ammoType == 0) {
 				projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
 			} else if (ammoType == 1) {
@@ -200,6 +198,7 @@ void Game::processEvent(sf::Event event)
 			} else {
 				std::cout << "AmmoType fail: " << ammoType << std::endl;
 			}
+		}
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
@@ -220,6 +219,9 @@ void Game::processEvent(sf::Event event)
 		map->bgSpr->setScale(
 			float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
 			float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
+		break;
+	}
+	default: {
 		break;
 	}
 	}
@@ -264,7 +266,7 @@ void Game::addSource()
 
 int Game::collision(float x, float y, std::string collisionType)
 {
-	int i = map->Collision(x, y, collisionType);
+	int i = map->collision(x, y, collisionType);
 	return i;
 }
 
@@ -308,7 +310,7 @@ void Game::updateProjectiles()
 {
 	for (unsigned int i = 0; i < projectiles.size();) {
 		projectiles[i].update(frameClock);
-		++i;
+		i++;
 	}
 }
 
