@@ -3,18 +3,27 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
-#ifndef FOG
-#define FOG
+#ifndef LIGHT
+#define LIGHT
 
 #define LIGHT_MAX_LIGHTLEVEL 100
 #define LIGHT_ABSOLUTE 80
 
-sf::Color applyIntensity(sf::Color c, char intensity);
-sf::Color reapplyIntensity(sf::Color c, char intensity1, char intensity2);
-sf::Color mixColors(sf::Color c1, sf::Color c2);
-bool canMixColors(sf::Color base, sf::Color light);
-float sqr(float x);
-void clearSources();
+#define deleteList(list) \
+for (; !(list).empty(); delete (list).back(), (list).pop_back())
+
+#define updateList(list) \
+for (unsigned int i = 0; i < (list).size();) { \
+	if (!(list)[i]->update()) { \
+		delete (list)[i]; \
+		(list).erase((list).begin() + i); \
+		} else { \
+		i++; \
+		} \
+}
+
+/* Forward declaration due to a cyclic dependency */
+class MapTile;
 
 enum SourceType
 {
@@ -43,6 +52,38 @@ public:
 	virtual bool over() {
 		return false;
 	}
+};
+
+class Light
+{
+public:
+	int lightCounts[LIGHT_MAX_LIGHTLEVEL];
+	char ambientIntensity;
+	std::vector<StaticLightSource *> sources;
+	sf::Color ambientColor;
+	sf::Vertex lightMask[4];
+	MapTile **lightTiles[LIGHT_MAX_LIGHTLEVEL];
+
+	Light();
+	~Light();
+	void resetLight();
+	void buildLight();
+	void renderLight();
+	void initIntensity(MapTile *tile);
+	void setIntensity(MapTile *tile, char intensity, sf::Color color);
+	void addIntensity(sf::Vector2i index, char intensity, sf::Color color);
+	void checkNeighbours(MapTile *tile);
+	void initialize();
+	void update(StaticLightSource *tmpSource);
+	void checkSources(StaticLightSource *tmpSource);
+	void clear() { deleteList(sources); };
+	bool canMixColors(sf::Color base, sf::Color light);
+	float sqr(float x);
+	sf::Vector2f getTilePos(int x, int y);
+	sf::Color getTileLight(int x, int y);
+	sf::Color applyIntensity(sf::Color c, char intensity);
+	sf::Color reapplyIntensity(sf::Color c, char intensity1, char intensity2);
+	sf::Color mixColors(sf::Color c1, sf::Color c2);
 };
 
 class FadingLightSource : StaticLightSource

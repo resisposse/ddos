@@ -6,34 +6,9 @@
 #ifndef MAP
 #define MAP
 
-#include "fog.hpp"
-
 #define TILE_SIZE 32
 #define MAP_SIZE_X 50
 #define MAP_SIZE_Y 38
-
-/*
- * Because of the 'one definition' rule for inline functions, an identical
- * definition for the function must exist in every translation unit that uses
- * it. The easiest way to achieve this is by putting the definition in a header
- * file.
- */
-inline void deleteList(std::vector<StaticLightSource *> list)
-{
-	for (; !(list).empty(); delete (list).back(), (list).pop_back());
-}
-
-inline void updateList(std::vector<StaticLightSource *> list)
-{
-	for (unsigned int i = 0; i < (list).size();) {
-		if (!(list)[i]->update()) {
-			delete (list)[i];
-			(list).erase((list).begin() + i);
-		} else {
-			i++;
-		}
-	}
-}
 
 enum MapTileType
 {
@@ -54,30 +29,41 @@ public:
 	char absorb;
 };
 
-/*
- * The Fog Of War effect is very much integrated into drawing the map
- * so we have some prototypes mixed in here. Editing the attributes
- * of FOW happens from 'map.cpp' while the actual implementations reside
- * in 'fog.cpp'.
- */
 class Map
 {
 public:
-	/* Lighting */
-	MapTile **lightTiles[LIGHT_MAX_LIGHTLEVEL];
-	int lightCounts[LIGHT_MAX_LIGHTLEVEL];
-	sf::Vertex lightMask[4];
-	void light();
-	void resetLight();
-	void buildLight();
-	void renderLight();
-	void setIntensity(MapTile *tile, char intensity, sf::Color color);
-	void addIntensity(sf::Vector2i index, char intensity, sf::Color color);
-	void initIntensity(MapTile *tile);
-	void checkNeighbours(MapTile *tile);
-	unsigned int checkNeighbourType(MapTile tile, MapTileType tileType);
-	sf::Vector2f getTilePos(int x, int y);
-	sf::Color getTileLight(int x, int y);
+	int direction;
+	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
+	int floorTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+	int wallHorizontalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+	int wallVerticalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+	int wallCornerTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+	int wallFillTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
+	std::vector<sf::Sprite *> floorTiles;
+	std::vector<sf::Sprite *> wallHorizontalTiles;
+	std::vector<sf::Sprite *> wallVerticalTiles;
+	std::vector<sf::Sprite *> wallCornerTiles;
+	std::vector<sf::Sprite *> wallFillTiles;
+	std::vector<sf::Sprite *> lavaFrames;
+	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
+
+	Map(char *generatedMap);
+	~Map();
+	int updateWallDirection(MapTile tile);
+	int checkNeighbourType(MapTile tile, MapTileType tileType);
+	int collision(float X, float Y, std::string collisionType);
+	int getCorrectFrame(int totFrames, float duration);
+	void renderTiles();
+	void drawFloorTile(int x, int y, sf::Color tileColor);
+	void drawWallCornerTile(int x, int y, sf::Color tileColor);
+	void drawWallHorizontalTile(int x, int y, sf::Color tileColor);
+	void drawWallVerticalTile(int x, int y, sf::Color tileColor);
+	void drawWallFillTile(int x, int y, sf::Color tileColor);
+	void drawLavaFrame(int x, int y, sf::Color tileColor, float frameDuration);
+	void drawTile(std::vector<sf::Sprite *> tileVector,
+	              int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y],
+	              int x, int y,
+	              sf::Color tileColor);
 
 	/* Tiles */
 	sf::Texture *tileMapTex;
@@ -156,44 +142,6 @@ public:
 	sf::Sprite *lava6Spr;
 	sf::Sprite *lava7Spr;
 	sf::Sprite *lava8Spr;
-
-	std::vector<sf::Sprite *> floorTiles;
-	int floorTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-	std::vector<sf::Sprite *> wallHorizontalTiles;
-	int wallHorizontalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-	std::vector<sf::Sprite *> wallVerticalTiles;
-	int wallVerticalTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-	std::vector<sf::Sprite *> wallCornerTiles;
-	int wallCornerTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-	std::vector<sf::Sprite *> wallFillTiles;
-	int wallFillTilesRand[MAP_SIZE_X][MAP_SIZE_Y];
-	std::vector<sf::Sprite *> lavaFrames;
-	int getCorrectFrame(int totFrames, float duration);
-
-	void drawFloorTile          (int x, int y, sf::Color tileColor);
-	void drawWallCornerTile     (int x, int y, sf::Color tileColor);
-	void drawWallHorizontalTile (int x, int y, sf::Color tileColor);
-	void drawWallVerticalTile   (int x, int y, sf::Color tileColor);
-	void drawWallFillTile       (int x, int y, sf::Color tileColor);
-	void drawLavaFrame          (int x, int y, sf::Color tileColor, float frameDuration);
-	void drawTile               (std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y], int x, int y, sf::Color tileColor);
-
-	int direction;
-	int collisionMap[MAP_SIZE_X][MAP_SIZE_Y];
-	char ambientIntensity;
-	MapTile tiles[MAP_SIZE_X][MAP_SIZE_Y];
-
-	Map(char *generatedMap);
-	~Map();
-	int updateWallDirection(MapTile tile);
-	int collision(float X, float Y, std::string collisionType);
-	void update(StaticLightSource *tmpSource);
-	void checkSources(StaticLightSource *tmpSource);
-	void renderTiles();
-	void clear() { deleteList(sources); };
-
-	sf::Color ambientColor;
-	std::vector<StaticLightSource *> sources;
 };
 
 #endif

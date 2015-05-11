@@ -8,7 +8,6 @@
 #include <cmath>
 #include "object.hpp"
 #include "main.hpp"
-#include "map.hpp"
 
 const float Object::PlayerSpeed = 100.f;
 sf::Time timeSinceLastUpdate = sf::Time::Zero;

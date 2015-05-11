@@ -7,9 +7,7 @@
 #include <iostream>
 #include <random>
 #include <cmath>
-#include "fog.hpp"
 #include "map.hpp"
-#include "object.hpp"
 #include "main.hpp"
 
 Map::Map(char *generatedMap)
@@ -292,15 +290,10 @@ Map::Map(char *generatedMap)
 			collisionMap[i][j] = 0;
 		}
 	}
-	int lightCount = MAP_SIZE_X * MAP_SIZE_Y;
-	for (int i = 0; i < LIGHT_MAX_LIGHTLEVEL; i++) {
-		lightTiles[i] = new MapTile*[lightCount];
-	}
 }
 
 Map::~Map()
 {
-	for (int i = 0; i < LIGHT_MAX_LIGHTLEVEL; delete lightTiles[i++]);
 	delete bgTex;
 	delete bgSpr;
 	delete floorSpr;
@@ -372,7 +365,6 @@ Map::~Map()
 	delete lava6Spr;
 	delete lava7Spr;
 	delete lava8Spr;
-	deleteList(sources);
 }
 
 int Map::updateWallDirection(MapTile tile)
@@ -415,25 +407,6 @@ int Map::updateWallDirection(MapTile tile)
 		a = 5;
 	}
 	return a;
-}
-
-void Map::update(StaticLightSource *tmpSource)
-{
-	updateList(sources);
-	resetLight();
-	renderTiles();
-	checkSources(tmpSource);
-	light();
-}
-
-void Map::checkSources(StaticLightSource *tmpSource)
-{
-	for (unsigned int i = 0; i < sources.size(); i++) {
-		addIntensity(sources[i]->position, sources[i]->getIntensity(), sources[i]->color);
-	}
-	if (sf::IntRect(0, 0, MAP_SIZE_X, MAP_SIZE_Y).contains(tmpSource->position)) {
-		addIntensity(tmpSource->position, tmpSource->intensity, tmpSource->color);
-	}
 }
 
 void Map::renderTiles()
@@ -674,7 +647,7 @@ int Map::collision(float x, float y, std::string collisionType)
 	return collision;
 }
 
-unsigned int Map::checkNeighbourType(MapTile tile, MapTileType tileType)
+int Map::checkNeighbourType(MapTile tile, MapTileType tileType)
 {
 	unsigned int neighbours = 0;
 	int x = tile.index.x;

@@ -5,7 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "fog.hpp"
+#include "light.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
 #include "object.hpp"
@@ -35,9 +35,10 @@ Game::Game()
 	loadCursorTexture();
 	loadProjectileTextures();
 
-	player = new Player(*playerTexture);
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
+	light = new Light();
+	player = new Player(*playerTexture);
 
 	app->setFramerateLimit(60);
 	initializeLighting();
@@ -49,6 +50,7 @@ Game::~Game()
 {
 	delete map;
 	delete mapGenerator;
+	delete light;
 	delete bulletTexture;
 	delete laserBeamTexture;
 	delete playerTexture;
@@ -87,7 +89,10 @@ void Game::update()
 
 void Game::render()
 {
-	map->update(&state.tmpSource);
+	light->initialize();
+	map->renderTiles();
+	light->update(&state.tmpSource);
+
 	drawPlayer();
 	drawProjectiles();
 	drawEnemies();
@@ -138,8 +143,8 @@ void Game::updateLighting()
 	state.tmpSource = StaticLightSource(state.brush.position,
 	                                    state.brush.color,
 	                                    state.brush.intensity);
-	map->ambientColor = state.ambientColor;
-	map->ambientIntensity = state.ambientIntensity;
+	light->ambientColor = state.ambientColor;
+	light->ambientIntensity = state.ambientIntensity;
 }
 
 /*
@@ -203,7 +208,7 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::MouseButtonReleased: {
 		//if (event.mouseButton.button == sf::Mouse::Left) addSource();
-		if (event.mouseButton.button == sf::Mouse::Right) map->clear();
+		if (event.mouseButton.button == sf::Mouse::Right) light->clear();
 		break;
 	}
 	case sf::Event::Closed: {
@@ -231,14 +236,14 @@ void Game::addSource()
 {
 	switch (state.brush.type) {
 	case stStatic:
-		map->sources.push_back((StaticLightSource *)
+		light->sources.push_back((StaticLightSource *)
 		                       (new StaticLightSource
 		                       (state.brush.position,
 		                        state.brush.color,
 		                        state.brush.intensity)));
 		break;
 	case stFading:
-		map->sources.push_back((StaticLightSource *)
+		light->sources.push_back((StaticLightSource *)
 		                       (new FadingLightSource
 		                       (state.brush.position,
 		                        state.brush.color,
@@ -246,7 +251,7 @@ void Game::addSource()
 		                        state.brush.sourceTime)));
 		break;
 	case stPulsing:
-		map->sources.push_back((StaticLightSource *)
+		light->sources.push_back((StaticLightSource *)
 		                       (new PulsingLightSource
 		                       (state.brush.position,
 		                        state.brush.color,
@@ -254,7 +259,7 @@ void Game::addSource()
 		                        state.brush.sourceTime)));
 		break;
 	case stTest:
-		map->sources.push_back((StaticLightSource *)
+		light->sources.push_back((StaticLightSource *)
 		                       (new TestLightSource
 		                       (state.brush.position,
 		                        state.brush.color,

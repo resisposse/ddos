@@ -13,6 +13,7 @@
 class Player;
 class EnemyMelee;
 class Map;
+class Light;
 
 class Game
 {
@@ -28,6 +29,7 @@ public:
 
 	MapGenerator *mapGenerator;
 	Map *map;
+	Light *light;
 	Player *player;
 	EnemyMelee *enemy;
 
