@@ -237,34 +237,34 @@ void Game::addSource()
 	switch (state.brush.type) {
 	case stStatic:
 		light->sources.push_back((StaticLightSource *)
-		                       (new StaticLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity)));
+		                         (new StaticLightSource
+		                         (state.brush.position,
+		                          state.brush.color,
+		                          state.brush.intensity)));
 		break;
 	case stFading:
 		light->sources.push_back((StaticLightSource *)
-		                       (new FadingLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity,
-		                        state.brush.sourceTime)));
+		                         (new FadingLightSource
+		                         (state.brush.position,
+		                          state.brush.color,
+		                          state.brush.intensity,
+		                          state.brush.sourceTime)));
 		break;
 	case stPulsing:
 		light->sources.push_back((StaticLightSource *)
-		                       (new PulsingLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity,
-		                        state.brush.sourceTime)));
+		                         (new PulsingLightSource
+		                         (state.brush.position,
+		                          state.brush.color,
+		                          state.brush.intensity,
+		                          state.brush.sourceTime)));
 		break;
 	case stTest:
 		light->sources.push_back((StaticLightSource *)
-		                       (new TestLightSource
-		                       (state.brush.position,
-		                        state.brush.color,
-		                        state.brush.intensity,
-		                        state.brush.sourceTime)));
+		                         (new TestLightSource
+		                         (state.brush.position,
+		                          state.brush.color,
+		                          state.brush.intensity,
+		                          state.brush.sourceTime)));
 		break;
 	}
 }
@@ -292,7 +292,8 @@ void Game::loadCursorTexture()
 	fixed = app->getView();
 
 	TextureCursor = new sf::Texture();
-	TextureCursor->loadFromFile("media/cursor.png");
+	TextureCursor->loadFromFile("media/cursor2.png");
+	TextureCursor->setSmooth(true);
 	spriteCursor = new sf::Sprite(*TextureCursor);
 	sf::Vector2u spriteSize = TextureCursor->getSize();
 	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
