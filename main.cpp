@@ -292,7 +292,7 @@ void Game::loadCursorTexture()
 	fixed = app->getView();
 
 	TextureCursor = new sf::Texture();
-	TextureCursor->loadFromFile("media/cursor2.png");
+	TextureCursor->loadFromFile("media/cursor.png");
 	TextureCursor->setSmooth(true);
 	spriteCursor = new sf::Sprite(*TextureCursor);
 	sf::Vector2u spriteSize = TextureCursor->getSize();
