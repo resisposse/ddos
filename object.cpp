@@ -132,7 +132,7 @@ void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 /* Handle enemy movement by approaching the player and check for collisions */
 void Object::approach(float enemyPositionX, float enemyPositionY,
-	float playerPositionX, float playerPositionY)
+                      float playerPositionX, float playerPositionY)
 {
 	int collisionFlag = 1;
 	float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
@@ -141,8 +141,7 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 	float enemySpeed = 50;
 	float angle;
 	sf::Vector2f enemyMovement(0.f, 0.f);
-	if (distanceFromPlayer < 20 && distanceFromPlayer > 5 || getAggro() > 0) {
-
+	if ((distanceFromPlayer < 20 && distanceFromPlayer > 5) || (getAggro() > 0)) {
 		float distanceX = playerPositionX - enemyPositionX;
 		float distanceY = playerPositionY - enemyPositionY;
 		if (distanceX > 0) {
@@ -174,7 +173,8 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 		}
 
 		/* Start approaching when player is close enough to the enemy */
-		if (distanceFromPlayer < 20 && distanceFromPlayer > 5 && collisionFlag == 0 || getAggro() > 0) {
+		if (((distanceFromPlayer < 20) && (distanceFromPlayer > 5)) &&
+		    ((collisionFlag == 0) || (getAggro() > 0))) {
 			if (getAggro() > 0) {
 				aggro -= frameClock;
 			}

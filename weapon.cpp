@@ -11,17 +11,19 @@
 #include "map.hpp"
 #include "weapon.hpp"
 
-/* Ammo types for weapons
-	0 = bullet
-	1 = laser
-	2 = pellet
-*/
+/*
+ * Ammo types for weapons
+ * 0 = bullet
+ * 1 = laser
+ * 2 = pellet
+ */
 
-Weapon::Weapon(sf::Texture& weaponTexture) {
+Weapon::Weapon(sf::Texture& weaponTexture)
+{
 	sprite.setTexture(weaponTexture);
 }
 
-void Weapon::update(float timePerFrame, float playerPositionX, float playerPositionY, float mouseX, float mouseY)
+void Weapon::update(float playerPositionX, float playerPositionY, float mouseX, float mouseY)
 {
 	float angle;
 	double a, b;

@@ -9,13 +9,14 @@
 class Weapon
 {
 public:
-	Weapon(sf::Texture& weaponTexture);
-	void update(float timePerFrame, float playerPositionX, float playerPositionY, float mouseX, float mouseY);
-	sf::Sprite sprite;
 	int ammoType;
 	int bullets;
 	int spreadAngle;
 	float attackSpeed;
+	sf::Sprite sprite;
+
+	Weapon(sf::Texture& weaponTexture);
+	void update(float playerPositionX, float playerPositionY, float mouseX, float mouseY);
 };
 
 class Pistol : public Weapon {
