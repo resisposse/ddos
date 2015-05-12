@@ -40,7 +40,7 @@ Game::Game()
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 	light = new Light();
-	player = new Player(*playerTexture);
+	player = new Player(*playerTexture, randomSpawn());
 
 	app->setFramerateLimit(60);
 	initializeLighting();
@@ -83,6 +83,7 @@ void Game::update()
 		updateEnemies();
 		updateWeapons();
 		checkProjectileCollisions();
+		checkEnemyProjectileCollisions();
 
 		render();
 
@@ -207,8 +208,9 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::MouseButtonPressed: {
 		if (event.mouseButton.button == sf::Mouse::Left)
-			//spawnEnemies(1);
 			shoot();
+		if (event.mouseButton.button == sf::Mouse::Right)
+			spawnEnemies(1);
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
@@ -278,6 +280,20 @@ int Game::collision(float x, float y, std::string collisionType)
 {
 	int i = map->collision(x, y, collisionType);
 	return i;
+}
+
+sf::Vector2f Game::randomSpawn()
+{
+	int coll = 1;
+	sf::Vector2f coords;
+	float randX, randY;
+	while (coll == 1) {
+		randX = rand() % MAP_SIZE_X * 32;
+		randY = rand() % MAP_SIZE_Y * 32;
+		coll = map->collision(randX, randY, "asd");
+	}
+	coords = sf::Vector2f(randX, randY);
+	return coords;
 }
 
 void Game::loadCharacterTextures()
@@ -350,6 +366,11 @@ void Game::updateProjectiles()
 		projectiles[i].update(frameClock);
 		i++;
 	}
+
+	for (unsigned int b = 0; b < enemyProjectiles.size();) {
+		enemyProjectiles[b].update(frameClock);
+		b++;
+	}
 }
 
 void Game::checkProjectileCollisions()
@@ -358,6 +379,10 @@ void Game::checkProjectileCollisions()
 		int x, y;
 		x = projectiles[i].position.x;
 		y = projectiles[i].position.y;
+		if (checkEnemyCollisions(x, y, projectiles[i].getDamage()) == 1) {
+			projectiles.erase(projectiles.begin() + i);
+			break;
+		}
 		if (collision(x, y, "projectile") == 1) {
 			projectiles.erase(projectiles.begin() + i);
 			break;
@@ -365,9 +390,66 @@ void Game::checkProjectileCollisions()
 	}
 }
 
+int Game::checkEnemyCollisions(int x, int y, int damage)
+{
+	int enemyX, enemyY, diffX, diffY;
+	int enemyCollision = 0;
+
+	for (unsigned int b = 0; b < enemies.size(); b++) {
+		enemyX = enemies[b].sprite.getPosition().x;
+		enemyY = enemies[b].sprite.getPosition().y;
+
+		diffX = abs(x - enemyX);
+		diffY = abs(y - enemyY);
+		if (diffX < 10 && diffY < 10) {
+			enemyCollision = 1;
+			enemies[b].setDamage(damage);
+			enemies[b].setAggro(5);
+		}
+	}
+	return enemyCollision;
+}
+
+void Game::checkEnemyProjectileCollisions()
+{
+	for (unsigned int a = 0; a < enemyProjectiles.size(); a++) {
+		int x, y;
+		x = enemyProjectiles[a].position.x;
+		y = enemyProjectiles[a].position.y;
+
+		if (checkPlayerCollisions(x, y, enemyProjectiles[a].getDamage()) == 1) {
+			enemyProjectiles.erase(enemyProjectiles.begin() + a);
+			break;
+		}
+
+		if (collision(x, y, "projectile") == 1) {
+			enemyProjectiles.erase(enemyProjectiles.begin() + a);
+			break;
+		}
+	}
+}
+
+int Game::checkPlayerCollisions(int x, int y, int damage)
+{
+	sf::Vector2f playerCoords(player->sprite.getPosition());
+	int diffX, diffY;
+	int playerCollision = 0;
+
+	diffX = abs(x - playerCoords.x);
+	diffY = abs(y - playerCoords.y);
+	if (diffX < 10 && diffY < 10) {
+		playerCollision = 1;
+		player->setDamage(damage);
+	}
+	return playerCollision;
+}
+
 void Game::drawProjectiles()
 {
 	for (ProjectileSprite &projectile : projectiles) {
+		app->draw(projectile.sprite);
+	}
+	for (ProjectileSprite &projectile : enemyProjectiles) {
 		app->draw(projectile.sprite);
 	}
 }
@@ -407,7 +489,7 @@ void Game::initializeWeapons()
 void Game::spawnEnemies(int amount)
 {
 	for (int i = 0; i < amount; i++) {
-		enemies.push_back(EnemyMelee(*enemyMeleeTexture));
+		enemies.push_back(EnemyMelee(*enemyMeleeTexture, randomSpawn()));
 		std::cout << "Enemy Spawned" << std::endl;
 	}
 }
@@ -415,12 +497,37 @@ void Game::spawnEnemies(int amount)
 void Game::updateEnemies()
 {
 	for (unsigned int i = 0; i <  enemies.size();) {
+		if (enemies[i].getHitpoints() <= 0) {
+			enemies.erase(enemies.begin() + i);
+			break;
+		}
+
 		enemies[i].update(enemies[i].sprite.getPosition().x,
 		                  enemies[i].sprite.getPosition().y,
 		                  player->sprite.getPosition().x,
 		                  player->sprite.getPosition().y);
+		if (checkProximity(enemies[i].sprite.getPosition()) == 1) {
+			player->setDamage(enemies[i].getMeleeDamage());
+			std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
+		}
 		i++;
 	}
+}
+
+int Game::checkProximity(sf::Vector2f enemy)
+{
+	sf::Vector2f playerPosition(player->sprite.getPosition());
+	float distanceX, distanceY, distanceFromObject;
+	int closeEnough = 0;
+	distanceX = abs(enemy.x - playerPosition.x);
+	distanceY = abs(enemy.y - playerPosition.y);
+	//pitää olla sama kuin objectin approachissa, muutetaan myöhemmin
+	distanceFromObject = sqrt(distanceX * 2 + distanceY * 2);
+
+	if (distanceFromObject < 5) {
+		closeEnough = 1;
+	}
+	return closeEnough;
 }
 
 void Game::drawEnemies()
@@ -429,13 +536,6 @@ void Game::drawEnemies()
 		app->draw(enemies[i].sprite);
 	}
 }
-
-/*
-void Game::updatePlayer()
-{
-	player->update(TimePerFrameTmp);
-}
-*/
 
 void Game::drawPlayer()
 {

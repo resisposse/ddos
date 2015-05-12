@@ -18,6 +18,7 @@ ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f 
 	sf::Vector2u spriteSize = projectileTexture.getSize();
 	position = startPosition;
 	speed = 300;
+	damage = 10;
 
 	sprite.setTexture(projectileTexture);
 	sprite.setScale(0.5, 0.5);
@@ -56,6 +57,10 @@ void ProjectileSprite::update(float second)
 	position = sprite.getPosition();
 }
 
+int ProjectileSprite::getDamage() {
+	return damage;
+}
+
 /* Undecided if we need this function
 bool ProjectileSprite::outsideWindow()
 {
@@ -76,6 +81,7 @@ LaserSprite::LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosit
 {
 	speed = 1000;
 	damage = 25;
+
 }
 
 PelletSprite::PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)

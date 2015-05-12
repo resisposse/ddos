@@ -37,6 +37,7 @@ public:
 	Game();
 	~Game();
 	int collision(float x, float y, std::string collisionType);
+	sf::Vector2f randomSpawn();
 	void update();
 	void render();
 	void parseEvents();
@@ -49,10 +50,14 @@ public:
 	void loadWeaponTextures();
 	void updateProjectiles();
 	void checkProjectileCollisions();
+	void checkEnemyProjectileCollisions();
+	int checkEnemyCollisions(int x, int y, int damage);
+	int checkPlayerCollisions(int x, int y, int damage);
 	void drawProjectiles();
 	void spawnEnemies(int amount);
 	void updateEnemies();
 	void updateWeapons();
+	int checkProximity(sf::Vector2f enemy);
 	void drawEnemies();
 	void drawPlayer();
 	void drawCursor();
@@ -78,6 +83,7 @@ public:
 	sf::Vector2i mouse;
 
 	std::vector<ProjectileSprite> projectiles;
+	std::vector<ProjectileSprite> enemyProjectiles;
 	std::vector<EnemyMelee> enemies;
 	std::vector<Weapon> weapons;
 

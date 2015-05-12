@@ -91,6 +91,9 @@ void Object::update(sf::Time TimePerFrame)
 	if (mIsMovingRight) {
 		movement.x += PlayerSpeed;
 	}
+	if (getHitpoints() <= 0) {
+		std::cout << "you dieded" << std::endl;
+	}
 
 	float positionPlayerX = sprite.getPosition().x;
 	float positionPlayerY = sprite.getPosition().y;
@@ -129,7 +132,7 @@ void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 /* Handle enemy movement by approaching the player and check for collisions */
 void Object::approach(float enemyPositionX, float enemyPositionY,
-                      float playerPositionX, float playerPositionY)
+	float playerPositionX, float playerPositionY)
 {
 	int collisionFlag = 1;
 	float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
@@ -138,44 +141,61 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 	float enemySpeed = 50;
 	float angle;
 	sf::Vector2f enemyMovement(0.f, 0.f);
+	if (distanceFromPlayer < 20 && distanceFromPlayer > 5 || getAggro() > 0) {
 
-	float distanceX = playerPositionX - enemyPositionX;
-	float distanceY = playerPositionY - enemyPositionY;
-	if (distanceX > 2) {
-		enemyMovement.x += enemySpeed;
-	}
-	if (distanceX < -2) {
-		enemyMovement.x -= enemySpeed;
-	}
-	if (distanceY > 2) {
-		enemyMovement.y += enemySpeed;
-	}
-	if (distanceY < -2) {
-		enemyMovement.y -= enemySpeed;
-	}
-
-	float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + enemyPositionX);
-	float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + enemyPositionY);
-	int enemyCollisionX = game->collision(enemySpeedX,    enemyPositionY, "player");
-	int enemyCollisionY = game->collision(enemyPositionX, enemySpeedY,    "player");
-
-	if (enemyCollisionX != 1 || enemyCollisionY != 1) {
-		collisionFlag = 0;
-		if (enemyCollisionX == 1) {
-			enemyMovement.x = 0.f;
+		float distanceX = playerPositionX - enemyPositionX;
+		float distanceY = playerPositionY - enemyPositionY;
+		if (distanceX > 0) {
+			enemyMovement.x += enemySpeed;
 		}
-		if (enemyCollisionY == 1) {
-			enemyMovement.y = 0.f;
+		if (distanceX < 0) {
+			enemyMovement.x -= enemySpeed;
+		}
+		if (distanceY > 0) {
+			enemyMovement.y += enemySpeed;
+		}
+		if (distanceY < 0) {
+			enemyMovement.y -= enemySpeed;
+		}
+
+		float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + enemyPositionX);
+		float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + enemyPositionY);
+		int enemyCollisionX = game->collision(enemySpeedX, enemyPositionY, "player");
+		int enemyCollisionY = game->collision(enemyPositionX, enemySpeedY, "player");
+
+		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
+			collisionFlag = 0;
+			if (enemyCollisionX == 1) {
+				enemyMovement.x = 0.f;
+			}
+			if (enemyCollisionY == 1) {
+				enemyMovement.y = 0.f;
+			}
+		}
+
+		/* Start approaching when player is close enough to the enemy */
+		if (distanceFromPlayer < 20 && distanceFromPlayer > 5 && collisionFlag == 0 || getAggro() > 0) {
+			if (getAggro() > 0) {
+				aggro -= frameClock;
+			}
+			sf::Vector2i playerCoords(playerPositionX, playerPositionY);
+			angle = -atan2(distanceX, distanceY) * 180 / 3.141593;
+			this->sprite.setOrigin(16, 16);
+			this->sprite.setRotation(angle);
+			this->sprite.move(enemyMovement * TimePerFrame.asSeconds());
+			enemyShoot(playerCoords);
 		}
 	}
+}
 
-	/* Start approaching when player is close enough to the enemy */
-	if (distanceFromPlayer < 20 && distanceFromPlayer > 5 && collisionFlag == 0) {
-		angle = -atan2(distanceX, distanceY) * 180 / 3.141593;
-		this->sprite.setOrigin(16, 16);
-		this->sprite.setRotation(angle);
-		this->sprite.move(enemyMovement * TimePerFrame.asSeconds());
+void Object::enemyShoot(sf::Vector2i coords)
+{
+	if (cooldown <= 0) {
+		setCooldown(0.5);
+		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
 	}
+	else cooldown -= frameClock;
+
 }
 
 int Object::getHitpoints() const
@@ -188,7 +208,40 @@ void Object::setHitpoints(int hp)
 	mHitpoints = hp;
 }
 
-Player::Player(sf::Texture& objectTexture) : Object(objectTexture)
+void Object::setDamage(float damage)
+{
+	int currentHitpoints = getHitpoints();
+	int newHitpoints = currentHitpoints - damage;
+	if (newHitpoints < 0) newHitpoints = 0;
+	setHitpoints(newHitpoints);
+}
+
+void Object::setMeleeDamage(float damage)
+{
+	meleeDamage = damage;
+}
+
+float Object::getMeleeDamage() const
+{
+	return meleeDamage;
+}
+
+void Object::setCooldown(float amount)
+{
+	cooldown = amount;
+}
+
+void Object::setAggro(float amount)
+{
+	aggro = amount;
+}
+
+float Object::getAggro() const
+{
+	return aggro;
+}
+
+Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	/*
 	ObjectTex = new sf::Texture();
@@ -199,12 +252,13 @@ Player::Player(sf::Texture& objectTexture) : Object(objectTexture)
 	//sprite.setTexture(*ObjectTex);
 	sprite.setTextureRect(mPlayer);
 	sprite.setOrigin(16, 16);
-	sprite.setPosition(500, 200);
+	sprite.setPosition(coords.x, coords.y);
 
 	setHitpoints(100);
+	setMeleeDamage(0);
 }
 
-EnemyMelee::EnemyMelee(sf::Texture& objectTexture) : Object(objectTexture)
+EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	/*
 	ObjectTex = new sf::Texture();
@@ -215,7 +269,9 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture) : Object(objectTexture)
 	//sprite.setTexture(*ObjectTex);
 	sprite.setTextureRect(mEnemy);
 	sprite.setOrigin(16, 16);
-	sprite.setPosition(rand() % 300 + 400, rand() % 300 + 200);
+	sprite.setPosition(coords.x, coords.y);
 
 	setHitpoints(50);
+	setMeleeDamage(0.5);
+	setCooldown(0);
 }

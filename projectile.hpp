@@ -20,6 +20,7 @@ public:
 
 	ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
 	void update(float second);
+	int getDamage();
 	//bool outsideWindow();
 };
 
