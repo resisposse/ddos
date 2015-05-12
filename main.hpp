@@ -8,6 +8,7 @@
 
 #include "mapgenerator.hpp"
 #include "projectile.hpp"
+#include "weapon.hpp"
 
 /* Forward declarations due to cyclic dependencies */
 class Player;
@@ -25,7 +26,7 @@ public:
 	float zoomLevel;
 	float playerPositionX;
 	float playerPositionY;
-	int ammoType = 0;
+	int weaponType = 0;
 
 	MapGenerator *mapGenerator;
 	Map *map;
@@ -41,26 +42,35 @@ public:
 	void parseEvents();
 	void processEvent(sf::Event event);
 	void addSource();
+	void shoot();
 	void loadCharacterTextures();
 	void loadCursorTexture();
 	void loadProjectileTextures();
+	void loadWeaponTextures();
 	void updateProjectiles();
 	void checkProjectileCollisions();
 	void drawProjectiles();
 	void spawnEnemies(int amount);
 	void updateEnemies();
+	void updateWeapons();
 	void drawEnemies();
 	void drawPlayer();
 	void drawCursor();
+	void drawWeapons();
 	void initializeView();
 	void initializeLighting();
 	void updateLighting();
+	void initializeWeapons();
 
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
-	sf::Texture *TextureCursor;
+	sf::Texture *pelletTexture;
+	sf::Texture *pistolTexture;
+	sf::Texture *laserRifleTexture;
+	sf::Texture *shotgunTexture;
+	sf::Texture *textureCursor;
 	sf::Sprite *spriteCursor;
 	sf::View *playerView;
 	sf::View *backgroundView;
@@ -69,6 +79,7 @@ public:
 
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<EnemyMelee> enemies;
+	std::vector<Weapon> weapons;
 
 	/* Temporary time fix, check this from main.cpp */
 	static const sf::Time TimePerFrameTmp;

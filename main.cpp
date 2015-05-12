@@ -34,6 +34,8 @@ Game::Game()
 	loadCharacterTextures();
 	loadCursorTexture();
 	loadProjectileTextures();
+	loadWeaponTextures();
+	initializeWeapons();
 
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
@@ -51,8 +53,12 @@ Game::~Game()
 	delete map;
 	delete mapGenerator;
 	delete light;
+	delete textureCursor;
 	delete bulletTexture;
 	delete laserBeamTexture;
+	delete pelletTexture;
+	delete pistolTexture;
+	delete shotgunTexture;
 	delete playerTexture;
 	delete enemyMeleeTexture;
 	delete player;
@@ -75,6 +81,7 @@ void Game::update()
 		updateLighting();
 		updateProjectiles();
 		updateEnemies();
+		updateWeapons();
 		checkProjectileCollisions();
 
 		render();
@@ -96,6 +103,7 @@ void Game::render()
 	drawPlayer();
 	drawProjectiles();
 	drawEnemies();
+	drawWeapons();
 	drawCursor();
 }
 
@@ -188,22 +196,19 @@ void Game::processEvent(sf::Event event)
 			app->close();
 			break;
 		} else if (event.key.code == sf::Keyboard::E) {
-			ammoType = (ammoType + 1) % 2;
+			weaponType = (weaponType + 1) % weapons.size();
 		} else if (event.key.code == sf::Keyboard::Q) {
-			ammoType = abs((ammoType - 1) % 2);
+			if (weaponType == 0) {
+				weaponType = weapons.size();
+			}
+			weaponType = (weaponType - 1);
 		}
 		break;
 	}
 	case sf::Event::MouseButtonPressed: {
-		if (event.mouseButton.button == sf::Mouse::Left) {
-			if (ammoType == 0) {
-				projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
-			} else if (ammoType == 1) {
-				projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(), sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)))));
-			} else {
-				std::cout << "AmmoType fail: " << ammoType << std::endl;
-			}
-		}
+		if (event.mouseButton.button == sf::Mouse::Left)
+			//spawnEnemies(1);
+			shoot();
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
@@ -286,16 +291,39 @@ void Game::loadCharacterTextures()
 	enemyMeleeTexture->setSmooth(true);
 }
 
+void Game::shoot()
+{
+	if (weapons[weaponType].ammoType == 0) {
+		projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
+											sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+											weapons[weaponType].spreadAngle));
+	} else if (weapons[weaponType].ammoType == 1) {
+		projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
+											sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+											weapons[weaponType].spreadAngle));
+	} else if (weapons[weaponType].ammoType == 2) {
+		for (int i = 0; i < weapons[weaponType].bullets; i++) {
+			projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
+									sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+									weapons[weaponType].spreadAngle));
+		}
+	}
+	else {
+		std::cout << "weaponType fail: " << weaponType << std::endl;
+	}
+}
+
 void Game::loadCursorTexture()
 {
 	app->setMouseCursorVisible(false);
 	fixed = app->getView();
 
-	TextureCursor = new sf::Texture();
-	TextureCursor->loadFromFile("media/cursor.png");
-	TextureCursor->setSmooth(true);
-	spriteCursor = new sf::Sprite(*TextureCursor);
-	sf::Vector2u spriteSize = TextureCursor->getSize();
+	textureCursor = new sf::Texture();
+	textureCursor->loadFromFile("media/cursor.png");
+	textureCursor->setSmooth(true);
+	spriteCursor = new sf::Sprite(*textureCursor);
+	sf::Vector2u spriteSize = textureCursor->getSize();
+
 	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
 	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
 	app->setView(fixed);
@@ -310,6 +338,10 @@ void Game::loadProjectileTextures()
 	laserBeamTexture = new sf::Texture();
 	laserBeamTexture->loadFromFile("media/laserBeam.png");
 	laserBeamTexture->setSmooth(true);
+
+	pelletTexture = new sf::Texture();
+	pelletTexture->loadFromFile("media/pellet.png");
+	pelletTexture->setSmooth(true);
 }
 
 void Game::updateProjectiles()
@@ -338,6 +370,38 @@ void Game::drawProjectiles()
 	for (ProjectileSprite &projectile : projectiles) {
 		app->draw(projectile.sprite);
 	}
+}
+
+void Game::loadWeaponTextures()
+{
+	pistolTexture = new sf::Texture();
+	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
+	pistolTexture->setSmooth(true);
+
+	laserRifleTexture = new sf::Texture();
+	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
+	laserRifleTexture->setSmooth(true);
+
+	shotgunTexture = new sf::Texture();
+	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
+	shotgunTexture->setSmooth(true);
+}
+
+void Game::updateWeapons()
+{
+	weapons[weaponType].update(frameClock ,player->sprite.getPosition().x, player->sprite.getPosition().y, mouse.x, mouse.y);
+}
+
+void Game::drawWeapons()
+{
+	app->draw(weapons[weaponType].sprite);
+}
+
+void Game::initializeWeapons()
+{
+	weapons.push_back(Pistol(*pistolTexture));
+	weapons.push_back(LaserRifle(*laserRifleTexture));
+	weapons.push_back(Shotgun(*shotgunTexture));
 }
 
 void Game::spawnEnemies(int amount)

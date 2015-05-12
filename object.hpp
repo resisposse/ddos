@@ -32,7 +32,7 @@ public:
 	sf::Sprite sprite;
 	sf::Sprite *spriteCursor;
 	sf::Texture *ObjectTex;
-	sf::Texture *TextureCursor;
+	sf::Texture *textureCursor;
 	sf::View fixed;
 	sf::Vector2i mouse;
 private:
