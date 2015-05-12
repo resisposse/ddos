@@ -9,8 +9,8 @@
 #include "map.hpp"
 #include "mapgenerator.hpp"
 #include "object.hpp"
-#include "main.hpp"
 #include "projectile.hpp"
+#include "main.hpp"
 
 float frameClock = 0;
 float lastClockTmp = 0;
@@ -35,7 +35,6 @@ Game::Game()
 	loadCursorTexture();
 	loadProjectileTextures();
 	loadWeaponTextures();
-	initializeWeapons();
 
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
@@ -45,6 +44,7 @@ Game::Game()
 	app->setFramerateLimit(60);
 	initializeLighting();
 	initializeView();
+	initializeWeapons();
 	spawnEnemies(5);
 }
 
@@ -53,7 +53,6 @@ Game::~Game()
 	delete map;
 	delete mapGenerator;
 	delete light;
-	delete textureCursor;
 	delete bulletTexture;
 	delete laserBeamTexture;
 	delete pelletTexture;
@@ -61,6 +60,7 @@ Game::~Game()
 	delete shotgunTexture;
 	delete playerTexture;
 	delete enemyMeleeTexture;
+	delete cursorTexture;
 	delete player;
 	delete app;
 	delete playerView;
@@ -311,20 +311,19 @@ void Game::shoot()
 {
 	if (weapons[weaponType].ammoType == 0) {
 		projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
-											sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-											weapons[weaponType].spreadAngle));
+		                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+		                                   weapons[weaponType].spreadAngle));
 	} else if (weapons[weaponType].ammoType == 1) {
 		projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
-											sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-											weapons[weaponType].spreadAngle));
+		                                  sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+		                                  weapons[weaponType].spreadAngle));
 	} else if (weapons[weaponType].ammoType == 2) {
 		for (int i = 0; i < weapons[weaponType].bullets; i++) {
 			projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
-									sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-									weapons[weaponType].spreadAngle));
+			                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                   weapons[weaponType].spreadAngle));
 		}
-	}
-	else {
+	} else {
 		std::cout << "weaponType fail: " << weaponType << std::endl;
 	}
 }
@@ -334,14 +333,14 @@ void Game::loadCursorTexture()
 	app->setMouseCursorVisible(false);
 	fixed = app->getView();
 
-	textureCursor = new sf::Texture();
-	textureCursor->loadFromFile("media/cursor.png");
-	textureCursor->setSmooth(true);
-	spriteCursor = new sf::Sprite(*textureCursor);
-	sf::Vector2u spriteSize = textureCursor->getSize();
+	cursorTexture = new sf::Texture();
+	cursorTexture->loadFromFile("media/cursor.png");
+	cursorTexture->setSmooth(true);
 
-	spriteCursor->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
-	spriteCursor->setColor(sf::Color(255, 0, 0, 255));
+	cursorSprite = new sf::Sprite(*cursorTexture);
+	sf::Vector2u spriteSize = cursorTexture->getSize();
+	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
+	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
 	app->setView(fixed);
 }
 
@@ -471,7 +470,9 @@ void Game::loadWeaponTextures()
 
 void Game::updateWeapons()
 {
-	weapons[weaponType].update(frameClock ,player->sprite.getPosition().x, player->sprite.getPosition().y, mouse.x, mouse.y);
+	weapons[weaponType].update(player->sprite.getPosition().x,
+	                           player->sprite.getPosition().y,
+	                           mouse.x, mouse.y);
 }
 
 void Game::drawWeapons()
@@ -545,8 +546,8 @@ void Game::drawPlayer()
 void Game::drawCursor()
 {
 	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	spriteCursor->setPosition(static_cast<sf::Vector2f>(mouse));
-	app->draw(*spriteCursor);
+	cursorSprite->setPosition(static_cast<sf::Vector2f>(mouse));
+	app->draw(*cursorSprite);
 }
 
 int main()

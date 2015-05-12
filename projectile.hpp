@@ -9,14 +9,14 @@
 class ProjectileSprite
 {
 public:
-	sf::Sprite sprite;
-	sf::Vector2f position;
-	sf::Vector2f normalized;
 	int speed;
 	int damage;
 	float xVelocity;
 	float yVelocity;
 	float inaccuracyAmount = 0.f;
+	sf::Sprite sprite;
+	sf::Vector2f position;
+	sf::Vector2f normalized;
 
 	ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
 	void update(float second);

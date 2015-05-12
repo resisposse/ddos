@@ -59,9 +59,9 @@ class Light
 public:
 	int lightCounts[LIGHT_MAX_LIGHTLEVEL];
 	char ambientIntensity;
-	std::vector<StaticLightSource *> sources;
 	sf::Color ambientColor;
 	sf::Vertex lightMask[4];
+	std::vector<StaticLightSource *> sources;
 	MapTile **lightTiles[LIGHT_MAX_LIGHTLEVEL];
 
 	Light();

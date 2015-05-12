@@ -4,9 +4,9 @@
  */
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <cmath>
 #include "projectile.hpp"
-#include "iostream"
 #include "weapon.hpp"
 
 ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)

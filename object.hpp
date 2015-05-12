@@ -15,6 +15,10 @@ public:
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	sf::Sprite sprite;
+	sf::View fixed;
+	sf::Vector2i mouse;
+	// sf::Texture *ObjectTex;
 
 	Object(sf::Texture& objectTexture);
 	void run();
@@ -36,13 +40,6 @@ public:
 	void setCooldown(float amount);
 	void setAggro(float amount);
 	float getAggro() const;
-
-	sf::Sprite sprite;
-	sf::Sprite *spriteCursor;
-	sf::Texture *ObjectTex;
-	sf::Texture *textureCursor;
-	sf::View fixed;
-	sf::Vector2i mouse;
 private:
 	int mHitpoints;
 	float meleeDamage;
