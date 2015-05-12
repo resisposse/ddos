@@ -6,10 +6,8 @@
 #ifndef MAPGENERATOR
 #define MAPGENERATOR
 
-#define MAP_SIZE_X 50
-#define MAP_SIZE_Y 38
-#define CORRIDOR_CHANCE 10
-#define ROOM_CHANCE 75
+#define MAP_SIZE_X 55
+#define MAP_SIZE_Y 43
 
 #include "random.hpp"
 
@@ -28,10 +26,10 @@ enum class CardinalDirection
 class Point
 {
 public:
-	Point() : x(NULL), y(NULL) {};
+	Point() : x(-1), y(-1) {};
 	Point(int x0, int y0) {
-		int x = x0;
-		int y = y0;
+		x = x0;
+		y = y0;
 	};
 	int x;
 	int y;
@@ -42,24 +40,21 @@ class MapGenerator
 public:
 	MapGenerator();
 	~MapGenerator();
-	bool isInBounds(int x, int y) const;
-	unsigned int checkNeighbourType(int x, int y, char tileType);
 	int setTile(int x, int y, char tileType);
 	int setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	char getTile(int x, int y);
 	int fillTiles(char tileType);
-	int getRand(int min, int max);
-	CardinalDirection getRandDirection();
-	bool generateRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction);
-	bool generateCorridor(int x, int y, int width, int length, int wallWidth, CardinalDirection direction);
-	bool eliminateDeadEnds();
-	bool generateFeature();
-	bool generateFeature(int x, int y, int xOffset, int yOffset, CardinalDirection direction);
-	char* generateMap();
+	bool isInBounds(int x, int y) const;
+	bool isInBounds(int x, int y, int offset, CardinalDirection direction) const;
 	bool isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	bool adjustPosition(int &x, int &y, int xStart, int yStart, int xEnd, int yEnd, char tileType, CardinalDirection direction);
+	bool generateRoomCenter(int x, int y);
+	bool generateRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction);
+	bool generateCorridor(int x, int y, int width, int length, int wallWidth, CardinalDirection direction);
+	bool generateFeature();
+	bool generateFeature(int x, int y, CardinalDirection direction);
+	char* generateMap();
 	Point checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd);
-	bool isAdjacent(int x, int y, char type);
 	int writeMapFile();
 private:
 	int maxFeatures_;
@@ -76,6 +71,7 @@ private:
 	int maxRoomHeight_;
 	int minRoomWall_;
 	int maxRoomWall_;
+	int roomEntranceLength_;
 	int minCorridorWall_;
 	int maxCorridorWall_;
 	char *dungeonTiles_;

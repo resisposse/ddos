@@ -28,6 +28,10 @@ int Random::generate(int min, int max)
 	return std::uniform_int_distribution<int>(min, max) (*engine);
 }
 
+int Random::generateNormal(int min, int max) {
+	return std::normal_distribution<>(min, max) (*engine);
+}
+
 int Random::getSeed()
 {
 	return seed_;

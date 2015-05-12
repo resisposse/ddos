@@ -19,6 +19,7 @@ public:
 	Random(int seed);
 	~Random();
 	int generate(int min, int max);
+	int generateNormal(int min, int max);
 	int getSeed();
 private:
 	int seed_;
