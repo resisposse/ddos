@@ -14,6 +14,9 @@ public:
 	int spreadAngle;
 	float attackSpeed;
 	sf::Sprite sprite;
+	/* Must be the position where the weapons is in the weapons vector
+	 * in initializeWeapons function in main! */
+	int weaponPosition;
 
 	Weapon(sf::Texture& weaponTexture);
 	void update(float playerPositionX, float playerPositionY, float mouseX, float mouseY);

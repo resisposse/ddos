@@ -26,7 +26,7 @@ public:
 	float zoomLevel;
 	float playerPositionX;
 	float playerPositionY;
-	int weaponType = 0;
+	int heldWeapon = 0;
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
@@ -43,8 +43,10 @@ public:
 	sf::Vector2i mouse;
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<ProjectileSprite> enemyProjectiles;
-	std::vector<EnemyMelee> enemies;
+	std::vector<Object> enemies;
 	std::vector<Weapon> weapons;
+	std::vector<Weapon> weaponsOnMap;
+	std::vector<Weapon> playerWeapons;
 	/* Temporary time fix, check this from main.cpp */
 	static const sf::Time TimePerFrameTmp;
 
@@ -86,7 +88,12 @@ public:
 	void drawWeapons();
 	void drawProjectiles();
 	sf::Vector2f randomSpawn();
+	void spawnWeapons(int amount);
+	void spawnWeapons(int weaponType, int x, int y);
+	void dropWeapon();
+	void pickWeapon();
 };
+
 extern float frameClock;
 extern float lastClockTmp;
 extern sf::RenderWindow *app;

@@ -46,6 +46,7 @@ Game::Game()
 	initializeView();
 	initializeWeapons();
 	spawnEnemies(5);
+	spawnWeapons(20);
 }
 
 Game::~Game()
@@ -101,10 +102,10 @@ void Game::render()
 	map->renderTiles();
 	light->update(&state.tmpSource);
 
-	drawPlayer();
 	drawProjectiles();
 	drawEnemies();
 	drawWeapons();
+	drawPlayer();
 	drawCursor();
 }
 
@@ -197,12 +198,15 @@ void Game::processEvent(sf::Event event)
 			app->close();
 			break;
 		} else if (event.key.code == sf::Keyboard::E) {
-			weaponType = (weaponType + 1) % weapons.size();
+			heldWeapon = (heldWeapon + 1) % playerWeapons.size();
 		} else if (event.key.code == sf::Keyboard::Q) {
-			if (weaponType == 0) {
-				weaponType = weapons.size();
+			if (heldWeapon == 0) {
+				heldWeapon = playerWeapons.size();
 			}
-			weaponType = (weaponType - 1);
+			heldWeapon = (heldWeapon - 1);
+		} else if (event.key.code == sf::Keyboard::G) {
+			dropWeapon();
+			pickWeapon();
 		}
 		break;
 	}
@@ -300,31 +304,30 @@ void Game::loadCharacterTextures()
 {
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
-	playerTexture->setSmooth(true);
 
 	enemyMeleeTexture = new sf::Texture();
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
-	enemyMeleeTexture->setSmooth(true);
 }
 
 void Game::shoot()
 {
-	if (weapons[weaponType].ammoType == 0) {
+	if (playerWeapons[heldWeapon].ammoType == 0) {
 		projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
-		                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-		                                   weapons[weaponType].spreadAngle));
-	} else if (weapons[weaponType].ammoType == 1) {
+		                                    sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+		                                    playerWeapons[heldWeapon].spreadAngle));
+	} else if (playerWeapons[heldWeapon].ammoType == 1) {
 		projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
-		                                  sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-		                                  weapons[weaponType].spreadAngle));
-	} else if (weapons[weaponType].ammoType == 2) {
-		for (int i = 0; i < weapons[weaponType].bullets; i++) {
+		                                    sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+		                                    playerWeapons[heldWeapon].spreadAngle));
+	} else if (playerWeapons[heldWeapon].ammoType == 2) {
+		for (int i = 0; i < playerWeapons[heldWeapon].bullets; i++) {
 			projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
-			                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                   weapons[weaponType].spreadAngle));
+			                                sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                playerWeapons[heldWeapon].spreadAngle));
 		}
-	} else {
-		std::cout << "weaponType fail: " << weaponType << std::endl;
+	}
+	else {
+		std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
 	}
 }
 
@@ -457,27 +460,50 @@ void Game::loadWeaponTextures()
 {
 	pistolTexture = new sf::Texture();
 	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
-	pistolTexture->setSmooth(true);
 
 	laserRifleTexture = new sf::Texture();
 	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
-	laserRifleTexture->setSmooth(true);
 
 	shotgunTexture = new sf::Texture();
 	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
-	shotgunTexture->setSmooth(true);
+}
+
+void Game::spawnWeapons(int amount) {
+	for (int i = 0; i < amount; i++) {
+		int tmp = rand() % weapons.size();
+		if (tmp == 0) {
+			weaponsOnMap.push_back(Pistol(*pistolTexture));
+		}
+		else if (tmp == 1) {
+			weaponsOnMap.push_back(LaserRifle(*laserRifleTexture));
+		}
+		else {
+			weaponsOnMap.push_back(Shotgun(*shotgunTexture));
+		}
+		weaponsOnMap[i].sprite.setPosition(randomSpawn());
+		weaponsOnMap[i].sprite.setRotation(rand() % 360);
+	}
+}
+
+void Game::spawnWeapons(int heldWeapon, int x, int y) {
+		weaponsOnMap.push_back(weapons[playerWeapons[heldWeapon].weaponPosition]);
+		weaponsOnMap.back().sprite.setPosition(x, y);
+		weaponsOnMap.back().sprite.setRotation(rand() % 360);
 }
 
 void Game::updateWeapons()
 {
-	weapons[weaponType].update(player->sprite.getPosition().x,
-	                           player->sprite.getPosition().y,
-	                           mouse.x, mouse.y);
+	playerWeapons[heldWeapon].update(player->sprite.getPosition().x,
+	                                 player->sprite.getPosition().y,
+	                                 mouse.x, mouse.y);
 }
 
 void Game::drawWeapons()
 {
-	app->draw(weapons[weaponType].sprite);
+	app->draw(playerWeapons[heldWeapon].sprite);
+	for (int i = 0; i < weaponsOnMap.size(); i++) {
+		app->draw(weaponsOnMap[i].sprite);
+	}
 }
 
 void Game::initializeWeapons()
@@ -485,6 +511,35 @@ void Game::initializeWeapons()
 	weapons.push_back(Pistol(*pistolTexture));
 	weapons.push_back(LaserRifle(*laserRifleTexture));
 	weapons.push_back(Shotgun(*shotgunTexture));
+
+	playerWeapons.push_back(Pistol(*pistolTexture));
+	playerWeapons.push_back(LaserRifle(*laserRifleTexture));
+}
+
+void Game::dropWeapon() {
+	if (playerWeapons.size() > 1) {
+		spawnWeapons(heldWeapon, player->sprite.getPosition().x, player->sprite.getPosition().y);
+		playerWeapons.erase(playerWeapons.begin() + heldWeapon);
+		heldWeapon = 0;
+	}
+}
+
+void Game::pickWeapon() {
+	for (int i = 0; i < weaponsOnMap.size(); i++) {
+		if (playerWeapons.size() < 2) {
+			sf::Vector2f playerCoords(player->sprite.getPosition());
+			int diffX, diffY;
+			int playerCollision = 0;
+
+			diffX = abs(weaponsOnMap[i].sprite.getPosition().x - playerCoords.x);
+			diffY = abs(weaponsOnMap[i].sprite.getPosition().y - playerCoords.y);
+			if (diffX < 10 && diffY < 10) {
+				playerWeapons.push_back(weapons[weaponsOnMap[i].weaponPosition]);
+				weaponsOnMap.erase(weaponsOnMap.begin() + i);
+				heldWeapon = 1;
+			}
+		}
+	}
 }
 
 void Game::spawnEnemies(int amount)

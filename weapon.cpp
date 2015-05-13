@@ -39,37 +39,37 @@ Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	attackSpeed = 1;
 	spreadAngle = 15;
+	ammoType = 0;
 	bullets = 1;
+	weaponPosition = 0;
 
 	sf::IntRect mPistol(32 * 2, 32 * 0, 32, 32);
 	sprite.setTextureRect(mPistol);
 	sprite.setOrigin(16, 0);
-
-	ammoType = 0;
 }
 
 LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	attackSpeed = 0.5;
 	spreadAngle = 5;
+	ammoType = 1;
 	bullets = 1;
+	weaponPosition = 1;
 
 	sf::IntRect mLaserRifle(32 * 3, 32 * 0, 32, 32);
 	sprite.setTextureRect(mLaserRifle);
 	sprite.setOrigin(16, 0);
-
-	ammoType = 1;
 }
 
 Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	attackSpeed = 1.5;
 	spreadAngle = 20;
+	ammoType = 2;
 	bullets = 7;
+	weaponPosition = 2;
 
 	sf::IntRect mShotgun(32 * 1, 32 * 0, 32, 32);
 	sprite.setTextureRect(mShotgun);
 	sprite.setOrigin(16, 0);
-
-	ammoType = 2;
 }
