@@ -29,6 +29,7 @@ Game::Game()
 	                           "Dark Domains Of Space",
 	                           sf::Style::Resize | sf::Style::Close);
 	running = true;
+	shooting = false;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
 	loadCharacterTextures();
@@ -220,13 +221,13 @@ void Game::processEvent(sf::Event event)
 	}
 	case sf::Event::MouseButtonPressed: {
 		if (event.mouseButton.button == sf::Mouse::Left)
-			shoot();
+			shooting = true;
 		if (event.mouseButton.button == sf::Mouse::Right)
 			spawnEnemies(1);
 		break;
 	}
 	case sf::Event::MouseButtonReleased: {
-		//if (event.mouseButton.button == sf::Mouse::Left) addSource();
+		if (event.mouseButton.button == sf::Mouse::Left) shooting = false;
 		if (event.mouseButton.button == sf::Mouse::Right) light->clear();
 		break;
 	}
@@ -319,23 +320,31 @@ void Game::loadCharacterTextures()
 
 void Game::shoot()
 {
-	if (playerWeapons[heldWeapon].ammoType == 0) {
-		projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
-		                                    sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-		                                    playerWeapons[heldWeapon].spreadAngle));
-	} else if (playerWeapons[heldWeapon].ammoType == 1) {
-		projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
-		                                    sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-		                                    playerWeapons[heldWeapon].spreadAngle));
-	} else if (playerWeapons[heldWeapon].ammoType == 2) {
-		for (int i = 0; i < playerWeapons[heldWeapon].bullets; i++) {
-			projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
-			                                sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                playerWeapons[heldWeapon].spreadAngle));
+	if (shooting == 1 && shootingCooldown <= 0) {
+		shootingCooldown = weapons[heldWeapon].attackSpeed;
+		if (playerWeapons[heldWeapon].ammoType == 0) {
+			projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
+				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				playerWeapons[heldWeapon].spreadAngle));
+		}
+		else if (playerWeapons[heldWeapon].ammoType == 1) {
+			projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
+				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				playerWeapons[heldWeapon].spreadAngle));
+		}
+		else if (playerWeapons[heldWeapon].ammoType == 2) {
+			for (int i = 0; i < playerWeapons[heldWeapon].bullets; i++) {
+				projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					playerWeapons[heldWeapon].spreadAngle));
+			}
+		}
+		else {
+			std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
 		}
 	}
 	else {
-		std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
+		shootingCooldown -= frameClock;
 	}
 }
 

@@ -9,6 +9,7 @@
 #include "mapgenerator.hpp"
 #include "projectile.hpp"
 #include "weapon.hpp"
+#include "object.hpp"
 
 /* Forward declarations due to cyclic dependencies */
 class Player;
@@ -24,16 +25,17 @@ public:
 	long currentClock = 0;
 	long lastClock = 0;
 	bool running;
+	bool shooting;
 	bool focused;
 	float zoomLevel;
 	float playerPositionX;
 	float playerPositionY;
 	int heldWeapon = 0;
-
 	float healthbarPositionX, healthbarPositionY;
 	float healthTextPositionX, healthTextPositionY;
 	int weaponType = 0;
 	sf::Texture *healthTexture;
+	float shootingCooldown = 0;
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;

@@ -37,7 +37,7 @@ void Weapon::update(float playerPositionX, float playerPositionY, float mouseX, 
 
 Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
-	attackSpeed = 1;
+	attackSpeed = 0.2;
 	spreadAngle = 15;
 	ammoType = 0;
 	bullets = 1;
@@ -50,7 +50,7 @@ Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 
 LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
-	attackSpeed = 0.5;
+	attackSpeed = 0.3;
 	spreadAngle = 5;
 	ammoType = 1;
 	bullets = 1;
@@ -63,7 +63,7 @@ LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 
 Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
-	attackSpeed = 1.5;
+	attackSpeed = 1;
 	spreadAngle = 20;
 	ammoType = 2;
 	bullets = 7;
