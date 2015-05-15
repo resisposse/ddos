@@ -31,9 +31,11 @@ public:
 	float playerPositionX;
 	float playerPositionY;
 	int heldWeapon = 0;
+	int weaponType = 0;
 	float healthbarPositionX, healthbarPositionY;
 	float healthTextPositionX, healthTextPositionY;
-	int weaponType = 0;
+	float weaponHUDX, weaponHUDY;
+
 	sf::Texture *healthTexture;
 	float shootingCooldown = 0;
 	sf::Texture *playerTexture;
@@ -60,6 +62,7 @@ public:
 	static const sf::Time TimePerFrameTmp;
 	sf::Font font;
 	sf::Text healthText;
+	sf::Text currentGun;
 
 	MapGenerator *mapGenerator;
 	Map *map;
@@ -88,7 +91,7 @@ public:
 	void loadProjectileTextures();
 	void loadWeaponTextures();
 	void loadHealthbarTexture();
-	void healthManager();
+	void HUDManager();
 	void initializeView();
 	void initializeLighting();
 	void initializeWeapons();
@@ -99,6 +102,7 @@ public:
 	void updateProjectiles();
 	void drawHealthbar();
 	void drawHealthText();
+	void drawCurrentGun();
 	void drawCursor();
 	void drawPlayer();
 	void drawEnemies();

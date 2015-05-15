@@ -9,6 +9,7 @@
 class Weapon
 {
 public:
+	std::string name;
 	int ammoType;
 	int bullets;
 	int spreadAngle;

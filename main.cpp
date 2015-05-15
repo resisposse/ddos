@@ -90,10 +90,7 @@ void Game::update()
 		checkProjectileCollisions();
 		checkEnemyProjectileCollisions();
 		render();
-		
-		healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
-		healthText.setFont(font);
-		healthManager();
+		HUDManager();
 
 		playerView->setCenter(playerPositionX, playerPositionY);
 		map->bgSpr->setOrigin(400, 300);
@@ -116,6 +113,7 @@ void Game::render()
 	drawCursor();
 	drawHealthbar();
 	drawHealthText();
+	drawCurrentGun();
 }
 
 void Game::initializeLighting()
@@ -386,16 +384,29 @@ void Game::loadHealthbarTexture()
 	healthTexture->setSmooth(true);
 }
 
-void Game::healthManager()
+void Game::HUDManager()
 {
+	
+		/*window SE-corner*/
+		float wWGun = (playerView->getSize().x);
+		float wHGun = (playerView->getSize().y);
+		weaponHUDX = playerPositionX - 155;
+		weaponHUDY = playerPositionY - 55;
+		
+		currentGun.setString("Current gun: "+ weapons[playerWeapons[heldWeapon].weaponPosition].name);
+		currentGun.setFont(font);
+		game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
+		
 		/*window SW-corner*/
 		float wW = (playerView->getSize().x)*(-1);
 		float wH = (playerView->getSize().y);
 		healthbarPositionX = playerPositionX + 10;
 		healthbarPositionY = playerPositionY - 15;
 		healthTextPositionX = playerPositionX + 10;
-		healthTextPositionY = playerPositionY - 50; 
+		healthTextPositionY = playerPositionY - 50;
 		
+		healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
+		healthText.setFont(font);
 		game->healthText.setPosition(wW/2 + healthTextPositionX , wH/2 + healthTextPositionY);
 		healthbar->sprite.setPosition(wW/2 + healthbarPositionX, wH/2 + healthbarPositionY);
 	
@@ -608,6 +619,7 @@ void Game::initializeHUD()
 	}
 	
 	healthText.setCharacterSize(15);
+	currentGun.setCharacterSize(15);
 }
 
 void Game::spawnEnemies(int amount)
@@ -677,6 +689,11 @@ void Game::drawHealthbar()
 void Game::drawHealthText()
 {
 	app->draw(game->healthText);
+}
+
+void Game::drawCurrentGun()
+{
+	app->draw(game->currentGun);
 }
 
 void Game::drawCursor()
