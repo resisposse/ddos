@@ -57,4 +57,10 @@ public:
 	EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords);
 };
 
+class HealthBar : public Object {
+public:
+	HealthBar(sf::Texture& objectTexture);
+	
+};
+
 #endif

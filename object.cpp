@@ -275,3 +275,8 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object
 	setMeleeDamage(0.5);
 	setCooldown(0);
 }
+
+HealthBar::HealthBar(sf::Texture& objectTexture) : Object(objectTexture)
+{
+	
+}

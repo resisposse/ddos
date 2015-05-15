@@ -35,16 +35,19 @@ Game::Game()
 	loadCursorTexture();
 	loadProjectileTextures();
 	loadWeaponTextures();
+	loadHealthbarTexture();
 
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 	light = new Light();
 	player = new Player(*playerTexture, randomSpawn());
+	healthbar = new HealthBar(*healthTexture);
 
 	app->setFramerateLimit(60);
 	initializeLighting();
 	initializeView();
 	initializeWeapons();
+	initializeHUD();
 	spawnEnemies(5);
 	spawnWeapons(20);
 }
@@ -65,6 +68,7 @@ Game::~Game()
 	delete player;
 	delete app;
 	delete playerView;
+	delete healthbar;
 }
 
 void Game::update()
@@ -78,15 +82,17 @@ void Game::update()
 		parseEvents();
 		player->run();
 		app->clear();
-
 		updateLighting();
 		updateProjectiles();
 		updateEnemies();
 		updateWeapons();
 		checkProjectileCollisions();
 		checkEnemyProjectileCollisions();
-
 		render();
+		
+		healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
+		healthText.setFont(font);
+		healthManager();
 
 		playerView->setCenter(playerPositionX, playerPositionY);
 		map->bgSpr->setOrigin(400, 300);
@@ -107,6 +113,8 @@ void Game::render()
 	drawWeapons();
 	drawPlayer();
 	drawCursor();
+	drawHealthbar();
+	drawHealthText();
 }
 
 void Game::initializeLighting()
@@ -362,6 +370,47 @@ void Game::loadProjectileTextures()
 	pelletTexture->setSmooth(true);
 }
 
+void Game::loadHealthbarTexture()
+{
+	healthTexture = new sf::Texture();
+	healthTexture->loadFromFile("media/laserBeam.png");
+	healthTexture->setSmooth(true);
+}
+
+void Game::healthManager()
+{
+		/*window SW-corner*/
+		float wW = (playerView->getSize().x)*(-1);
+		float wH = (playerView->getSize().y);
+		healthbarPositionX = playerPositionX + 10;
+		healthbarPositionY = playerPositionY - 15;
+		healthTextPositionX = playerPositionX + 10;
+		healthTextPositionY = playerPositionY - 50; 
+		
+		game->healthText.setPosition(wW/2 + healthTextPositionX , wH/2 + healthTextPositionY);
+		healthbar->sprite.setPosition(wW/2 + healthbarPositionX, wH/2 + healthbarPositionY);
+	
+		if(player->getHitpoints() >=70){
+			healthText.setColor(sf::Color::Green);
+		}
+		else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
+			healthText.setColor(sf::Color::Yellow);
+		}
+		else{
+			healthText.setColor(sf::Color::Red);
+		}
+		
+		if(player->getHitpoints() >=70){
+			healthbar->sprite.setColor(sf::Color::Green);
+		}
+		else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
+			healthbar->sprite.setColor(sf::Color::Yellow);
+		}
+		else {
+			healthbar->sprite.setColor(sf::Color::Red);
+		}
+}
+
 void Game::updateProjectiles()
 {
 	for (unsigned int i = 0; i < projectiles.size();) {
@@ -542,6 +591,16 @@ void Game::pickWeapon() {
 	}
 }
 
+void Game::initializeHUD()
+{
+	if (!font.loadFromFile("fonts/arial.ttf"))
+	{
+		//error
+	}
+	
+	healthText.setCharacterSize(15);
+}
+
 void Game::spawnEnemies(int amount)
 {
 	for (int i = 0; i < amount; i++) {
@@ -596,6 +655,19 @@ void Game::drawEnemies()
 void Game::drawPlayer()
 {
 	app->draw(player->sprite);
+}
+
+void Game::drawHealthbar()
+{
+	int hbarLength = player->getHitpoints();
+		sf::IntRect mCurrentHealth(0, 0, hbarLength, 5);
+		healthbar->sprite.setTextureRect(mCurrentHealth);
+		app->draw(healthbar->sprite);
+}
+
+void Game::drawHealthText()
+{
+	app->draw(game->healthText);
 }
 
 void Game::drawCursor()

@@ -15,6 +15,8 @@ class Player;
 class EnemyMelee;
 class Map;
 class Light;
+class HealthBar;
+class Object;
 
 class Game
 {
@@ -27,6 +29,11 @@ public:
 	float playerPositionX;
 	float playerPositionY;
 	int heldWeapon = 0;
+
+	float healthbarPositionX, healthbarPositionY;
+	float healthTextPositionX, healthTextPositionY;
+	int weaponType = 0;
+	sf::Texture *healthTexture;
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
@@ -49,12 +56,15 @@ public:
 	std::vector<Weapon> playerWeapons;
 	/* Temporary time fix, check this from main.cpp */
 	static const sf::Time TimePerFrameTmp;
+	sf::Font font;
+	sf::Text healthText;
 
 	MapGenerator *mapGenerator;
 	Map *map;
 	Light *light;
 	Player *player;
 	EnemyMelee *enemy;
+	HealthBar *healthbar;
 
 	Game();
 	~Game();
@@ -75,13 +85,18 @@ public:
 	void loadCursorTexture();
 	void loadProjectileTextures();
 	void loadWeaponTextures();
+	void loadHealthbarTexture();
+	void healthManager();
 	void initializeView();
 	void initializeLighting();
 	void initializeWeapons();
+	void initializeHUD();
 	void updateLighting();
 	void updateEnemies();
 	void updateWeapons();
 	void updateProjectiles();
+	void drawHealthbar();
+	void drawHealthText();
 	void drawCursor();
 	void drawPlayer();
 	void drawEnemies();
