@@ -35,12 +35,28 @@ void Weapon::update(float playerPositionX, float playerPositionY, float mouseX, 
 	sprite.setPosition(playerPositionX, playerPositionY);
 }
 
+void Weapon::setAmmo(int _ammo)
+{
+	
+	int currentAmmo = getAmmo();
+	int newAmmo = currentAmmo - _ammo;
+	if (newAmmo < 0) newAmmo = 0;
+	ammo = newAmmo;
+	
+}
+
+int Weapon::getAmmo() const
+{
+	return ammo;
+}
+
 Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Pistol";
 	attackSpeed = 0.2;
 	spreadAngle = 15;
 	ammoType = 0;
+	ammo = 300;
 	bullets = 1;
 	weaponPosition = 0;
 
@@ -55,6 +71,7 @@ LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	attackSpeed = 0.3;
 	spreadAngle = 5;
 	ammoType = 1;
+	ammo = 300;
 	bullets = 1;
 	weaponPosition = 1;
 
@@ -69,6 +86,7 @@ Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	attackSpeed = 1;
 	spreadAngle = 20;
 	ammoType = 2;
+	ammo = 300;
 	bullets = 7;
 	weaponPosition = 2;
 

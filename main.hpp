@@ -25,17 +25,16 @@ public:
 	bool shooting;
 	bool focused;
 	float zoomLevel;
-	float playerPositionX;
-	float playerPositionY;
+	float playerPositionX, playerPositionY;
 	int heldWeapon = 0;
 	int weaponType = 0;
-	float weaponHUDX;
-	float weaponHUDY;
-	float healthbarPositionX;
-	float healthbarPositionY;
-	float healthTextPositionX;
-	float healthTextPositionY;
+	float weaponHUDX, weaponHUDY;
+	float healthbarPositionX, healthbarPositionY;
+	float healthTextPositionX, healthTextPositionY;
+	float ammoHUDX, ammoHUDY;
+	int ammos;
 	float shootingCooldown = 0;
+	
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
@@ -54,6 +53,7 @@ public:
 	sf::Font font;
 	sf::Text healthText;
 	sf::Text currentGun;
+	sf::Text currentAmmo;
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<ProjectileSprite> enemyProjectiles;
 	std::vector<Object> enemies;
@@ -105,6 +105,7 @@ public:
 	void drawHealthbar();
 	void drawHealthText();
 	void drawCurrentGun();
+	void drawCurrentAmmo();
 	void drawCursor();
 	void addSource();
 	void shoot();

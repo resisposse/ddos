@@ -11,6 +11,7 @@ class Weapon
 public:
 	std::string name;
 	int ammoType;
+	int ammo;
 	int bullets;
 	int spreadAngle;
 	float attackSpeed;
@@ -21,6 +22,8 @@ public:
 
 	Weapon(sf::Texture& weaponTexture);
 	void update(float playerPositionX, float playerPositionY, float mouseX, float mouseY);
+	void setAmmo(int _ammo);
+	int getAmmo() const;
 };
 
 class Pistol : public Weapon {

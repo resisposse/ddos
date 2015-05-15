@@ -110,6 +110,7 @@ void Game::render()
 	drawHealthbar();
 	drawHealthText();
 	drawCurrentGun();
+	drawCurrentAmmo();
 }
 
 void Game::loadCursorTexture()
@@ -225,6 +226,7 @@ void Game::initializeHUD()
 	}
 	healthText.setCharacterSize(15);
 	currentGun.setCharacterSize(15);
+	currentAmmo.setCharacterSize(15);
 }
 
 void Game::spawnEnemies(int amount)
@@ -518,6 +520,11 @@ void Game::drawWeapon()
 	app->draw(playerWeapons[heldWeapon].sprite);
 }
 
+void Game::drawCurrentAmmo()
+{
+	app->draw(game->currentAmmo);
+}
+
 void Game::drawWeaponsOnMap()
 {
 	for (int i = 0; i < weaponsOnMap.size(); i++) {
@@ -592,6 +599,8 @@ void Game::shoot()
 {
 	if (shooting == 1 && shootingCooldown <= 0) {
 		shootingCooldown = weapons[heldWeapon].attackSpeed;
+			ammos = weapons[heldWeapon].getAmmo();
+			weapons[playerWeapons[heldWeapon].weaponPosition].setAmmo(1);
 		switch (playerWeapons[heldWeapon].ammoType) {
 		case 0:
 			projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
@@ -649,16 +658,26 @@ void Game::pickWeapon()
 
 void Game::HUDManager()
 {
-	/* window SE-corner */
+	/*window SE-corner*/
 	float wWGun = (playerView->getSize().x);
 	float wHGun = (playerView->getSize().y);
 	weaponHUDX = playerPositionX - 155;
 	weaponHUDY = playerPositionY - 55;
-
-	currentGun.setString(weapons[playerWeapons[heldWeapon].weaponPosition].name);
+		
+	currentGun.setString("Current gun: "+ weapons[playerWeapons[heldWeapon].weaponPosition].name);
 	currentGun.setFont(font);
 	game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
-
+	
+	/*window SE-corner*/
+	float wWAmmo = (playerView->getSize().x);
+	float wHAmmo = (playerView->getSize().y);
+	ammoHUDX = playerPositionX - 155;
+	ammoHUDY = playerPositionY - 20;
+	
+	currentAmmo.setString("Ammo: "+ std::to_string (weapons[playerWeapons[heldWeapon].weaponPosition].getAmmo()));
+	currentAmmo.setFont(font);
+	game->currentAmmo.setPosition(wWAmmo/2 + ammoHUDX , wHAmmo/2 + ammoHUDY);
+		
 	/*window SW-corner*/
 	float wW = (playerView->getSize().x)*(-1);
 	float wH = (playerView->getSize().y);
@@ -666,25 +685,29 @@ void Game::HUDManager()
 	healthbarPositionY = playerPositionY - 15;
 	healthTextPositionX = playerPositionX + 10;
 	healthTextPositionY = playerPositionY - 50;
-
-	healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
+		
+	healthText.setString("Health: "+ std::to_string (player->getHitpoints()));
 	healthText.setFont(font);
-	game->healthText.setPosition(wW / 2 + healthTextPositionX, wH / 2 + healthTextPositionY);
-	healthbar->sprite.setPosition(wW / 2 + healthbarPositionX, wH / 2 + healthbarPositionY);
-
-	if (player->getHitpoints() >= 70) {
+	game->healthText.setPosition(wW/2 + healthTextPositionX , wH/2 + healthTextPositionY);
+	healthbar->sprite.setPosition(wW/2 + healthbarPositionX, wH/2 + healthbarPositionY);
+	
+	if(player->getHitpoints() >=70){
 		healthText.setColor(sf::Color::Green);
-	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70) {
+	}
+	else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
 		healthText.setColor(sf::Color::Yellow);
-	} else {
+	}
+	else{
 		healthText.setColor(sf::Color::Red);
 	}
-
-	if (player->getHitpoints() >= 70) {
+		
+	if(player->getHitpoints() >=70){
 		healthbar->sprite.setColor(sf::Color::Green);
-	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70) {
+	}
+	else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
 		healthbar->sprite.setColor(sf::Color::Yellow);
-	} else {
+	}
+	else {
 		healthbar->sprite.setColor(sf::Color::Red);
 	}
 }
