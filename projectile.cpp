@@ -6,10 +6,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-#include "projectile.hpp"
 #include "weapon.hpp"
+#include "projectile.hpp"
 
-ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
+ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+                                   sf::Vector2i mousePosition, int inaccuracy)
 {
 	float PI = 3.14159265359, b;
 	int magnitude, magnitudeTmp;
@@ -57,7 +58,8 @@ void ProjectileSprite::update(float second)
 	position = sprite.getPosition();
 }
 
-int ProjectileSprite::getDamage() {
+int ProjectileSprite::getDamage()
+{
 	return damage;
 }
 

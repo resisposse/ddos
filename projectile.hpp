@@ -18,7 +18,8 @@ public:
 	sf::Vector2f position;
 	sf::Vector2f normalized;
 
-	ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
+	ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+	                 sf::Vector2i mousePosition, int inaccuracy);
 	void update(float second);
 	int getDamage();
 	//bool outsideWindow();
@@ -27,18 +28,21 @@ public:
 class BulletSprite: public ProjectileSprite
 {
 public:
-	BulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
+	BulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+	             sf::Vector2i mousePosition, int inaccuracy);
 };
 
 class LaserSprite : public ProjectileSprite
 {
 public:
-	LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
+	LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+	            sf::Vector2i mousePosition, int inaccuracy);
 };
 
 class PelletSprite : public ProjectileSprite
 {
 public:
-	PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy);
+	PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+	             sf::Vector2i mousePosition, int inaccuracy);
 };
 #endif

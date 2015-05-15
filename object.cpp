@@ -6,15 +6,14 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-#include "object.hpp"
+#include "map.hpp"
+#include "projectile.hpp"
 #include "main.hpp"
-
-const float Object::PlayerSpeed = 100.f;
-sf::Time timeSinceLastUpdate = sf::Time::Zero;
-const sf::Time Object::TimePerFrame = sf::seconds(1.f / 60.f);
+#include "object.hpp"
 
 Object::Object(sf::Texture& objectTexture)
 {
+	playerSpeed = 100.0;
 	mIsMovingUp = false;
 	mIsMovingDown = false;
 	mIsMovingRight = false;
@@ -24,29 +23,6 @@ Object::Object(sf::Texture& objectTexture)
 	sprite.setTexture(objectTexture);
 	//sprite.setTextureRect(mPlayer);
 	//sprite.setOrigin(16, 16);
-}
-
-void Object::run()
-{
-	float angle;
-	double a, b;
-
-	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	float playerPositionX = sprite.getPosition().x;
-	float playerPositionY = sprite.getPosition().y;
-	sprite.setOrigin(16, 16);
-
-	a = mouse.x - (playerPositionX);
-	b = mouse.y - (playerPositionY);
-	angle = -atan2(a, b) * 180 / 3.141593;
-	sprite.setRotation(angle);
-
-	sf::Time elapsedTime = timer.restart();
-	timeSinceLastUpdate += elapsedTime;
-	while (timeSinceLastUpdate > TimePerFrame) {
-		timeSinceLastUpdate -= TimePerFrame;
-		update(TimePerFrame);
-	}
 }
 
 void Object::processEvent(sf::Event event)
@@ -76,20 +52,33 @@ void Object::update(float enemyPositionX, float enemyPositionY,
 	approach(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
 }
 
-void Object::update(sf::Time TimePerFrame)
+void Object::update(float frameClock)
 {
-	sf::Vector2f movement(0.f, 0.f);
+	float angle;
+	double a, b;
+
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
+	float playerPositionX = sprite.getPosition().x;
+	float playerPositionY = sprite.getPosition().y;
+	sprite.setOrigin(16, 16);
+
+	a = mouse.x - (playerPositionX);
+	b = mouse.y - (playerPositionY);
+	angle = -atan2(a, b) * 180 / 3.141593;
+	sprite.setRotation(angle);
+
+	sf::Vector2f movement(0.0, 0.0);
 	if (mIsMovingUp) {
-		movement.y -= PlayerSpeed;
+		movement.y -= playerSpeed;
 	}
 	if (mIsMovingDown) {
-		movement.y += PlayerSpeed;
+		movement.y += playerSpeed;
 	}
 	if (mIsMovingLeft) {
-		movement.x -= PlayerSpeed;
+		movement.x -= playerSpeed;
 	}
 	if (mIsMovingRight) {
-		movement.x += PlayerSpeed;
+		movement.x += playerSpeed;
 	}
 	if (getHitpoints() <= 0) {
 		std::cout << "you dieded" << std::endl;
@@ -98,21 +87,21 @@ void Object::update(sf::Time TimePerFrame)
 
 	float positionPlayerX = sprite.getPosition().x;
 	float positionPlayerY = sprite.getPosition().y;
-	float playerSpeedX = (movement.x * TimePerFrame.asSeconds() + positionPlayerX);
-	float playerSpeedY = (movement.y * TimePerFrame.asSeconds() + positionPlayerY);
+	float playerSpeedX = (movement.x * frameClock + positionPlayerX);
+	float playerSpeedY = (movement.y * frameClock + positionPlayerY);
 
-	int collisionX = game->collision(playerSpeedX, positionPlayerY, "player");
-	int collisionY = game->collision(positionPlayerX, playerSpeedY, "player");
+	int collisionX = game->map->collision(playerSpeedX, positionPlayerY, "player");
+	int collisionY = game->map->collision(positionPlayerX, playerSpeedY, "player");
 
 	if (collisionX != 1 || collisionY != 1) {
 		if (collisionX == 1) {
-			movement.x = 0.f;
+			movement.x = 0.0;
 		}
 		if (collisionY == 1) {
-			movement.y = 0.f;
+			movement.y = 0.0;
 		}
 
-		sprite.move(movement * TimePerFrame.asSeconds());
+		sprite.move(movement * frameClock);
 		positionPlayerX = sprite.getPosition().x;
 		positionPlayerY = sprite.getPosition().y;
 	}
@@ -158,10 +147,10 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 			enemyMovement.y -= enemySpeed;
 		}
 
-		float enemySpeedX = (enemyMovement.x * TimePerFrame.asSeconds() + enemyPositionX);
-		float enemySpeedY = (enemyMovement.y * TimePerFrame.asSeconds() + enemyPositionY);
-		int enemyCollisionX = game->collision(enemySpeedX, enemyPositionY, "player");
-		int enemyCollisionY = game->collision(enemyPositionX, enemySpeedY, "player");
+		float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
+		float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
+		int enemyCollisionX = game->map->collision(enemySpeedX, enemyPositionY, "player");
+		int enemyCollisionY = game->map->collision(enemyPositionX, enemySpeedY, "player");
 
 		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 			collisionFlag = 0;
@@ -183,7 +172,7 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 			angle = -atan2(distanceX, distanceY) * 180 / 3.141593;
 			this->sprite.setOrigin(16, 16);
 			this->sprite.setRotation(angle);
-			this->sprite.move(enemyMovement * TimePerFrame.asSeconds());
+			this->sprite.move(enemyMovement * frameClock);
 			enemyShoot(playerCoords);
 		}
 	}
@@ -196,7 +185,6 @@ void Object::enemyShoot(sf::Vector2i coords)
 		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
 	}
 	else cooldown -= frameClock;
-
 }
 
 int Object::getHitpoints() const

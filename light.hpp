@@ -17,9 +17,9 @@ for (unsigned int i = 0; i < (list).size();) { \
 	if (!(list)[i]->update()) { \
 		delete (list)[i]; \
 		(list).erase((list).begin() + i); \
-		} else { \
+	} else { \
 		i++; \
-		} \
+	} \
 }
 
 /* Forward declaration due to a cyclic dependency */
@@ -36,22 +36,17 @@ enum SourceType
 class StaticLightSource
 {
 public:
-	sf::Vector2i position;
-	sf::Color color;
 	char intensity;
 	char actualIntensity;
+	sf::Vector2i position;
+	sf::Color color;
+
 	StaticLightSource() {};
 	StaticLightSource(sf::Vector2i _position, sf::Color _color, char _intensity);
 	virtual ~StaticLightSource() {};
-	virtual bool update() {
-		return !over();
-	}
-	virtual char getIntensity() {
-		return actualIntensity;
-	}
-	virtual bool over() {
-		return false;
-	}
+	virtual bool update() { return !over(); }
+	virtual char getIntensity() { return actualIntensity; }
+	virtual bool over() { return false; }
 };
 
 class Light
@@ -91,12 +86,11 @@ class FadingLightSource : StaticLightSource
 public:
 	float lifetime;
 	float life = 0;
+
 	FadingLightSource(sf::Vector2i _position, sf::Color _color,
 	                  char _intensity, float _lifetime);
 	bool update();
-	bool over() {
-		return (life > lifetime);
-	}
+	bool over() { return (life > lifetime); }
 };
 
 class PulsingLightSource : StaticLightSource
@@ -104,12 +98,11 @@ class PulsingLightSource : StaticLightSource
 public:
 	float period;
 	float life = 0;
+
 	PulsingLightSource(sf::Vector2i _position, sf::Color _color,
 	                   char _intensity, float _period);
 	bool update();
-	bool over() {
-		return false;
-	}
+	bool over() { return false; }
 };
 
 class TestLightSource : StaticLightSource
@@ -117,12 +110,11 @@ class TestLightSource : StaticLightSource
 public:
 	float period;
 	float life = 0;
+
 	TestLightSource(sf::Vector2i _position, sf::Color _color,
 	                char _intensity, float _period);
 	bool update();
-	bool over() {
-		return false;
-	}
+	bool over() { return false; }
 };
 
 class Brush

@@ -5,12 +5,14 @@
 
 #include <iostream>
 #include <fstream>
+#include "random.hpp"
 #include "mapgenerator.hpp"
 
 /*
-Corridor and Room parameters except walls have to be 1 less than what you want it to be due to North/West bug
-Currently the program will be stuck in an infinite loop if corridor width is more than 1
-*/
+ * Corridor and Room parameters except walls have to be 1 less than what you
+ * want it to be due to North/West bug. Currently the program will be stuck in
+ * an infinite loop if corridor width is more than 1
+ */
 MapGenerator::MapGenerator()
 {
 	maxFeatures_ = 1000;
@@ -48,7 +50,10 @@ int MapGenerator::setTile(int x, int y, char tileType)
 	return 0;
 }
 
-/*This function contains a workaround for the north/west bug which makes all features 1 tile longer in each axis*/
+/*
+ * This function contains a workaround for the north/west bug which makes all
+ * features 1 tile longer in each axis
+ */
 int MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType)
 {
 	for (int i = xStart; i != xEnd + 1; ++i) {
@@ -85,7 +90,7 @@ bool MapGenerator::isInBounds(int x, int y, int offset, CardinalDirection direct
 	int safeOffset = 1;
 	if (direction == CardinalDirection::north || direction == CardinalDirection::south) {
 		return x >= safeOffset && x < MAP_SIZE_X - safeOffset && y >= offset && y < MAP_SIZE_Y - offset;
-	} else if (direction == CardinalDirection::east || direction == CardinalDirection::west) {
+	} else {
 		return x >= offset && x < MAP_SIZE_X - offset && y >= safeOffset && y < MAP_SIZE_Y - safeOffset;
 	}
 }
@@ -200,11 +205,12 @@ Point MapGenerator::checkTiles(char tileType, int xStart, int yStart, int xEnd, 
 }
 
 /*
- * This function will create a room based on the refence coordinates, x and y, as well as the direction.
- * It will first find the starting and ending coordinates to be passed for the setTiles function
+ * This function will create a room based on the refence coordinates, x and y,
+ * as well as the direction. It will first find the starting and ending
+ * coordinates to be passed for the setTiles function.
  */
-
-bool MapGenerator::generateRoomCenter(int x, int y) {
+bool MapGenerator::generateRoomCenter(int x, int y)
+{
 	int roomWidth = random->generate(minRoomWidth_, maxRoomWidth_);
 	int roomHeight = random->generate(maxRoomHeight_, maxRoomHeight_);
 
@@ -335,10 +341,12 @@ bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wal
 }
 
 /*
- * Due to a bug, all features facing north or west are drawn 1 tile to far from the target, this has been patched with a workaround in setTiles function
+ * Due to a bug, all features facing north or west are drawn 1 tile to far from
+ * the target, this has been patched with a workaround in setTiles function
  *
- * This function will first pick a random wall tile that is adjacent to a room or corridor.
- * Then it will create a feature facing either north, east, south or west, depending on which side of the room or corridor that wall is.
+ * This function will first pick a random wall tile that is adjacent to a room
+ * or corridor. Then it will create a feature facing either north, east, south
+ * or west, depending on which side of the room or corridor that wall is.
  */
 bool MapGenerator::generateFeature()
 {
@@ -383,8 +391,8 @@ bool MapGenerator::generateFeature()
 
 
 /*
- * This function will roll a number and create either a room or corridor based on the outcome
- * The chance for the feature can be adjusted in the constructor
+ * This function will roll a number and create either a room or corridor based
+ * on the outcome. The chance for the feature can be adjusted in the constructor
  */
 bool MapGenerator::generateFeature(int x, int y, CardinalDirection direction)
 {
@@ -404,7 +412,6 @@ bool MapGenerator::generateFeature(int x, int y, CardinalDirection direction)
 		return false;
 	}
 }
-
 
 char* MapGenerator::generateMap()
 {

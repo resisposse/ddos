@@ -9,7 +9,8 @@
 #define MAP_SIZE_X 55
 #define MAP_SIZE_Y 43
 
-#include "random.hpp"
+/* Forward declaration due to cyclic dependency */
+class Random;
 
 enum class CardinalDirection
 {

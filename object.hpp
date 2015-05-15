@@ -9,8 +9,7 @@
 class Object
 {
 public:
-	static const float PlayerSpeed;
-	static const sf::Time TimePerFrame;
+	float playerSpeed;
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
@@ -25,7 +24,7 @@ public:
 	void processEvent(sf::Event event);
 	void render();
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-	void update(sf::Time TimePerFrame);
+	void update(float frameClock);
 	void update(float enemyPositionX, float enemyPositionY,
 	            float playerPositionX, float playerPositionY);
 	void approach(float enemyPositionX, float enemyPositionY,
@@ -47,12 +46,14 @@ private:
 	float aggro;
 };
 
-class Player : public Object {
+class Player : public Object
+{
 public:
 	Player(sf::Texture& objectTexture, sf::Vector2f coords);
 };
 
-class EnemyMelee : public Object {
+class EnemyMelee : public Object
+{
 public:
 	EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords);
 };

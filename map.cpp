@@ -7,8 +7,8 @@
 #include <iostream>
 #include <random>
 #include <cmath>
-#include "map.hpp"
 #include "main.hpp"
+#include "map.hpp"
 
 Map::Map(char *generatedMap)
 {
@@ -266,27 +266,27 @@ Map::Map(char *generatedMap)
 		switch (generatedMap[i + MAP_SIZE_X * j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
-			tiles[i][j].absorb = 35;
+			tiles[i][j].absorb = 45;
 			collisionMap[i][j] = 1;
 			break;
 		case '.':
 			tiles[i][j].type = mtFloor;
-			tiles[i][j].absorb = 6;
+			tiles[i][j].absorb = 10;
 			collisionMap[i][j] = 0;
 			break;
 		case ' ':
 			tiles[i][j].type = mtAir;
-			tiles[i][j].absorb = 35;
+			tiles[i][j].absorb = 45;
 			collisionMap[i][j] = 0;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
-			tiles[i][j].absorb = 6;
+			tiles[i][j].absorb = 10;
 			collisionMap[i][j] = 0;
 			break;
 		case 'L':
 			tiles[i][j].type = mtLava;
-			tiles[i][j].absorb = 6;
+			tiles[i][j].absorb = 10;
 			collisionMap[i][j] = 0;
 		}
 	}
@@ -656,8 +656,8 @@ int Map::checkNeighbourType(MapTile tile, MapTileType tileType)
 	if (tiles[x - 1][y - 1].type == tileType) { neighbours += 128; };
 	if (tiles[x]	[y - 1].type == tileType) { neighbours += 64; };
 	if (tiles[x + 1][y - 1].type == tileType) { neighbours += 32; };
-	if (tiles[x - 1][y].type == tileType) {		neighbours += 16; };
-	if (tiles[x + 1][y].type == tileType) {		neighbours += 8; };
+	if (tiles[x - 1][y].type == tileType) {	    neighbours += 16; };
+	if (tiles[x + 1][y].type == tileType) {	    neighbours += 8; };
 	if (tiles[x - 1][y + 1].type == tileType) { neighbours += 4; };
 	if (tiles[x]	[y + 1].type == tileType) { neighbours += 2; };
 	if (tiles[x + 1][y + 1].type == tileType) { neighbours += 1; };
@@ -726,17 +726,17 @@ void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_
 	app->draw(*tileVector[type]);
 }
 
-int Map::getCorrectFrame(int totFrames, float duration)
+int Map::getCorrectFrame(int totalFrames, float duration)
 {
 	int frame = 0;
-	if (int((lastClockTmp + frameClock) / duration) > int(lastClockTmp / duration)) {
+	if (int((lastClock + frameClock) / duration) > int(lastClock / duration)) {
 		/* Calculate the frame number */
-		frame = int((lastClockTmp + frameClock) / duration);
+		frame = int((lastClock + frameClock) / duration);
 		/* Adjust for looping */
-		frame %= totFrames;
+		frame %= totalFrames;
 	} else {
-		frame = int(lastClockTmp / duration);
-		frame %= totFrames;
+		frame = int(lastClock / duration);
+		frame %= totalFrames;
 	}
 	return frame;
 }

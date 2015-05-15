@@ -10,18 +10,16 @@
 #include "mapgenerator.hpp"
 #include "object.hpp"
 #include "projectile.hpp"
+#include "weapon.hpp"
 #include "main.hpp"
 
 float frameClock = 0;
-float lastClockTmp = 0;
+long lastClock = 0;
+sf::Clock timer;
+
 GameState state;
 sf::RenderWindow *app;
 Game *game;
-sf::Clock timer;
-
-/* Object.update takes type Time, change to use float frameCLock */
-//sf::Time timeSinceLastUpdate = sf::Time::Zero;
-const sf::Time Game::TimePerFrameTmp = sf::seconds(1.f / 60.f);
 
 Game::Game()
 {
@@ -31,12 +29,13 @@ Game::Game()
 	running = true;
 	shooting = false;
 	lastClock = timer.getElapsedTime().asMilliseconds();
+	app->setFramerateLimit(60);
 
-	loadCharacterTextures();
 	loadCursorTexture();
-	loadProjectileTextures();
-	loadWeaponTextures();
 	loadHealthbarTexture();
+	loadCharacterTextures();
+	loadWeaponTextures();
+	loadProjectileTextures();
 
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
@@ -44,9 +43,8 @@ Game::Game()
 	player = new Player(*playerTexture, randomSpawn());
 	healthbar = new HealthBar(*healthTexture);
 
-	app->setFramerateLimit(60);
-	initializeLighting();
 	initializeView();
+	initializeLighting();
 	initializeWeapons();
 	initializeHUD();
 	spawnEnemies(5);
@@ -66,36 +64,31 @@ Game::~Game()
 	delete playerTexture;
 	delete enemyMeleeTexture;
 	delete cursorTexture;
+	delete healthTexture;
 	delete player;
-	delete app;
 	delete playerView;
 	delete healthbar;
+	delete app;
 }
 
 void Game::update()
 {
 	while (running) {
-		currentClock += timer.getElapsedTime().asMilliseconds();
-		frameClock = (currentClock - lastClock) / 1000.f;
-		lastClockTmp = lastClock / 1000.f;
-		lastClock = currentClock;
-
 		parseEvents();
-		player->run();
-		app->clear();
+
+		updateClock();
+		updateView();
 		updateLighting();
-		updateProjectiles();
+		updatePlayer();
 		updateEnemies();
 		updateWeapons();
+		updateProjectiles();
 		checkProjectileCollisions();
 		checkEnemyProjectileCollisions();
+
+		app->clear();
 		render();
 		HUDManager();
-
-		playerView->setCenter(playerPositionX, playerPositionY);
-		map->bgSpr->setOrigin(400, 300);
-		map->bgSpr->setPosition(playerPositionX, playerPositionY);
-		app->setView(*playerView);
 		app->display();
 	}
 }
@@ -104,35 +97,83 @@ void Game::render()
 {
 	light->initialize();
 	map->renderTiles();
+
+	drawWeaponsOnMap();
+	drawEnemies();
+	drawProjectiles();
+	drawPlayer();
+	drawWeapon();
+
 	light->update(&state.tmpSource);
 
-	drawProjectiles();
-	drawEnemies();
-	drawWeapons();
-	drawPlayer();
 	drawCursor();
 	drawHealthbar();
 	drawHealthText();
 	drawCurrentGun();
 }
 
-void Game::initializeLighting()
+void Game::loadCursorTexture()
 {
-	state.brush.type = stStatic;
-	state.brush.intensity = 100;
-	state.brush.color = sf::Color::Red;
-	state.brush.color.r = 150;
-	state.brush.color.g = 150;
-	state.brush.color.b = 150;
-	state.brush.sourceTime = 2.0f;
-	state.ambientIntensity = 0;
-	state.ambientColor = sf::Color::White;
-	state.ambientColor.r = 0;
-	state.ambientColor.g = 0;
-	state.ambientColor.b = 0;
+	app->setMouseCursorVisible(false);
+	fixed = app->getView();
 
-	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stPulsing;
+	cursorTexture = new sf::Texture();
+	cursorTexture->loadFromFile("media/cursor.png");
+	cursorTexture->setSmooth(true);
+
+	cursorSprite = new sf::Sprite(*cursorTexture);
+	sf::Vector2u spriteSize = cursorTexture->getSize();
+	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
+	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
+	app->setView(fixed);
+}
+
+void Game::loadHealthbarTexture()
+{
+	healthTexture = new sf::Texture();
+	healthTexture->loadFromFile("media/laserBeam.png");
+	healthTexture->setSmooth(true);
+}
+
+void Game::loadCharacterTextures()
+{
+	playerTexture = new sf::Texture();
+	playerTexture->loadFromFile("media/ddos-dude-guns.png");
+	playerTexture->setSmooth(true);
+
+	enemyMeleeTexture = new sf::Texture();
+	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
+	enemyMeleeTexture->setSmooth(true);
+}
+
+void Game::loadWeaponTextures()
+{
+	pistolTexture = new sf::Texture();
+	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
+	pistolTexture->setSmooth(true);
+
+	laserRifleTexture = new sf::Texture();
+	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
+	laserRifleTexture->setSmooth(true);
+
+	shotgunTexture = new sf::Texture();
+	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
+	shotgunTexture->setSmooth(true);
+}
+
+void Game::loadProjectileTextures()
+{
+	bulletTexture = new sf::Texture();
+	bulletTexture->loadFromFile("media/bullet.png");
+	bulletTexture->setSmooth(true);
+
+	laserBeamTexture = new sf::Texture();
+	laserBeamTexture->loadFromFile("media/laserBeam.png");
+	laserBeamTexture->setSmooth(true);
+
+	pelletTexture = new sf::Texture();
+	pelletTexture->loadFromFile("media/pellet.png");
+	pelletTexture->setSmooth(true);
 }
 
 void Game::initializeView()
@@ -147,21 +188,75 @@ void Game::initializeView()
 	app->setView(*playerView);
 }
 
-/*
- * Keep realigning the center of the light (fog of war) with the player and then
- * reread the light's attributes on the off chance that they were changed.
- */
-void Game::updateLighting()
+void Game::initializeLighting()
 {
-	playerPositionX = player->sprite.getPosition().x;
-	playerPositionY = player->sprite.getPosition().y;
-	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
-	                                    (int)playerPositionY / TILE_SIZE);
-	state.tmpSource = StaticLightSource(state.brush.position,
-	                                    state.brush.color,
-	                                    state.brush.intensity);
-	light->ambientColor = state.ambientColor;
-	light->ambientIntensity = state.ambientIntensity;
+	state.brush.type = stStatic;
+	state.brush.intensity = 100;
+	state.brush.color = sf::Color::White;
+	state.brush.color.r = 255;
+	state.brush.color.g = 225;
+	state.brush.color.b = 225;
+	state.brush.sourceTime = 2.0f;
+	state.ambientIntensity = 0;
+	state.ambientColor = sf::Color::White;
+	state.ambientColor.r = 0;
+	state.ambientColor.g = 0;
+	state.ambientColor.b = 0;
+
+	/* Options are: stStatic, stPulsing, stFading, stTest */
+	state.brush.type = stPulsing;
+}
+
+void Game::initializeWeapons()
+{
+	weapons.push_back(Pistol(*pistolTexture));
+	weapons.push_back(LaserRifle(*laserRifleTexture));
+	weapons.push_back(Shotgun(*shotgunTexture));
+
+	playerWeapons.push_back(Pistol(*pistolTexture));
+	playerWeapons.push_back(LaserRifle(*laserRifleTexture));
+}
+
+void Game::initializeHUD()
+{
+	if (!font.loadFromFile("fonts/arial.ttf"))
+	{
+		//error
+	}
+	healthText.setCharacterSize(15);
+	currentGun.setCharacterSize(15);
+}
+
+void Game::spawnEnemies(int amount)
+{
+	for (int i = 0; i < amount; i++) {
+		enemies.push_back(EnemyMelee(*enemyMeleeTexture, randomSpawn()));
+		std::cout << "Enemy Spawned" << std::endl;
+	}
+}
+
+void Game::spawnWeapons(int amount) {
+	for (int i = 0; i < amount; i++) {
+		int tmp = rand() % weapons.size();
+		if (tmp == 0) {
+			weaponsOnMap.push_back(Pistol(*pistolTexture));
+		}
+		else if (tmp == 1) {
+			weaponsOnMap.push_back(LaserRifle(*laserRifleTexture));
+		}
+		else {
+			weaponsOnMap.push_back(Shotgun(*shotgunTexture));
+		}
+		weaponsOnMap[i].sprite.setPosition(randomSpawn());
+		weaponsOnMap[i].sprite.setRotation(rand() % 360);
+	}
+}
+
+void Game::spawnWeapons(int heldWeapon, int x, int y)
+{
+	weaponsOnMap.push_back(weapons[playerWeapons[heldWeapon].weaponPosition]);
+	weaponsOnMap.back().sprite.setPosition(x, y);
+	weaponsOnMap.back().sprite.setRotation(rand() % 360);
 }
 
 /*
@@ -250,6 +345,212 @@ void Game::processEvent(sf::Event event)
 	}
 }
 
+void Game::updateClock()
+{
+	currentClock += timer.getElapsedTime().asMilliseconds();
+	frameClock = (currentClock - lastClock) / 1000.0;
+	lastClock = currentClock;
+	timer.restart();
+}
+
+void Game::updateView()
+{
+	playerView->setCenter(playerPositionX, playerPositionY);
+	map->bgSpr->setOrigin(400, 300);
+	map->bgSpr->setPosition(playerPositionX, playerPositionY);
+	app->setView(*playerView);
+}
+
+/*
+ * Keep realigning the center of the light (fog of war) with the player and then
+ * reread the light's attributes on the off chance that they were changed.
+ */
+void Game::updateLighting()
+{
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
+	                                    (int)playerPositionY / TILE_SIZE);
+	state.tmpSource = StaticLightSource(state.brush.position,
+	                                    state.brush.color,
+	                                    state.brush.intensity);
+	light->ambientColor = state.ambientColor;
+	light->ambientIntensity = state.ambientIntensity;
+}
+
+void Game::updatePlayer()
+{
+	player->update(frameClock);
+}
+
+void Game::updateEnemies()
+{
+	for (unsigned int i = 0; i <  enemies.size();) {
+		if (enemies[i].getHitpoints() <= 0) {
+			enemies.erase(enemies.begin() + i);
+			break;
+		}
+		enemies[i].update(enemies[i].sprite.getPosition().x,
+		                  enemies[i].sprite.getPosition().y,
+		                  player->sprite.getPosition().x,
+		                  player->sprite.getPosition().y);
+		if (checkProximity(enemies[i].sprite.getPosition()) == 1) {
+			player->setDamage(enemies[i].getMeleeDamage());
+			std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
+		}
+		i++;
+	}
+}
+
+void Game::updateWeapons()
+{
+	playerWeapons[heldWeapon].update(player->sprite.getPosition().x,
+	                                 player->sprite.getPosition().y,
+	                                 mouse.x, mouse.y);
+}
+
+void Game::updateProjectiles()
+{
+	for (unsigned int i = 0; i < projectiles.size();) {
+		projectiles[i].update(frameClock);
+		i++;
+	}
+	for (unsigned int b = 0; b < enemyProjectiles.size();) {
+		enemyProjectiles[b].update(frameClock);
+		b++;
+	}
+}
+
+void Game::checkProjectileCollisions()
+{
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		int x, y;
+		x = projectiles[i].position.x;
+		y = projectiles[i].position.y;
+		if (checkEnemyCollisions(x, y, projectiles[i].getDamage()) == 1) {
+			projectiles.erase(projectiles.begin() + i);
+			break;
+		}
+		if (map->collision(x, y, "projectile") == 1) {
+			projectiles.erase(projectiles.begin() + i);
+			break;
+		}
+	}
+}
+
+void Game::checkEnemyProjectileCollisions()
+{
+	for (unsigned int a = 0; a < enemyProjectiles.size(); a++) {
+		int x, y;
+		x = enemyProjectiles[a].position.x;
+		y = enemyProjectiles[a].position.y;
+
+		if (checkPlayerCollisions(x, y, enemyProjectiles[a].getDamage()) == 1) {
+			enemyProjectiles.erase(enemyProjectiles.begin() + a);
+			break;
+		}
+
+		if (map->collision(x, y, "projectile") == 1) {
+			enemyProjectiles.erase(enemyProjectiles.begin() + a);
+			break;
+		}
+	}
+}
+
+int Game::checkEnemyCollisions(int x, int y, int damage)
+{
+	int enemyX, enemyY, diffX, diffY;
+	int enemyCollision = 0;
+	for (unsigned int b = 0; b < enemies.size(); b++) {
+		enemyX = enemies[b].sprite.getPosition().x;
+		enemyY = enemies[b].sprite.getPosition().y;
+
+		diffX = abs(x - enemyX);
+		diffY = abs(y - enemyY);
+		if (diffX < 10 && diffY < 10) {
+			enemyCollision = 1;
+			enemies[b].setDamage(damage);
+			enemies[b].setAggro(5);
+		}
+	}
+	return enemyCollision;
+}
+
+int Game::checkPlayerCollisions(int x, int y, int damage)
+{
+	sf::Vector2f playerCoords(player->sprite.getPosition());
+	int diffX, diffY;
+	int playerCollision = 0;
+
+	diffX = abs(x - playerCoords.x);
+	diffY = abs(y - playerCoords.y);
+	if (diffX < 10 && diffY < 10) {
+		playerCollision = 1;
+		player->setDamage(damage);
+	}
+	return playerCollision;
+}
+
+void Game::drawEnemies()
+{
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		app->draw(enemies[i].sprite);
+	}
+}
+
+void Game::drawProjectiles()
+{
+	for (ProjectileSprite &projectile : projectiles) {
+		app->draw(projectile.sprite);
+	}
+	for (ProjectileSprite &projectile : enemyProjectiles) {
+		app->draw(projectile.sprite);
+	}
+}
+
+void Game::drawPlayer()
+{
+	app->draw(player->sprite);
+}
+
+void Game::drawWeapon()
+{
+	app->draw(playerWeapons[heldWeapon].sprite);
+}
+
+void Game::drawWeaponsOnMap()
+{
+	for (int i = 0; i < weaponsOnMap.size(); i++) {
+		app->draw(weaponsOnMap[i].sprite);
+	}
+}
+
+void Game::drawHealthbar()
+{
+	int hbarLength = player->getHitpoints();
+	sf::IntRect mCurrentHealth(0, 0, hbarLength, 5);
+	healthbar->sprite.setTextureRect(mCurrentHealth);
+	app->draw(healthbar->sprite);
+}
+
+void Game::drawHealthText()
+{
+	app->draw(game->healthText);
+}
+
+void Game::drawCurrentGun()
+{
+	app->draw(game->currentGun);
+}
+
+void Game::drawCursor()
+{
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
+	cursorSprite->setPosition(static_cast<sf::Vector2f>(mouse));
+	app->draw(*cursorSprite);
+
+}
+
 void Game::addSource()
 {
 	switch (state.brush.type) {
@@ -287,305 +588,39 @@ void Game::addSource()
 	}
 }
 
-int Game::collision(float x, float y, std::string collisionType)
-{
-	int i = map->collision(x, y, collisionType);
-	return i;
-}
-
-sf::Vector2f Game::randomSpawn()
-{
-	int coll = 1;
-	sf::Vector2f coords;
-	float randX, randY;
-	while (coll == 1) {
-		randX = rand() % MAP_SIZE_X * 32;
-		randY = rand() % MAP_SIZE_Y * 32;
-		coll = map->collision(randX, randY, "asd");
-	}
-	coords = sf::Vector2f(randX, randY);
-	return coords;
-}
-
-void Game::loadCharacterTextures()
-{
-	playerTexture = new sf::Texture();
-	playerTexture->loadFromFile("media/ddos-dude-guns.png");
-
-	enemyMeleeTexture = new sf::Texture();
-	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
-}
-
 void Game::shoot()
 {
 	if (shooting == 1 && shootingCooldown <= 0) {
 		shootingCooldown = weapons[heldWeapon].attackSpeed;
-		if (playerWeapons[heldWeapon].ammoType == 0) {
+		switch (playerWeapons[heldWeapon].ammoType) {
+		case 0:
 			projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
-				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				playerWeapons[heldWeapon].spreadAngle));
-		}
-		else if (playerWeapons[heldWeapon].ammoType == 1) {
+			                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                   playerWeapons[heldWeapon].spreadAngle));
+			break;
+		case 1:
 			projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
-				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				playerWeapons[heldWeapon].spreadAngle));
-		}
-		else if (playerWeapons[heldWeapon].ammoType == 2) {
+			                                  sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                  playerWeapons[heldWeapon].spreadAngle));
+			break;
+		case 2:
 			for (int i = 0; i < playerWeapons[heldWeapon].bullets; i++) {
 				projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
-					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-					playerWeapons[heldWeapon].spreadAngle));
+				                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				                                   playerWeapons[heldWeapon].spreadAngle));
 			}
-		}
-		else {
+			break;
+		default:
 			std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
+			break;
 		}
-	}
-	else {
+	} else {
 		shootingCooldown -= frameClock;
 	}
 }
 
-void Game::loadCursorTexture()
+void Game::dropWeapon()
 {
-	app->setMouseCursorVisible(false);
-	fixed = app->getView();
-
-	cursorTexture = new sf::Texture();
-	cursorTexture->loadFromFile("media/cursor.png");
-	cursorTexture->setSmooth(true);
-
-	cursorSprite = new sf::Sprite(*cursorTexture);
-	sf::Vector2u spriteSize = cursorTexture->getSize();
-	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
-	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
-	app->setView(fixed);
-}
-
-void Game::loadProjectileTextures()
-{
-	bulletTexture = new sf::Texture();
-	bulletTexture->loadFromFile("media/bullet.png");
-	bulletTexture->setSmooth(true);
-
-	laserBeamTexture = new sf::Texture();
-	laserBeamTexture->loadFromFile("media/laserBeam.png");
-	laserBeamTexture->setSmooth(true);
-
-	pelletTexture = new sf::Texture();
-	pelletTexture->loadFromFile("media/pellet.png");
-	pelletTexture->setSmooth(true);
-}
-
-void Game::loadHealthbarTexture()
-{
-	healthTexture = new sf::Texture();
-	healthTexture->loadFromFile("media/laserBeam.png");
-	healthTexture->setSmooth(true);
-}
-
-void Game::HUDManager()
-{
-	
-		/*window SE-corner*/
-		float wWGun = (playerView->getSize().x);
-		float wHGun = (playerView->getSize().y);
-		weaponHUDX = playerPositionX - 155;
-		weaponHUDY = playerPositionY - 55;
-		
-		currentGun.setString("Current gun: "+ weapons[playerWeapons[heldWeapon].weaponPosition].name);
-		currentGun.setFont(font);
-		game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
-		
-		/*window SW-corner*/
-		float wW = (playerView->getSize().x)*(-1);
-		float wH = (playerView->getSize().y);
-		healthbarPositionX = playerPositionX + 10;
-		healthbarPositionY = playerPositionY - 15;
-		healthTextPositionX = playerPositionX + 10;
-		healthTextPositionY = playerPositionY - 50;
-		
-		healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
-		healthText.setFont(font);
-		game->healthText.setPosition(wW/2 + healthTextPositionX , wH/2 + healthTextPositionY);
-		healthbar->sprite.setPosition(wW/2 + healthbarPositionX, wH/2 + healthbarPositionY);
-	
-		if(player->getHitpoints() >=70){
-			healthText.setColor(sf::Color::Green);
-		}
-		else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
-			healthText.setColor(sf::Color::Yellow);
-		}
-		else{
-			healthText.setColor(sf::Color::Red);
-		}
-		
-		if(player->getHitpoints() >=70){
-			healthbar->sprite.setColor(sf::Color::Green);
-		}
-		else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
-			healthbar->sprite.setColor(sf::Color::Yellow);
-		}
-		else {
-			healthbar->sprite.setColor(sf::Color::Red);
-		}
-}
-
-void Game::updateProjectiles()
-{
-	for (unsigned int i = 0; i < projectiles.size();) {
-		projectiles[i].update(frameClock);
-		i++;
-	}
-
-	for (unsigned int b = 0; b < enemyProjectiles.size();) {
-		enemyProjectiles[b].update(frameClock);
-		b++;
-	}
-}
-
-void Game::checkProjectileCollisions()
-{
-	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		int x, y;
-		x = projectiles[i].position.x;
-		y = projectiles[i].position.y;
-		if (checkEnemyCollisions(x, y, projectiles[i].getDamage()) == 1) {
-			projectiles.erase(projectiles.begin() + i);
-			break;
-		}
-		if (collision(x, y, "projectile") == 1) {
-			projectiles.erase(projectiles.begin() + i);
-			break;
-		}
-	}
-}
-
-int Game::checkEnemyCollisions(int x, int y, int damage)
-{
-	int enemyX, enemyY, diffX, diffY;
-	int enemyCollision = 0;
-
-	for (unsigned int b = 0; b < enemies.size(); b++) {
-		enemyX = enemies[b].sprite.getPosition().x;
-		enemyY = enemies[b].sprite.getPosition().y;
-
-		diffX = abs(x - enemyX);
-		diffY = abs(y - enemyY);
-		if (diffX < 10 && diffY < 10) {
-			enemyCollision = 1;
-			enemies[b].setDamage(damage);
-			enemies[b].setAggro(5);
-		}
-	}
-	return enemyCollision;
-}
-
-void Game::checkEnemyProjectileCollisions()
-{
-	for (unsigned int a = 0; a < enemyProjectiles.size(); a++) {
-		int x, y;
-		x = enemyProjectiles[a].position.x;
-		y = enemyProjectiles[a].position.y;
-
-		if (checkPlayerCollisions(x, y, enemyProjectiles[a].getDamage()) == 1) {
-			enemyProjectiles.erase(enemyProjectiles.begin() + a);
-			break;
-		}
-
-		if (collision(x, y, "projectile") == 1) {
-			enemyProjectiles.erase(enemyProjectiles.begin() + a);
-			break;
-		}
-	}
-}
-
-int Game::checkPlayerCollisions(int x, int y, int damage)
-{
-	sf::Vector2f playerCoords(player->sprite.getPosition());
-	int diffX, diffY;
-	int playerCollision = 0;
-
-	diffX = abs(x - playerCoords.x);
-	diffY = abs(y - playerCoords.y);
-	if (diffX < 10 && diffY < 10) {
-		playerCollision = 1;
-		player->setDamage(damage);
-	}
-	return playerCollision;
-}
-
-void Game::drawProjectiles()
-{
-	for (ProjectileSprite &projectile : projectiles) {
-		app->draw(projectile.sprite);
-	}
-	for (ProjectileSprite &projectile : enemyProjectiles) {
-		app->draw(projectile.sprite);
-	}
-}
-
-void Game::loadWeaponTextures()
-{
-	pistolTexture = new sf::Texture();
-	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
-
-	laserRifleTexture = new sf::Texture();
-	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
-
-	shotgunTexture = new sf::Texture();
-	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
-}
-
-void Game::spawnWeapons(int amount) {
-	for (int i = 0; i < amount; i++) {
-		int tmp = rand() % weapons.size();
-		if (tmp == 0) {
-			weaponsOnMap.push_back(Pistol(*pistolTexture));
-		}
-		else if (tmp == 1) {
-			weaponsOnMap.push_back(LaserRifle(*laserRifleTexture));
-		}
-		else {
-			weaponsOnMap.push_back(Shotgun(*shotgunTexture));
-		}
-		weaponsOnMap[i].sprite.setPosition(randomSpawn());
-		weaponsOnMap[i].sprite.setRotation(rand() % 360);
-	}
-}
-
-void Game::spawnWeapons(int heldWeapon, int x, int y) {
-		weaponsOnMap.push_back(weapons[playerWeapons[heldWeapon].weaponPosition]);
-		weaponsOnMap.back().sprite.setPosition(x, y);
-		weaponsOnMap.back().sprite.setRotation(rand() % 360);
-}
-
-void Game::updateWeapons()
-{
-	playerWeapons[heldWeapon].update(player->sprite.getPosition().x,
-	                                 player->sprite.getPosition().y,
-	                                 mouse.x, mouse.y);
-}
-
-void Game::drawWeapons()
-{
-	app->draw(playerWeapons[heldWeapon].sprite);
-	for (int i = 0; i < weaponsOnMap.size(); i++) {
-		app->draw(weaponsOnMap[i].sprite);
-	}
-}
-
-void Game::initializeWeapons()
-{
-	weapons.push_back(Pistol(*pistolTexture));
-	weapons.push_back(LaserRifle(*laserRifleTexture));
-	weapons.push_back(Shotgun(*shotgunTexture));
-
-	playerWeapons.push_back(Pistol(*pistolTexture));
-	playerWeapons.push_back(LaserRifle(*laserRifleTexture));
-}
-
-void Game::dropWeapon() {
 	if (playerWeapons.size() > 1) {
 		spawnWeapons(heldWeapon, player->sprite.getPosition().x, player->sprite.getPosition().y);
 		playerWeapons.erase(playerWeapons.begin() + heldWeapon);
@@ -593,7 +628,8 @@ void Game::dropWeapon() {
 	}
 }
 
-void Game::pickWeapon() {
+void Game::pickWeapon()
+{
 	for (int i = 0; i < weaponsOnMap.size(); i++) {
 		if (playerWeapons.size() < 2) {
 			sf::Vector2f playerCoords(player->sprite.getPosition());
@@ -611,42 +647,45 @@ void Game::pickWeapon() {
 	}
 }
 
-void Game::initializeHUD()
+void Game::HUDManager()
 {
-	if (!font.loadFromFile("fonts/arial.ttf"))
-	{
-		//error
+	/* window SE-corner */
+	float wWGun = (playerView->getSize().x);
+	float wHGun = (playerView->getSize().y);
+	weaponHUDX = playerPositionX - 155;
+	weaponHUDY = playerPositionY - 55;
+
+	currentGun.setString(weapons[playerWeapons[heldWeapon].weaponPosition].name);
+	currentGun.setFont(font);
+	game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
+
+	/*window SW-corner*/
+	float wW = (playerView->getSize().x)*(-1);
+	float wH = (playerView->getSize().y);
+	healthbarPositionX = playerPositionX + 10;
+	healthbarPositionY = playerPositionY - 15;
+	healthTextPositionX = playerPositionX + 10;
+	healthTextPositionY = playerPositionY - 50;
+
+	healthText.setString("Health: "+ std::to_string(player->getHitpoints()));
+	healthText.setFont(font);
+	game->healthText.setPosition(wW / 2 + healthTextPositionX, wH / 2 + healthTextPositionY);
+	healthbar->sprite.setPosition(wW / 2 + healthbarPositionX, wH / 2 + healthbarPositionY);
+
+	if (player->getHitpoints() >= 70) {
+		healthText.setColor(sf::Color::Green);
+	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70) {
+		healthText.setColor(sf::Color::Yellow);
+	} else {
+		healthText.setColor(sf::Color::Red);
 	}
-	
-	healthText.setCharacterSize(15);
-	currentGun.setCharacterSize(15);
-}
 
-void Game::spawnEnemies(int amount)
-{
-	for (int i = 0; i < amount; i++) {
-		enemies.push_back(EnemyMelee(*enemyMeleeTexture, randomSpawn()));
-		std::cout << "Enemy Spawned" << std::endl;
-	}
-}
-
-void Game::updateEnemies()
-{
-	for (unsigned int i = 0; i <  enemies.size();) {
-		if (enemies[i].getHitpoints() <= 0) {
-			enemies.erase(enemies.begin() + i);
-			break;
-		}
-
-		enemies[i].update(enemies[i].sprite.getPosition().x,
-		                  enemies[i].sprite.getPosition().y,
-		                  player->sprite.getPosition().x,
-		                  player->sprite.getPosition().y);
-		if (checkProximity(enemies[i].sprite.getPosition()) == 1) {
-			player->setDamage(enemies[i].getMeleeDamage());
-			std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
-		}
-		i++;
+	if (player->getHitpoints() >= 70) {
+		healthbar->sprite.setColor(sf::Color::Green);
+	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70) {
+		healthbar->sprite.setColor(sf::Color::Yellow);
+	} else {
+		healthbar->sprite.setColor(sf::Color::Red);
 	}
 }
 
@@ -666,41 +705,18 @@ int Game::checkProximity(sf::Vector2f enemy)
 	return closeEnough;
 }
 
-void Game::drawEnemies()
+sf::Vector2f Game::randomSpawn()
 {
-	for (unsigned int i = 0; i < enemies.size(); i++) {
-		app->draw(enemies[i].sprite);
+	int coll = 1;
+	sf::Vector2f coords;
+	float randX, randY;
+	while (coll == 1) {
+		randX = rand() % MAP_SIZE_X * 32;
+		randY = rand() % MAP_SIZE_Y * 32;
+		coll = map->collision(randX, randY, "asd");
 	}
-}
-
-void Game::drawPlayer()
-{
-	app->draw(player->sprite);
-}
-
-void Game::drawHealthbar()
-{
-	int hbarLength = player->getHitpoints();
-		sf::IntRect mCurrentHealth(0, 0, hbarLength, 5);
-		healthbar->sprite.setTextureRect(mCurrentHealth);
-		app->draw(healthbar->sprite);
-}
-
-void Game::drawHealthText()
-{
-	app->draw(game->healthText);
-}
-
-void Game::drawCurrentGun()
-{
-	app->draw(game->currentGun);
-}
-
-void Game::drawCursor()
-{
-	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	cursorSprite->setPosition(static_cast<sf::Vector2f>(mouse));
-	app->draw(*cursorSprite);
+	coords = sf::Vector2f(randX, randY);
+	return coords;
 }
 
 int main()

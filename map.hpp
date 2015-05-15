@@ -52,7 +52,7 @@ public:
 	int updateWallDirection(MapTile tile);
 	int checkNeighbourType(MapTile tile, MapTileType tileType);
 	int collision(float X, float Y, std::string collisionType);
-	int getCorrectFrame(int totFrames, float duration);
+	int getCorrectFrame(int totalFrames, float duration);
 	void renderTiles();
 	void drawFloorTile(int x, int y, sf::Color tileColor);
 	void drawWallCornerTile(int x, int y, sf::Color tileColor);

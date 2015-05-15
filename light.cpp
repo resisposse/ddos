@@ -5,9 +5,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
-#include "light.hpp"
 #include "map.hpp"
 #include "main.hpp"
+#include "light.hpp"
 
 Light::Light()
 {
