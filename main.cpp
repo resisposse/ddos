@@ -40,14 +40,14 @@ Game::Game()
 	map = new Map(mapGenerator->generateMap());
 	light = new Light();
 	lightState = new LightState();
-	player = new Player(*playerTexture, randomSpawn());
+	player = new Player(*playerTexture, playerSpawn());
 	healthbar = new HealthBar(*healthTexture);
 
 	initializeView();
 	initializeLighting();
 	initializeWeapons();
 	initializeHUD();
-	spawnEnemies(5);
+	spawnEnemies(30);
 	spawnWeapons(20);
 }
 
@@ -730,6 +730,20 @@ sf::Vector2f Game::randomSpawn()
 		coll = map->collision(randX, randY, "asd");
 	}
 	coords = sf::Vector2f(randX, randY);
+	return coords;
+}
+
+sf::Vector2f Game::playerSpawn()
+{
+	int coll = 1;
+	sf::Vector2f coords;
+	float spawnX, spawnY;
+	while (coll == 1) {
+		spawnX = (float)mapGenerator->spawn.x * TILE_SIZE + TILE_SIZE / 2;
+		spawnY = (float)mapGenerator->spawn.y * TILE_SIZE + TILE_SIZE / 2;
+		coll = map->collision(spawnX, spawnY, "asd");
+	}
+	coords = sf::Vector2f(spawnX, spawnY);
 	return coords;
 }
 

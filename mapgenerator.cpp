@@ -3,6 +3,7 @@
  * 2015 © Project Team (see: LICENSE)
  */
 
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
 #include "random.hpp"
@@ -17,8 +18,9 @@ MapGenerator::MapGenerator()
 {
 	maxFeatures_ = 1000;
 	maxTries_ = 3000;
-	roomChance_ = 75;
+	roomChance_ = 74;
 	corridorChance_ = 25;
+	teleportRoomChance_ = 1;
 	minCorridorWidth_ = 1;
 	maxCorridorWidth_ = 1;
 	minCorridorLength_ = 4;
@@ -44,34 +46,31 @@ MapGenerator::~MapGenerator()
 	delete [] dungeonTiles_;
 }
 
-int MapGenerator::setTile(int x, int y, char tileType)
+void MapGenerator::setTile(int x, int y, char tileType)
 {
 	dungeonTiles_[x + MAP_SIZE_X * y] = tileType;
-	return 0;
 }
 
 /*
  * This function contains a workaround for the north/west bug which makes all
  * features 1 tile longer in each axis
  */
-int MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType)
+void MapGenerator::setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType)
 {
 	for (int i = xStart; i != xEnd + 1; ++i) {
 		for (int j = yStart; j != yEnd + 1; ++j) {
 			dungeonTiles_[i + MAP_SIZE_X * j] = tileType;
 		}
 	}
-	return 0;
 }
 
-int MapGenerator::fillTiles(char tileType)
+void MapGenerator::fillTiles(char tileType)
 {
 	for (int i = 0; i < MAP_SIZE_X; i++) {
 		for (int j = 0; j < MAP_SIZE_Y; j++) {
 			dungeonTiles_[i + MAP_SIZE_X * j] = tileType;
 		}
 	}
-	return 0;
 }
 
 char MapGenerator::getTile(int x, int y)
@@ -79,20 +78,74 @@ char MapGenerator::getTile(int x, int y)
 	return dungeonTiles_[x + MAP_SIZE_X * y];
 }
 
+sf::Vector2f getRoomCenter(int x, int y, int roomWidth, int roomHeight, CardinalDirection direction)
+{
+	sf::Vector2f center(x, y);
+	if (direction == CardinalDirection::north) {
+		center.x = x + (float)((roomWidth + 2) % 2) / 2;
+		center.y = y - ((float)roomHeight + 2) / 2;
+	} else if (direction == CardinalDirection::east) {
+		center.x = x + ((float)roomWidth + 2) / 2;
+		center.y = y + (float)((roomHeight + 2) % 2) / 2;
+	} else if (direction == CardinalDirection::south) {
+		center.x = x + (float)((roomWidth + 2) % 2) / 2;
+		center.y = y + ((float)roomHeight + 2) / 2;
+	} else if (direction == CardinalDirection::west) {
+		center.x = x - ((float)roomWidth + 2) / 2;
+		center.y = y + (float)((roomHeight + 2) % 2) / 2;
+	}
+	return center;
+}
+
 bool MapGenerator::isInBounds(int x, int y) const
 {
-	int offset = 1;
+	int offset = 15;
 	return x >= offset && x < MAP_SIZE_X - offset && y >= offset && y < MAP_SIZE_Y - offset;
 }
 
+/*
+ * This function prevents corridors from spawning near the edges of the map that would otherwise create unnecessary dead ends. 
+ */
 bool MapGenerator::isInBounds(int x, int y, int offset, CardinalDirection direction) const
 {
-	int safeOffset = 1;
+	int safeOffset = 15;
+	int adjustOffset = offset + safeOffset;
 	if (direction == CardinalDirection::north || direction == CardinalDirection::south) {
-		return x >= safeOffset && x < MAP_SIZE_X - safeOffset && y >= offset && y < MAP_SIZE_Y - offset;
+		return x >= safeOffset && x < MAP_SIZE_X - safeOffset && y >= adjustOffset && y < MAP_SIZE_Y - adjustOffset;
 	} else {
-		return x >= offset && x < MAP_SIZE_X - offset && y >= safeOffset && y < MAP_SIZE_Y - safeOffset;
+		return x >= adjustOffset && x < MAP_SIZE_X - adjustOffset && y >= safeOffset && y < MAP_SIZE_Y - safeOffset;
 	}
+}
+
+void MapGenerator::clearWalls()
+{
+	for (int i = 0; i < MAP_SIZE_X; i++) {
+		for (int j = 0; j < MAP_SIZE_Y; j++) {
+			if (getTile(i, j) == 'X') {
+				if ((checkNeighbourType(i - 1, j - 1, 'X') | checkNeighbourType(i - 1, j - 1, ' ') | checkNeighbourType(i - 1, j - 1, 'R')) == 255 &&
+					(checkNeighbourType(i + 1, j - 1, 'X') | checkNeighbourType(i + 1, j - 1, ' ') | checkNeighbourType(i + 1, j - 1, 'R')) == 255 &&
+					(checkNeighbourType(i + 1, j + 1, 'X') | checkNeighbourType(i + 1, j + 1, ' ') | checkNeighbourType(i + 1, j + 1, 'R')) == 255 &&
+					(checkNeighbourType(i - 1, j + 1, 'X') | checkNeighbourType(i - 1, j + 1, ' ') | checkNeighbourType(i - 1, j + 1, 'R')) == 255) {
+					dungeonTiles_[i + MAP_SIZE_X * j] = ' ';
+				}
+			}
+		}
+	}
+}
+
+unsigned int MapGenerator::checkNeighbourType(int x, int y, char tileType)
+{
+	unsigned int neighbours = 0;
+
+	if (getTile(x - 1, y - 1) == tileType) { neighbours += 128; };
+	if (getTile(x, y - 1) == tileType    ) { neighbours += 64; };
+	if (getTile(x + 1, y - 1) == tileType) { neighbours += 32; };
+	if (getTile(x - 1, y) == tileType    ) { neighbours += 16; };
+	if (getTile(x + 1, y) == tileType    ) { neighbours += 8; };
+	if (getTile(x - 1, y + 1) == tileType) { neighbours += 4; };
+	if (getTile(x, y + 1) == tileType    ) { neighbours += 2; };
+	if (getTile(x + 1, y + 1) == tileType) { neighbours += 1; };
+	return neighbours;
 }
 
 bool MapGenerator::isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType)
@@ -119,7 +172,7 @@ bool MapGenerator::adjustPosition(int &x, int &y, int xStart, int yStart, int xE
 {
 	bool adjustedBackwards = false;
 	bool adjustedForwards = false;
-	Point point = checkTiles(tileType, xStart, yStart, xEnd, yEnd);
+	sf::Vector2i point = checkTiles(tileType, xStart, yStart, xEnd, yEnd);
 	while (point.x != -1) {
 		if (direction == CardinalDirection::north || direction == CardinalDirection::south) {
 			if (point.x > x) {
@@ -182,9 +235,9 @@ bool MapGenerator::adjustPosition(int &x, int &y, int xStart, int yStart, int xE
 	return true;
 }
 
-Point MapGenerator::checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd)
+sf::Vector2i MapGenerator::checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd)
 {
-	Point coords;
+	sf::Vector2i coords(-1, -1);
 	if (!isInBounds(xStart, yStart) || !isInBounds(xEnd, yEnd)) {
 		//std::cout << "out of bounds" << std::endl;
 		return coords;
@@ -198,7 +251,6 @@ Point MapGenerator::checkTiles(char tileType, int xStart, int yStart, int xEnd, 
 				coords.y = j;
 				return coords;
 			}
-			//std::cout << "coords: [" << coords.x << "," << coords.y << "]" << std::endl;
 		}
 	}
 	return coords;
@@ -235,29 +287,69 @@ bool MapGenerator::generateRoomCenter(int x, int y)
 	return true;
 }
 
-bool MapGenerator::generateRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction)
+bool MapGenerator::generateTeleportRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction)
 {
+	if (!spawnCreated) {
+		if (generateRoom(x, y, width, height, wallWidth, 'S', 'R', direction)) {
+			spawnCreated = true;
+			//std::cout << "Spawn created" << std::endl;
+			return true;
+		}
+	} else if (!goalCreated) {
+		if (generateRoom(x, y, width, height, wallWidth, 'G', 'R', direction)) {
+			goalCreated = true;
+			//std::cout << "Goal created" << std::endl;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool MapGenerator::generateRoom(int x, int y, int width, int height, int wallWidth, char floorType, char wallType, CardinalDirection direction)
+{
+	int corridorWidth = random->generate(minCorridorWidth_, maxCorridorWidth_);
+	int offset = roomEntranceLength_;
+	char entranceTile = '.';
+	bool adjust = false;
+	if (floorType == 'S' || floorType == 'G') {
+		offset = 0;
+		entranceTile = 'D';
+		adjust = true;
+	}
+
 	int xStart, yStart, xEnd, yEnd;
 
 	if (direction == CardinalDirection::north) {
+		if (adjust == true) {
+			adjustPosition(x, y, x - corridorWidth / 2, y + 1, x + (corridorWidth + 1) / 2, y + 1, '.', direction);
+		}
 		xStart = x - width / 2;
-		yStart = y - height - wallWidth - roomEntranceLength_;
+		yStart = y - height - wallWidth - offset;
 		xEnd = x + (width + 1) / 2;
-		yEnd = y - wallWidth - roomEntranceLength_;
+		yEnd = y - wallWidth - offset;
 	} else if (direction == CardinalDirection::east) {
-		xStart = x + wallWidth + roomEntranceLength_;
+		if (adjust == true) {
+			adjustPosition(x, y, x - 1, y - corridorWidth / 2, x - 1, y + (corridorWidth + 1) / 2, '.', direction);
+		}
+		xStart = x + wallWidth + offset;
 		yStart = y - height / 2;
-		xEnd = x + width + wallWidth + roomEntranceLength_;
+		xEnd = x + width + wallWidth + offset;
 		yEnd = y + (height + 1) / 2;
-	} else if (direction == CardinalDirection::south) {
+		} else if (direction == CardinalDirection::south) {
+		if (adjust == true) {
+			adjustPosition(x, y, x - corridorWidth / 2, y - 1, x + (corridorWidth + 1) / 2, y - 1, '.', direction);
+		}
 		xStart = x - width / 2;
-		yStart = y + wallWidth + roomEntranceLength_;
+		yStart = y + wallWidth + offset;
 		xEnd = x + (width + 1) / 2;
-		yEnd = y + height + wallWidth + roomEntranceLength_;
-	} else if (direction == CardinalDirection::west) {
-		xStart = x - width - wallWidth - roomEntranceLength_;
+		yEnd = y + height + wallWidth + offset;
+		} else if (direction == CardinalDirection::west) {
+		if (adjust == true) {
+			adjustPosition(x, y, x + 1, y - corridorWidth / 2, x + 1, y + (corridorWidth + 1) / 2, '.', direction);
+		}
+		xStart = x - width - wallWidth - offset;
 		yStart = y - height / 2;
-		xEnd = x - wallWidth - roomEntranceLength_;
+		xEnd = x - wallWidth - offset;
 		yEnd = y + (height + 1) / 2;
 	} else {
 		std::cout << "Could not set coords for room creation" << std::endl;
@@ -268,18 +360,24 @@ bool MapGenerator::generateRoom(int x, int y, int width, int height, int wallWid
 		return false;
 	}
 
-	if (!generateCorridor(x, y, random->generate(minCorridorWidth_, maxCorridorWidth_), wallWidth + roomEntranceLength_ - 1, 1, direction)) {
+	setTiles(xStart - wallWidth, yStart - wallWidth, xEnd + wallWidth, yEnd + wallWidth, wallType);
+
+	if (!generateCorridor(x, y, corridorWidth, wallWidth + offset - 1, 1, entranceTile, wallType, direction)) {
 		return false;
 	}
 
-	setTiles(xStart, yStart, xEnd, yEnd, '.');
+	setTiles(xStart, yStart, xEnd, yEnd, floorType);
+
+	if (floorType == 'S') {
+		spawn = getRoomCenter(x, y, width, height, direction);
+	}
 
 	//std::cout << "Room created between [" << xStart + wallWidth << "," << yStart + wallWidth << "] and [" << xEnd - wallWidth << "," << yEnd - wallWidth << "]." << std::endl;
 	//std::cout << "  Width: " << width << ", height: " << height << ", wall width: " << wallWidth << "." << std::endl;
 	return true;
 }
 
-bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wallWidth, CardinalDirection direction)
+bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wallWidth, char floorType, char wallType, CardinalDirection direction)
 {
 	int offset = wallWidth;
 
@@ -292,25 +390,25 @@ bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wal
 	int yOffset = 0;
 
 	if (direction == CardinalDirection::north) {
-		adjustPosition(x, y, x - width / 2, y + 1, x + (width + 1) / 2, y + 1, '.', CardinalDirection::north);
+		adjustPosition(x, y, x - width / 2, y + 1, x + (width + 1) / 2, y + 1, '.', direction);
 		xStart = x - width / 2;
 		yStart = y - length;
 		xEnd = x + (width + 1) / 2;
 		xOffset = offset;
 	} else if (direction == CardinalDirection::east) {
-		adjustPosition(x, y, x - 1, y - width / 2, x - 1, y + (width + 1) / 2, '.', CardinalDirection::east);;
+		adjustPosition(x, y, x - 1, y - width / 2, x - 1, y + (width + 1) / 2, '.', direction);;
 		yStart = y - width / 2;
 		xEnd = x + length;
 		yEnd = y + (width + 1) / 2;
 		yOffset = offset;
 	} else if (direction == CardinalDirection::south) {
-		adjustPosition(x, y, x - width / 2, y - 1, x + (width + 1) / 2, y - 1, '.', CardinalDirection::south);
+		adjustPosition(x, y, x - width / 2, y - 1, x + (width + 1) / 2, y - 1, '.', direction);
 		xStart = x - width / 2;
 		xEnd = x + (width + 1) / 2;
 		yEnd = y + length;
 		xOffset = offset;
 	} else if (direction == CardinalDirection::west) {
-		adjustPosition(x, y, x + 1, y - width / 2, x + 1, y + (width + 1) / 2, '.', CardinalDirection::west);
+		adjustPosition(x, y, x + 1, y - width / 2, x + 1, y + (width + 1) / 2, '.', direction);
 		xStart = x - length;
 		yStart = y - width / 2;
 		yEnd = y + (width + 1) / 2;
@@ -329,12 +427,12 @@ bool MapGenerator::generateCorridor(int x, int y, int width, int length, int wal
 		return false;
 	}
 
-	if (!isAreaType(xStart - xOffset, yStart - yOffset, xEnd + xOffset, yEnd + yOffset, 'X')) {
+	if (!isAreaType(xStart - xOffset, yStart - yOffset, xEnd + xOffset, yEnd + yOffset, wallType)) {
 		//std::cout << "Could not create corridor." << std::endl;
 		return false;
 	}
 
-	setTiles(xStart, yStart, xEnd, yEnd, '.');
+	setTiles(xStart, yStart, xEnd, yEnd, floorType);
 	//std::cout << "Corridor created between [" << xStart << "," << yStart << "] and [" << xEnd << "," << yEnd << "]." << std::endl;
 	//std::cout << "  Width: " << width << ", Length: " << length << "." << std::endl;
 	return true;
@@ -396,34 +494,55 @@ bool MapGenerator::generateFeature()
  */
 bool MapGenerator::generateFeature(int x, int y, CardinalDirection direction)
 {
-	int roll = random->generate(0, 100);
+	int maxRoll = 100;
+	int minRoll = 1;
+	int roll = random->generate(minRoll, maxRoll);
 
-	if (roll <= corridorChance_) {
+	if (roll >= corridorChance_ && roll <= corridorChance_ + roomChance_){
+		int roomWall = random->generate(minRoomWall_, maxRoomWall_);
+		if (generateRoom(x, y, random->generate(minRoomWidth_, maxRoomWidth_), random->generate(maxRoomHeight_, maxRoomHeight_), roomWall, '.', 'X', direction)) {
+			return true;
+		}
+		return false;
+	} else if (roll <= corridorChance_) {
 		int corridorWall = random->generate(minCorridorWall_, maxCorridorWall_);
-		if (generateCorridor(x, y, random->generate(minCorridorWidth_, maxCorridorWidth_), random->generate(minCorridorLength_, maxCorridorLength_), corridorWall, direction)) {
+		if (generateCorridor(x, y, random->generate(minCorridorWidth_, maxCorridorWidth_), random->generate(minCorridorLength_, maxCorridorLength_), corridorWall, '.', 'X', direction)) {
+			return true;
+		}
+		return false;
+	} else if (roll >= maxRoll - teleportRoomChance_) {
+		int roomSide = 3;
+		if (!generateTeleportRoom(x, y, roomSide, roomSide, 1, direction)) {
 			return true;
 		}
 		return false;
 	} else {
-		int roomWall = random->generate(minRoomWall_, maxRoomWall_);
-		if (generateRoom(x, y, random->generate(minRoomWidth_, maxRoomWidth_), random->generate(maxRoomHeight_, maxRoomHeight_), roomWall, direction)) {
-			return true;
-		}
-		return false;
+		std::cout << "Corridor, room and teleportroom chance totals less than 100, please adjust the values" << std::endl;
 	}
 }
 
 char* MapGenerator::generateMap()
 {
-	fillTiles('X');
-	generateRoomCenter(MAP_SIZE_X / 2, MAP_SIZE_Y / 2);
+	while (!goalCreated) {
+		spawnCreated = false;
+		goalCreated = false;
+		fillTiles(' ');
+		setTiles(2, 2, MAP_SIZE_X - 2, MAP_SIZE_Y - 2, 'X');
+		generateRoomCenter(MAP_SIZE_X / 2, MAP_SIZE_Y / 2);
 
-	for (int features = 1; features != maxFeatures_; features++) {
-		if (!generateFeature()) {
-			break;
+		for (int features = 1; features != maxFeatures_; features++) {
+			if (!generateFeature()) {
+				break;
+			}
+		}
+
+		clearWalls();
+
+		if (!goalCreated) {
+			delete random;
+			random = new Random();
 		}
 	}
-
 	std::cout << "Seed: " << random->getSeed() << std::endl;
 	return dungeonTiles_;
 }

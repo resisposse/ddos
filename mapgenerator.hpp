@@ -6,8 +6,8 @@
 #ifndef MAPGENERATOR
 #define MAPGENERATOR
 
-#define MAP_SIZE_X 55
-#define MAP_SIZE_Y 43
+#define MAP_SIZE_X 85
+#define MAP_SIZE_Y 73
 
 /* Forward declaration due to cyclic dependency */
 class Random;
@@ -24,44 +24,38 @@ enum class CardinalDirection
 	northWest = 7
 };
 
-class Point
-{
-public:
-	Point() : x(-1), y(-1) {};
-	Point(int x0, int y0) {
-		x = x0;
-		y = y0;
-	};
-	int x;
-	int y;
-};
-
 class MapGenerator
 {
 public:
+	sf::Vector2f spawn;
+
 	MapGenerator();
 	~MapGenerator();
-	int setTile(int x, int y, char tileType);
-	int setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType);
+	void setTile(int x, int y, char tileType);
+	void setTiles(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	char getTile(int x, int y);
-	int fillTiles(char tileType);
+	void fillTiles(char tileType);
+	void clearWalls();
 	bool isInBounds(int x, int y) const;
 	bool isInBounds(int x, int y, int offset, CardinalDirection direction) const;
+	unsigned int checkNeighbourType(int x, int y, char tileType);
 	bool isAreaType(int xStart, int yStart, int xEnd, int yEnd, char tileType);
 	bool adjustPosition(int &x, int &y, int xStart, int yStart, int xEnd, int yEnd, char tileType, CardinalDirection direction);
 	bool generateRoomCenter(int x, int y);
-	bool generateRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction);
-	bool generateCorridor(int x, int y, int width, int length, int wallWidth, CardinalDirection direction);
+	bool generateTeleportRoom(int x, int y, int width, int height, int wallWidth, CardinalDirection direction);
+	bool generateRoom(int x, int y, int width, int height, int wallWidth, char floorType, char wallType, CardinalDirection direction);
+	bool generateCorridor(int x, int y, int width, int length, int wallWidth, char floorType, char wallType, CardinalDirection direction);
 	bool generateFeature();
 	bool generateFeature(int x, int y, CardinalDirection direction);
 	char* generateMap();
-	Point checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd);
+	sf::Vector2i checkTiles(char tileType, int xStart, int yStart, int xEnd, int yEnd);
 	int writeMapFile();
 private:
 	int maxFeatures_;
 	int maxTries_;
 	int roomChance_;
 	int corridorChance_;
+	int teleportRoomChance_;
 	int minCorridorWidth_;
 	int maxCorridorWidth_;
 	int minCorridorLength_;
@@ -76,6 +70,8 @@ private:
 	int minCorridorWall_;
 	int maxCorridorWall_;
 	char *dungeonTiles_;
+	bool spawnCreated = false;
+	bool goalCreated = false;
 	Random *random;
 };
 

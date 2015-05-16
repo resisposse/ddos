@@ -7,16 +7,20 @@
 #define MAP
 
 #define TILE_SIZE 32
-#define MAP_SIZE_X 55
-#define MAP_SIZE_Y 43
+#define MAP_SIZE_X 85
+#define MAP_SIZE_Y 73
 
 enum MapTileType
 {
 	mtAir,
 	mtWall,
+	mtWallVoid,
 	mtFloorMetal,
 	mtFloor,
-	mtLava
+	mtLava,
+	mtSpawn,
+	mtGoal,
+	mtDoor
 };
 
 class MapTile
@@ -133,6 +137,7 @@ public:
 	sf::Sprite *wallFill3Spr;
 	sf::Sprite *wallFill4Spr;
 	sf::Sprite *wallFill5Spr;
+	sf::Sprite *voidSpr;
 
 	sf::Sprite *lava1Spr;
 	sf::Sprite *lava2Spr;

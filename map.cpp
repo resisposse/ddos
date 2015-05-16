@@ -95,6 +95,8 @@ Map::Map(char *generatedMap)
 	sf::IntRect wallFill4 (TILE_SIZE * 2, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
 	sf::IntRect wallFill5 (TILE_SIZE * 2, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 
+	sf::IntRect voidRect (TILE_SIZE * 0, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+
 	sf::IntRect lavaFrame1 (TILE_SIZE * 0, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect lavaFrame2 (TILE_SIZE * 1, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect lavaFrame3 (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
@@ -226,7 +228,7 @@ Map::Map(char *generatedMap)
 	wallCornerTiles.push_back(wallCorner3Spr);
 	wallCornerTiles.push_back(wallCorner4Spr);
 
-	wallFill1Spr = new sf::Sprite(*tileMapTex, wallFill1);
+	/*wallFill1Spr = new sf::Sprite(*tileMapTex, wallFill1);
 	wallFill2Spr = new sf::Sprite(*tileMapTex, wallFill2);
 	wallFill3Spr = new sf::Sprite(*tileMapTex, wallFill3);
 	wallFill4Spr = new sf::Sprite(*tileMapTex, wallFill4);
@@ -235,7 +237,10 @@ Map::Map(char *generatedMap)
 	wallFillTiles.push_back(wallFill2Spr);
 	wallFillTiles.push_back(wallFill3Spr);
 	wallFillTiles.push_back(wallFill4Spr);
-	wallFillTiles.push_back(wallFill5Spr);
+	wallFillTiles.push_back(wallFill5Spr);*/
+
+	voidSpr = new sf::Sprite(*tileMapTex, voidRect);
+	wallFillTiles.push_back(voidSpr);
 
 	lava1Spr = new sf::Sprite(*lavaTex, lavaFrame1);
 	lava2Spr = new sf::Sprite(*lavaTex, lavaFrame2);
@@ -277,7 +282,7 @@ Map::Map(char *generatedMap)
 		case ' ':
 			tiles[i][j].type = mtAir;
 			tiles[i][j].absorb = 45;
-			collisionMap[i][j] = 0;
+			collisionMap[i][j] = 1;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
@@ -288,6 +293,26 @@ Map::Map(char *generatedMap)
 			tiles[i][j].type = mtLava;
 			tiles[i][j].absorb = 10;
 			collisionMap[i][j] = 0;
+			break;
+		case 'S':
+			tiles[i][j].type = mtSpawn;
+			tiles[i][j].absorb = 10;
+			collisionMap[i][j] = 0;
+			break;
+		case 'G':
+			tiles[i][j].type = mtGoal;
+			tiles[i][j].absorb = 10;
+			collisionMap[i][j] = 0;
+			break;
+		case 'D':
+			tiles[i][j].type = mtDoor;
+			tiles[i][j].absorb = 10;
+			collisionMap[i][j] = 0;
+			break;
+		case 'R':
+			tiles[i][j].type = mtWall;
+			tiles[i][j].absorb = 45;
+			collisionMap[i][j] = 1;
 		}
 	}
 }
@@ -576,6 +601,22 @@ void Map::renderTiles()
 			app->draw(*floorMetalSpr);
 			break;
 		case mtLava:
+			drawLavaFrame(i, j, tileColor, 0.1);
+			break;
+		case mtSpawn:
+			floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+			floorMetalSpr->setColor(sf::Color::Green);
+			app->draw(*floorMetalSpr);
+			break;
+		case mtGoal:
+			/*floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+			floorMetalSpr->setColor(sf::Color::Blue);
+			app->draw(*floorMetalSpr);*/
+			break;
+		case mtDoor:
+			/*floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+			floorMetalSpr->setColor(sf::Color::Green);
+			app->draw(*floorMetalSpr);*/
 			drawLavaFrame(i, j, tileColor, 0.1);
 			break;
 		case mtAir:

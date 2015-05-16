@@ -115,6 +115,7 @@ public:
 	void HUDManager();
 	int checkProximity(sf::Vector2f enemy);
 	sf::Vector2f randomSpawn();
+	sf::Vector2f playerSpawn();
 };
 extern float frameClock;
 extern long lastClock;
