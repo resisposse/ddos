@@ -127,7 +127,7 @@ public:
 	float sourceTime;
 };
 
-class GameState
+class LightState
 {
 public:
 	Brush brush;

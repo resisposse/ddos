@@ -17,7 +17,6 @@ float frameClock = 0;
 long lastClock = 0;
 sf::Clock timer;
 
-GameState state;
 sf::RenderWindow *app;
 Game *game;
 
@@ -40,6 +39,7 @@ Game::Game()
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
 	light = new Light();
+	lightState = new LightState();
 	player = new Player(*playerTexture, randomSpawn());
 	healthbar = new HealthBar(*healthTexture);
 
@@ -104,7 +104,7 @@ void Game::render()
 	drawPlayer();
 	drawWeapon();
 
-	light->update(&state.tmpSource);
+	light->update(&lightState->tmpSource);
 
 	drawCursor();
 	drawHealthbar();
@@ -191,21 +191,21 @@ void Game::initializeView()
 
 void Game::initializeLighting()
 {
-	state.brush.type = stStatic;
-	state.brush.intensity = 100;
-	state.brush.color = sf::Color::White;
-	state.brush.color.r = 255;
-	state.brush.color.g = 225;
-	state.brush.color.b = 225;
-	state.brush.sourceTime = 2.0f;
-	state.ambientIntensity = 0;
-	state.ambientColor = sf::Color::White;
-	state.ambientColor.r = 0;
-	state.ambientColor.g = 0;
-	state.ambientColor.b = 0;
+	lightState->brush.type = stStatic;
+	lightState->brush.intensity = 100;
+	lightState->brush.color = sf::Color::White;
+	lightState->brush.color.r = 255;
+	lightState->brush.color.g = 255;
+	lightState->brush.color.b = 255;
+	lightState->brush.sourceTime = 2.0f;
+	lightState->ambientIntensity = 0;
+	lightState->ambientColor = sf::Color::White;
+	lightState->ambientColor.r = 0;
+	lightState->ambientColor.g = 0;
+	lightState->ambientColor.b = 0;
 
 	/* Options are: stStatic, stPulsing, stFading, stTest */
-	state.brush.type = stPulsing;
+	lightState->brush.type = stPulsing;
 }
 
 void Game::initializeWeapons()
@@ -220,8 +220,7 @@ void Game::initializeWeapons()
 
 void Game::initializeHUD()
 {
-	if (!font.loadFromFile("fonts/arial.ttf"))
-	{
+	if (!font.loadFromFile("fonts/arial.ttf")) {
 		//error
 	}
 	healthText.setCharacterSize(15);
@@ -237,7 +236,8 @@ void Game::spawnEnemies(int amount)
 	}
 }
 
-void Game::spawnWeapons(int amount) {
+void Game::spawnWeapons(int amount)
+{
 	for (int i = 0; i < amount; i++) {
 		int tmp = rand() % weapons.size();
 		if (tmp == 0) {
@@ -363,21 +363,17 @@ void Game::updateView()
 	app->setView(*playerView);
 }
 
-/*
- * Keep realigning the center of the light (fog of war) with the player and then
- * reread the light's attributes on the off chance that they were changed.
- */
 void Game::updateLighting()
 {
 	playerPositionX = player->sprite.getPosition().x;
 	playerPositionY = player->sprite.getPosition().y;
-	state.brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
-	                                    (int)playerPositionY / TILE_SIZE);
-	state.tmpSource = StaticLightSource(state.brush.position,
-	                                    state.brush.color,
-	                                    state.brush.intensity);
-	light->ambientColor = state.ambientColor;
-	light->ambientIntensity = state.ambientIntensity;
+	lightState->brush.position = sf::Vector2i((int)playerPositionX / TILE_SIZE,
+	                                          (int)playerPositionY / TILE_SIZE);
+	lightState->tmpSource = StaticLightSource(lightState->brush.position,
+	                                          lightState->brush.color,
+	                                          lightState->brush.intensity);
+	light->ambientColor = lightState->ambientColor;
+	light->ambientIntensity = lightState->ambientIntensity;
 }
 
 void Game::updatePlayer()
@@ -527,7 +523,7 @@ void Game::drawCurrentAmmo()
 
 void Game::drawWeaponsOnMap()
 {
-	for (int i = 0; i < weaponsOnMap.size(); i++) {
+	for (unsigned int i = 0; i < weaponsOnMap.size(); i++) {
 		app->draw(weaponsOnMap[i].sprite);
 	}
 }
@@ -560,37 +556,37 @@ void Game::drawCursor()
 
 void Game::addSource()
 {
-	switch (state.brush.type) {
+	switch (lightState->brush.type) {
 	case stStatic:
 		light->sources.push_back((StaticLightSource *)
 		                         (new StaticLightSource
-		                         (state.brush.position,
-		                          state.brush.color,
-		                          state.brush.intensity)));
+		                         (lightState->brush.position,
+		                          lightState->brush.color,
+		                          lightState->brush.intensity)));
 		break;
 	case stFading:
 		light->sources.push_back((StaticLightSource *)
 		                         (new FadingLightSource
-		                         (state.brush.position,
-		                          state.brush.color,
-		                          state.brush.intensity,
-		                          state.brush.sourceTime)));
+		                         (lightState->brush.position,
+		                          lightState->brush.color,
+		                          lightState->brush.intensity,
+		                          lightState->brush.sourceTime)));
 		break;
 	case stPulsing:
 		light->sources.push_back((StaticLightSource *)
 		                         (new PulsingLightSource
-		                         (state.brush.position,
-		                          state.brush.color,
-		                          state.brush.intensity,
-		                          state.brush.sourceTime)));
+		                         (lightState->brush.position,
+		                          lightState->brush.color,
+		                          lightState->brush.intensity,
+		                          lightState->brush.sourceTime)));
 		break;
 	case stTest:
 		light->sources.push_back((StaticLightSource *)
 		                         (new TestLightSource
-		                         (state.brush.position,
-		                          state.brush.color,
-		                          state.brush.intensity,
-		                          state.brush.sourceTime)));
+		                         (lightState->brush.position,
+		                          lightState->brush.color,
+		                          lightState->brush.intensity,
+		                          lightState->brush.sourceTime)));
 		break;
 	}
 }
@@ -639,11 +635,10 @@ void Game::dropWeapon()
 
 void Game::pickWeapon()
 {
-	for (int i = 0; i < weaponsOnMap.size(); i++) {
+	for (unsigned int i = 0; i < weaponsOnMap.size(); i++) {
 		if (playerWeapons.size() < 2) {
 			sf::Vector2f playerCoords(player->sprite.getPosition());
 			int diffX, diffY;
-			int playerCollision = 0;
 
 			diffX = abs(weaponsOnMap[i].sprite.getPosition().x - playerCoords.x);
 			diffY = abs(weaponsOnMap[i].sprite.getPosition().y - playerCoords.y);
@@ -663,51 +658,47 @@ void Game::HUDManager()
 	float wHGun = (playerView->getSize().y);
 	weaponHUDX = playerPositionX - 155;
 	weaponHUDY = playerPositionY - 55;
-		
-	currentGun.setString("Current gun: "+ weapons[playerWeapons[heldWeapon].weaponPosition].name);
+
+	currentGun.setString(weapons[playerWeapons[heldWeapon].weaponPosition].name);
 	currentGun.setFont(font);
 	game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
-	
+
 	/*window SE-corner*/
 	float wWAmmo = (playerView->getSize().x);
 	float wHAmmo = (playerView->getSize().y);
 	ammoHUDX = playerPositionX - 155;
 	ammoHUDY = playerPositionY - 20;
-	
-	currentAmmo.setString("Ammo: "+ std::to_string (weapons[playerWeapons[heldWeapon].weaponPosition].getAmmo()));
+
+	currentAmmo.setString("Ammo: " + std::to_string (weapons[playerWeapons[heldWeapon].weaponPosition].getAmmo()));
 	currentAmmo.setFont(font);
-	game->currentAmmo.setPosition(wWAmmo/2 + ammoHUDX , wHAmmo/2 + ammoHUDY);
-		
+	game->currentAmmo.setPosition(wWAmmo / 2 + ammoHUDX, wHAmmo / 2 + ammoHUDY);
+
 	/*window SW-corner*/
-	float wW = (playerView->getSize().x)*(-1);
+	float wW = (playerView->getSize().x) * (-1);
 	float wH = (playerView->getSize().y);
 	healthbarPositionX = playerPositionX + 10;
 	healthbarPositionY = playerPositionY - 15;
 	healthTextPositionX = playerPositionX + 10;
 	healthTextPositionY = playerPositionY - 50;
-		
-	healthText.setString("Health: "+ std::to_string (player->getHitpoints()));
+
+	healthText.setString("Health: " + std::to_string (player->getHitpoints()));
 	healthText.setFont(font);
-	game->healthText.setPosition(wW/2 + healthTextPositionX , wH/2 + healthTextPositionY);
-	healthbar->sprite.setPosition(wW/2 + healthbarPositionX, wH/2 + healthbarPositionY);
-	
-	if(player->getHitpoints() >=70){
+	game->healthText.setPosition(wW / 2 + healthTextPositionX, wH / 2 + healthTextPositionY);
+	healthbar->sprite.setPosition(wW / 2 + healthbarPositionX, wH / 2 + healthbarPositionY);
+
+	if (player->getHitpoints() >= 70) {
 		healthText.setColor(sf::Color::Green);
-	}
-	else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
+	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70) {
 		healthText.setColor(sf::Color::Yellow);
-	}
-	else{
+	} else {
 		healthText.setColor(sf::Color::Red);
 	}
-		
-	if(player->getHitpoints() >=70){
+
+	if (player->getHitpoints() >= 70) {
 		healthbar->sprite.setColor(sf::Color::Green);
-	}
-	else if(player->getHitpoints() >=30 && player->getHitpoints() <70){
+	} else if (player->getHitpoints() >= 30 && player->getHitpoints() < 70){
 		healthbar->sprite.setColor(sf::Color::Yellow);
-	}
-	else {
+	} else {
 		healthbar->sprite.setColor(sf::Color::Red);
 	}
 }

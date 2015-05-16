@@ -10,6 +10,7 @@
 class Map;
 class MapGenerator;
 class Light;
+class LightState;
 class HealthBar;
 class Object;
 class Player;
@@ -34,7 +35,6 @@ public:
 	float ammoHUDX, ammoHUDY;
 	int ammos;
 	float shootingCooldown = 0;
-	
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;
@@ -64,6 +64,7 @@ public:
 	MapGenerator *mapGenerator;
 	Map *map;
 	Light *light;
+	LightState *lightState;
 	Player *player;
 	EnemyMelee *enemy;
 	HealthBar *healthbar;

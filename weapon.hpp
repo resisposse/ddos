@@ -26,17 +26,20 @@ public:
 	int getAmmo() const;
 };
 
-class Pistol : public Weapon {
+class Pistol : public Weapon
+{
 public:
 	Pistol(sf::Texture& objectTexture);
 };
 
-class LaserRifle : public Weapon {
+class LaserRifle : public Weapon
+{
 public:
 	LaserRifle(sf::Texture& objectTexture);
 };
 
-class Shotgun : public Weapon {
+class Shotgun : public Weapon
+{
 public:
 	Shotgun(sf::Texture& objectTexture);
 };

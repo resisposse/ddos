@@ -131,7 +131,7 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 	float enemySpeed = 50;
 	float angle;
 	sf::Vector2f enemyMovement(0.f, 0.f);
-	if ((distanceFromPlayer < 20) && (distanceFromPlayer > 5) || getAggro() > 0) {
+	if (((distanceFromPlayer < 20) && (distanceFromPlayer > 5)) || (getAggro() > 0)) {
 		float distanceX = playerPositionX - enemyPositionX;
 		float distanceY = playerPositionY - enemyPositionY;
 		if (distanceX > 0) {
@@ -267,5 +267,5 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object
 
 HealthBar::HealthBar(sf::Texture& objectTexture) : Object(objectTexture)
 {
-	
+
 }
