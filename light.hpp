@@ -61,24 +61,25 @@ public:
 
 	Light();
 	~Light();
+	void initialize();
+	void update(StaticLightSource *tmpSource);
 	void resetLight();
+	void checkSources(StaticLightSource *tmpSource);
 	void buildLight();
 	void renderLight();
 	void initIntensity(MapTile *tile);
 	void setIntensity(MapTile *tile, char intensity, sf::Color color);
 	void addIntensity(sf::Vector2i index, char intensity, sf::Color color);
-	void checkNeighbours(MapTile *tile);
-	void initialize();
-	void update(StaticLightSource *tmpSource);
-	void checkSources(StaticLightSource *tmpSource);
-	void clear() { deleteList(sources); };
-	bool canMixColors(sf::Color base, sf::Color light);
-	float sqr(float x);
-	sf::Vector2f getTilePos(int x, int y);
-	sf::Color getTileLight(int x, int y);
 	sf::Color applyIntensity(sf::Color c, char intensity);
 	sf::Color reapplyIntensity(sf::Color c, char intensity1, char intensity2);
+	void checkNeighbours(MapTile *tile);
+	bool canMixColors(sf::Color base, sf::Color light);
 	sf::Color mixColors(sf::Color c1, sf::Color c2);
+	sf::Vector2f getTilePos(int x, int y);
+	sf::Color getTileLight(int x, int y);
+	void addSource(SourceType type);
+	float sqr(float x);
+	void clear() { deleteList(sources); };
 };
 
 class FadingLightSource : StaticLightSource

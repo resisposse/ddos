@@ -20,10 +20,7 @@ public:
 	// sf::Texture *ObjectTex;
 
 	Object(sf::Texture& objectTexture);
-	void run();
-	void processEvent(sf::Event event);
 	void render();
-	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
 	void update(float frameClock);
 	void update(float enemyPositionX, float enemyPositionY,
 	            float playerPositionX, float playerPositionY);
@@ -61,7 +58,7 @@ public:
 class HealthBar : public Object {
 public:
 	HealthBar(sf::Texture& objectTexture);
-	
+
 };
 
 #endif

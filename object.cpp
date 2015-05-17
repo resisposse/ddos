@@ -25,27 +25,6 @@ Object::Object(sf::Texture& objectTexture)
 	//sprite.setOrigin(16, 16);
 }
 
-void Object::processEvent(sf::Event event)
-{
-	switch (event.type) {
-	case sf::Event::KeyPressed: {
-		handlePlayerInput(event.key.code, true);
-		break;
-	}
-	case sf::Event::KeyReleased: {
-		handlePlayerInput(event.key.code, false);
-		break;
-	}
-	case sf::Event::Closed: {
-		app->close();
-		break;
-	}
-	default: {
-		break;
-	}
-	}
-}
-
 void Object::update(float enemyPositionX, float enemyPositionY,
                     float playerPositionX, float playerPositionY)
 {
@@ -104,19 +83,6 @@ void Object::update(float frameClock)
 		sprite.move(movement * frameClock);
 		positionPlayerX = sprite.getPosition().x;
 		positionPlayerY = sprite.getPosition().y;
-	}
-}
-
-void Object::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
-{
-	if (key == sf::Keyboard::W) {
-		mIsMovingUp = isPressed;
-	} else if (key == sf::Keyboard::S) {
-		mIsMovingDown = isPressed;
-	} else if (key == sf::Keyboard::A) {
-		mIsMovingLeft = isPressed;
-	} else if (key == sf::Keyboard::D) {
-		mIsMovingRight = isPressed;
 	}
 }
 

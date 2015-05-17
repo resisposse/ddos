@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "event.hpp"
 #include "light.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
@@ -25,10 +26,10 @@ Game::Game()
 	app = new sf::RenderWindow(sf::VideoMode(800, 608, 32),
 	                           "Dark Domains Of Space",
 	                           sf::Style::Resize | sf::Style::Close);
+	app->setFramerateLimit(60);
 	running = true;
 	shooting = false;
 	lastClock = timer.getElapsedTime().asMilliseconds();
-	app->setFramerateLimit(60);
 
 	loadCursorTexture();
 	loadHealthbarTexture();
@@ -36,10 +37,11 @@ Game::Game()
 	loadWeaponTextures();
 	loadProjectileTextures();
 
+	event = new Event;
 	mapGenerator = new MapGenerator;
 	map = new Map(mapGenerator->generateMap());
-	light = new Light();
-	lightState = new LightState();
+	light = new Light;
+	lightState = new LightState;
 	player = new Player(*playerTexture, playerSpawn());
 	healthbar = new HealthBar(*healthTexture);
 
@@ -53,6 +55,7 @@ Game::Game()
 
 Game::~Game()
 {
+	delete event;
 	delete map;
 	delete mapGenerator;
 	delete light;
@@ -74,7 +77,7 @@ Game::~Game()
 void Game::update()
 {
 	while (running) {
-		parseEvents();
+		event->processEvent();
 
 		updateClock();
 		updateView();
@@ -140,26 +143,21 @@ void Game::loadCharacterTextures()
 {
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
-	playerTexture->setSmooth(true);
 
 	enemyMeleeTexture = new sf::Texture();
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
-	enemyMeleeTexture->setSmooth(true);
 }
 
 void Game::loadWeaponTextures()
 {
 	pistolTexture = new sf::Texture();
 	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
-	pistolTexture->setSmooth(true);
 
 	laserRifleTexture = new sf::Texture();
 	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
-	laserRifleTexture->setSmooth(true);
 
 	shotgunTexture = new sf::Texture();
 	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
-	shotgunTexture->setSmooth(true);
 }
 
 void Game::loadProjectileTextures()
@@ -251,99 +249,6 @@ void Game::spawnWeapons(int amount)
 		}
 		weaponsOnMap[i].sprite.setPosition(randomSpawn());
 		weaponsOnMap[i].sprite.setRotation(rand() % 360);
-	}
-}
-
-void Game::spawnWeapons(int heldWeapon, int x, int y)
-{
-	weaponsOnMap.push_back(weapons[playerWeapons[heldWeapon].weaponPosition]);
-	weaponsOnMap.back().sprite.setPosition(x, y);
-	weaponsOnMap.back().sprite.setRotation(rand() % 360);
-}
-
-/*
- * A lot of events are handled separately and thus we have numerous event
- * processing functions of the same name. It might or might not be easier to
- * handle this way.
- *
- * http://bit.ly/1niVeJF
- */
-void Game::parseEvents()
-{
-	sf::Event event;
-	while (app->pollEvent(event)) {
-		game->processEvent(event);
-		player->processEvent(event);
-	}
-	if (!app->isOpen()) {
-		running = false;
-	}
-}
-
-void Game::processEvent(sf::Event event)
-{
-	switch(event.type) {
-	case sf::Event::MouseWheelMoved: {
-		if (event.mouseWheel.delta < 0) {
-			if (zoomLevel < 2.0f) {
-				playerView->zoom(2.0f);
-				zoomLevel *= 2.0f;
-			}
-		} else {
-			if (zoomLevel > 0.25f) {
-				playerView->zoom(0.5f);
-				zoomLevel *= 0.5f;
-			}
-		}
-		break;
-	}
-	case sf::Event::KeyPressed: {
-		if (event.key.code == sf::Keyboard::Escape) {
-			app->close();
-			break;
-		} else if (event.key.code == sf::Keyboard::E) {
-			heldWeapon = (heldWeapon + 1) % playerWeapons.size();
-		} else if (event.key.code == sf::Keyboard::Q) {
-			if (heldWeapon == 0) {
-				heldWeapon = playerWeapons.size();
-			}
-			heldWeapon = (heldWeapon - 1);
-		} else if (event.key.code == sf::Keyboard::G) {
-			dropWeapon();
-			pickWeapon();
-		}
-		break;
-	}
-	case sf::Event::MouseButtonPressed: {
-		if (event.mouseButton.button == sf::Mouse::Left)
-			shooting = true;
-		if (event.mouseButton.button == sf::Mouse::Right)
-			spawnEnemies(1);
-		break;
-	}
-	case sf::Event::MouseButtonReleased: {
-		if (event.mouseButton.button == sf::Mouse::Left) shooting = false;
-		if (event.mouseButton.button == sf::Mouse::Right) light->clear();
-		break;
-	}
-	case sf::Event::Closed: {
-		running = false;
-		break;
-	}
-	case sf::Event::Resized: {
-		playerView->setSize(event.size.width, event.size.height);
-		map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0), *playerView));
-		sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
-		pos *= 0.5f;
-		pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
-		map->bgSpr->setScale(
-			float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
-			float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
-		break;
-	}
-	default: {
-		break;
-	}
 	}
 }
 
@@ -554,43 +459,6 @@ void Game::drawCursor()
 
 }
 
-void Game::addSource()
-{
-	switch (lightState->brush.type) {
-	case stStatic:
-		light->sources.push_back((StaticLightSource *)
-		                         (new StaticLightSource
-		                         (lightState->brush.position,
-		                          lightState->brush.color,
-		                          lightState->brush.intensity)));
-		break;
-	case stFading:
-		light->sources.push_back((StaticLightSource *)
-		                         (new FadingLightSource
-		                         (lightState->brush.position,
-		                          lightState->brush.color,
-		                          lightState->brush.intensity,
-		                          lightState->brush.sourceTime)));
-		break;
-	case stPulsing:
-		light->sources.push_back((StaticLightSource *)
-		                         (new PulsingLightSource
-		                         (lightState->brush.position,
-		                          lightState->brush.color,
-		                          lightState->brush.intensity,
-		                          lightState->brush.sourceTime)));
-		break;
-	case stTest:
-		light->sources.push_back((StaticLightSource *)
-		                         (new TestLightSource
-		                         (lightState->brush.position,
-		                          lightState->brush.color,
-		                          lightState->brush.intensity,
-		                          lightState->brush.sourceTime)));
-		break;
-	}
-}
-
 void Game::shoot()
 {
 	if (shooting == 1 && shootingCooldown <= 0) {
@@ -627,7 +495,11 @@ void Game::shoot()
 void Game::dropWeapon()
 {
 	if (playerWeapons.size() > 1) {
-		spawnWeapons(heldWeapon, player->sprite.getPosition().x, player->sprite.getPosition().y);
+		int playerPositionX = player->sprite.getPosition().x;
+		int playerPositionY = player->sprite.getPosition().y;
+		weaponsOnMap.push_back(weapons[playerWeapons[heldWeapon].weaponPosition]);
+		weaponsOnMap.back().sprite.setPosition(playerPositionX, playerPositionY);
+		weaponsOnMap.back().sprite.setRotation(rand() % 360);
 		playerWeapons.erase(playerWeapons.begin() + heldWeapon);
 		heldWeapon = 0;
 	}
@@ -750,7 +622,6 @@ sf::Vector2f Game::playerSpawn()
 int main()
 {
 	game = new Game;
-	srand(time(NULL));
 	while (game->running) {
 		game->update();
 	}

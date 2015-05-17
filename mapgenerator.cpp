@@ -104,7 +104,8 @@ bool MapGenerator::isInBounds(int x, int y) const
 }
 
 /*
- * This function prevents corridors from spawning near the edges of the map that would otherwise create unnecessary dead ends. 
+ * This function prevents corridors from spawning near the edges of the map that
+ * would otherwise create unnecessary dead ends.
  */
 bool MapGenerator::isInBounds(int x, int y, int offset, CardinalDirection direction) const
 {

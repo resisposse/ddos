@@ -770,13 +770,14 @@ void Map::drawTile(std::vector<sf::Sprite *> tileVector, int tileVectorRand[MAP_
 int Map::getCorrectFrame(int totalFrames, float duration)
 {
 	int frame = 0;
-	if (int((lastClock + frameClock) / duration) > int(lastClock / duration)) {
+	float lastClockTmp = lastClock / 1000.0;
+	if (int((lastClockTmp + frameClock) / duration) > int(lastClockTmp / duration)) {
 		/* Calculate the frame number */
-		frame = int((lastClock + frameClock) / duration);
+		frame = int((lastClockTmp + frameClock) / duration);
 		/* Adjust for looping */
 		frame %= totalFrames;
 	} else {
-		frame = int(lastClock / duration);
+		frame = int(lastClockTmp / duration);
 		frame %= totalFrames;
 	}
 	return frame;

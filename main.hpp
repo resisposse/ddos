@@ -7,16 +7,17 @@
 #define MAIN
 
 /* Forward declarations due to cyclic dependencies */
+class Event;
 class Map;
 class MapGenerator;
 class Light;
 class LightState;
-class HealthBar;
 class Object;
 class Player;
 class EnemyMelee;
 class ProjectileSprite;
 class Weapon;
+class HealthBar;
 
 class Game
 {
@@ -61,6 +62,7 @@ public:
 	std::vector<Weapon> weaponsOnMap;
 	std::vector<Weapon> playerWeapons;
 
+	Event *event;
 	MapGenerator *mapGenerator;
 	Map *map;
 	Light *light;
@@ -84,9 +86,6 @@ public:
 	void initializeHUD();
 	void spawnEnemies(int amount);
 	void spawnWeapons(int amount);
-	void spawnWeapons(int weaponType, int x, int y);
-	void parseEvents();
-	void processEvent(sf::Event event);
 	void updateClock();
 	void updateView();
 	void updateLighting();
@@ -108,7 +107,6 @@ public:
 	void drawCurrentGun();
 	void drawCurrentAmmo();
 	void drawCursor();
-	void addSource();
 	void shoot();
 	void dropWeapon();
 	void pickWeapon();
