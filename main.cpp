@@ -28,7 +28,6 @@ Game::Game()
 	                           sf::Style::Resize | sf::Style::Close);
 	app->setFramerateLimit(60);
 	running = true;
-	shooting = false;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
 	loadCursorTexture();
@@ -189,21 +188,21 @@ void Game::initializeView()
 
 void Game::initializeLighting()
 {
-	lightState->brush.type = stStatic;
+	/* These affect all light sources, if there's nothing to override them */
 	lightState->brush.intensity = 100;
 	lightState->brush.color = sf::Color::White;
 	lightState->brush.color.r = 255;
 	lightState->brush.color.g = 255;
 	lightState->brush.color.b = 255;
-	lightState->brush.sourceTime = 2.0f;
-	lightState->ambientIntensity = 0;
-	lightState->ambientColor = sf::Color::White;
-	lightState->ambientColor.r = 0;
-	lightState->ambientColor.g = 0;
-	lightState->ambientColor.b = 0;
 
-	/* Options are: stStatic, stPulsing, stFading, stTest */
+	/*
+	 * These only go for light sources added through Light::addSource(),
+	 * not the one around the player.
+	 *
+	 * Options are: stStatic, stPulsing, stFading, stTest
+	 */
 	lightState->brush.type = stPulsing;
+	lightState->brush.sourceTime = 2.0f;
 }
 
 void Game::initializeWeapons()
@@ -421,11 +420,6 @@ void Game::drawWeapon()
 	app->draw(playerWeapons[heldWeapon].sprite);
 }
 
-void Game::drawCurrentAmmo()
-{
-	app->draw(game->currentAmmo);
-}
-
 void Game::drawWeaponsOnMap()
 {
 	for (unsigned int i = 0; i < weaponsOnMap.size(); i++) {
@@ -451,45 +445,17 @@ void Game::drawCurrentGun()
 	app->draw(game->currentGun);
 }
 
+void Game::drawCurrentAmmo()
+{
+	app->draw(game->currentAmmo);
+}
+
 void Game::drawCursor()
 {
 	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
 	cursorSprite->setPosition(static_cast<sf::Vector2f>(mouse));
 	app->draw(*cursorSprite);
 
-}
-
-void Game::shoot()
-{
-	if (shooting == 1 && shootingCooldown <= 0) {
-		shootingCooldown = weapons[heldWeapon].attackSpeed;
-			ammos = weapons[heldWeapon].getAmmo();
-			weapons[playerWeapons[heldWeapon].weaponPosition].setAmmo(1);
-		switch (playerWeapons[heldWeapon].ammoType) {
-		case 0:
-			projectiles.push_back(BulletSprite(*bulletTexture, player->sprite.getPosition(),
-			                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                   playerWeapons[heldWeapon].spreadAngle));
-			break;
-		case 1:
-			projectiles.push_back(LaserSprite(*laserBeamTexture, player->sprite.getPosition(),
-			                                  sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                  playerWeapons[heldWeapon].spreadAngle));
-			break;
-		case 2:
-			for (int i = 0; i < playerWeapons[heldWeapon].bullets; i++) {
-				projectiles.push_back(PelletSprite(*pelletTexture, player->sprite.getPosition(),
-				                                   sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				                                   playerWeapons[heldWeapon].spreadAngle));
-			}
-			break;
-		default:
-			std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
-			break;
-		}
-	} else {
-		shootingCooldown -= frameClock;
-	}
 }
 
 void Game::dropWeapon()

@@ -8,6 +8,7 @@
 #include <random>
 #include <cmath>
 #include "main.hpp"
+#include "object.hpp"
 #include "map.hpp"
 
 Map::Map(char *generatedMap)
@@ -436,14 +437,22 @@ int Map::updateWallDirection(MapTile tile)
 
 void Map::renderTiles()
 {
-	sf::Color tileColor;
+	int playerPositionX = game->player->sprite.getPosition().x / 32;
+	int playerPositionY = game->player->sprite.getPosition().y / 32;
+	sf::Color tileColor = sf::Color::White;
+
 	app->draw(*bgSpr);
-	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
-		tileColor = sf::Color::White;
+
+	/*
+	 * These magic numbers (12, 9, 14 and 11) are roughly the amount needed
+	 * to draw the map just under the visible light and not under the fog of
+	 * war.
+	 */
+	sf::Vector2i from(playerPositionX - 12, playerPositionY - 9);
+	sf::Vector2i to(playerPositionX + 14, playerPositionY + 11);
+	for (int i = from.x - 1; i < to.x; i++) for (int j = from.y - 1; j < to.y; j++) {
 		switch (tiles[i][j].type) {
 		case mtWall:
-			//tileColor = sf::Color(140, 140, 140, 255);
-			/* TODO Condense this switch case to a function. */
 			switch (direction = updateWallDirection(tiles[i][j])){
 			case 1:
 				//drawTile(wallCornerTiles, wallCornerTilesRand, i, j, tileColor);

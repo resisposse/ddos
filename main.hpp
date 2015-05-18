@@ -24,18 +24,16 @@ class Game
 public:
 	long currentClock = 0;
 	bool running;
-	bool shooting;
 	bool focused;
-	float zoomLevel;
-	float playerPositionX, playerPositionY;
 	int heldWeapon = 0;
 	int weaponType = 0;
+	int ammo;
+	float zoomLevel;
+	float playerPositionX, playerPositionY;
 	float weaponHUDX, weaponHUDY;
 	float healthbarPositionX, healthbarPositionY;
 	float healthTextPositionX, healthTextPositionY;
 	float ammoHUDX, ammoHUDY;
-	int ammos;
-	float shootingCooldown = 0;
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
 	sf::Texture *bulletTexture;

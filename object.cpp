@@ -9,15 +9,17 @@
 #include "map.hpp"
 #include "projectile.hpp"
 #include "main.hpp"
+#include "weapon.hpp"
 #include "object.hpp"
 
 Object::Object(sf::Texture& objectTexture)
 {
-	playerSpeed = 100.0;
 	mIsMovingUp = false;
 	mIsMovingDown = false;
 	mIsMovingRight = false;
 	mIsMovingLeft = false;
+	playerSpeed = 100.0;
+	playerShooting = false;
 
 	//sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
 	sprite.setTexture(objectTexture);
@@ -35,12 +37,10 @@ void Object::update(float frameClock)
 {
 	float angle;
 	double a, b;
-
-	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
 	float playerPositionX = sprite.getPosition().x;
 	float playerPositionY = sprite.getPosition().y;
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
 	sprite.setOrigin(16, 16);
-
 	a = mouse.x - (playerPositionX);
 	b = mouse.y - (playerPositionY);
 	angle = -atan2(a, b) * 180 / 3.141593;
@@ -60,9 +60,11 @@ void Object::update(float frameClock)
 		movement.x += playerSpeed;
 	}
 	if (getHitpoints() <= 0) {
-		std::cout << "you dieded" << std::endl;
+		/* you dieded */
 	}
-	game->shoot();
+
+	/* Goes in to check whether shooting flag is true or false */
+	playerShoot();
 
 	float positionPlayerX = sprite.getPosition().x;
 	float positionPlayerY = sprite.getPosition().y;
@@ -141,6 +143,43 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 			this->sprite.move(enemyMovement * frameClock);
 			enemyShoot(playerCoords);
 		}
+	}
+}
+
+/*
+ * Weapon and projectile vectors reside in main Game class, so everything is
+ * called through game->.
+ */
+void Object::playerShoot()
+{
+	if (playerShooting == true && shootingCooldown <= 0) {
+		shootingCooldown = game->weapons[game->heldWeapon].attackSpeed;
+		game->ammo = game->weapons[game->heldWeapon].getAmmo();
+		game->weapons[game->playerWeapons[game->heldWeapon].weaponPosition].setAmmo(1);
+		switch (game->playerWeapons[game->heldWeapon].ammoType) {
+		case 0:
+			game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
+			                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+			break;
+		case 1:
+			game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
+			                                        sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+			                                        game->playerWeapons[game->heldWeapon].spreadAngle));
+			break;
+		case 2:
+			for (int i = 0; i < game->playerWeapons[game->heldWeapon].bullets; i++) {
+				game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
+				                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+			}
+			break;
+		default:
+			std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
+			break;
+		}
+	} else {
+		shootingCooldown -= frameClock;
 	}
 }
 

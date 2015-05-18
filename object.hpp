@@ -9,11 +9,13 @@
 class Object
 {
 public:
-	float playerSpeed;
 	bool mIsMovingUp;
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	bool playerShooting;
+	float playerSpeed;
+	float shootingCooldown = 0;
 	sf::Sprite sprite;
 	sf::View fixed;
 	sf::Vector2i mouse;
@@ -26,6 +28,7 @@ public:
 	            float playerPositionX, float playerPositionY);
 	void approach(float enemyPositionX, float enemyPositionY,
 	              float playerPositionX, float playerPositionY);
+	void playerShoot();
 	void enemyShoot(sf::Vector2i coords);
 	int getHitpoints() const;
 	void setHitpoints(int hp);
@@ -55,10 +58,16 @@ public:
 	EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords);
 };
 
-class HealthBar : public Object {
+class EnemySoldier : public Object
+{
+public:
+	EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
+class HealthBar : public Object
+{
 public:
 	HealthBar(sf::Texture& objectTexture);
-
 };
 
 #endif

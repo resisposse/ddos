@@ -528,8 +528,8 @@ char* MapGenerator::generateMap()
 		spawnCreated = false;
 		goalCreated = false;
 		fillTiles(' ');
-		setTiles(2, 2, MAP_SIZE_X - 2, MAP_SIZE_Y - 2, 'X');
-		generateRoomCenter(MAP_SIZE_X / 2, MAP_SIZE_Y / 2);
+		setTiles(4, 4, MAP_SIZE_X - 4, MAP_SIZE_Y - 4, 'X');
+		generateRoomCenter(MAP_SIZE_X / 4, MAP_SIZE_Y / 4);
 
 		for (int features = 1; features != maxFeatures_; features++) {
 			if (!generateFeature()) {

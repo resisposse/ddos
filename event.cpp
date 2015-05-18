@@ -76,7 +76,7 @@ void Event::processEvent()
 		case sf::Event::MouseButtonPressed:
 			switch (event.mouseButton.button) {
 			case sf::Mouse::Left:
-				game->shooting = true;
+				game->player->playerShooting = true;
 				break;
 			case sf::Mouse::Right:
 				game->spawnEnemies(1);
@@ -88,7 +88,7 @@ void Event::processEvent()
 		case sf::Event::MouseButtonReleased:
 			switch (event.mouseButton.button) {
 			case sf::Mouse::Left:
-				game->shooting = false;
+				game->player->playerShooting = false;
 				break;
 			case sf::Mouse::Right:
 				game->light->clear();

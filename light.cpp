@@ -7,6 +7,7 @@
 #include <cmath>
 #include "map.hpp"
 #include "main.hpp"
+#include "object.hpp"
 #include "light.hpp"
 
 Light::Light()
@@ -36,21 +37,21 @@ void Light::update(StaticLightSource *tmpSource)
 	renderLight();
 }
 
+/*
+ * Reset lighting by painting the whole screen black, the light around the
+ * player is then reapplied later on in buildLight() and renderLight() where the
+ * new updated player position is taken into account. This all happens once in a
+ * frame.
+ */
 void Light::resetLight()
 {
 	sf::Vector2i from(0, 0);
 	sf::Vector2i to(MAP_SIZE_X, MAP_SIZE_Y);
-	sf::Color color = applyIntensity(ambientColor, ambientIntensity);
 	for (int i = 0; i < LIGHT_MAX_LIGHTLEVEL; lightCounts[i++] = 0);
 	for (int i = from.x; i < to.x; i++) {
 		for (int j = from.y; j < to.y; j++) {
-			if (game->map->tiles[i][j].type == mtAir) {
-				game->map->tiles[i][j].intensity = ambientIntensity;
-				game->map->tiles[i][j].light = color;
-			} else {
-				game->map->tiles[i][j].intensity = 0;
-				game->map->tiles[i][j].light = sf::Color::Black;
-			}
+			game->map->tiles[i][j].intensity = 0;
+			game->map->tiles[i][j].light = sf::Color::Black;
 		}
 	}
 }
@@ -60,7 +61,7 @@ void Light::checkSources(StaticLightSource *tmpSource)
 	for (unsigned int i = 0; i < sources.size(); i++) {
 		addIntensity(sources[i]->position, sources[i]->getIntensity(), sources[i]->color);
 	}
-	if (sf::IntRect(0, 0, MAP_SIZE_X, MAP_SIZE_Y).contains(tmpSource->position)) {
+	if (sf::IntRect(0, 0, 100, 100).contains(tmpSource->position)) {
 		addIntensity(tmpSource->position, tmpSource->intensity, tmpSource->color);
 	}
 }
@@ -84,10 +85,18 @@ void Light::buildLight()
 	}
 }
 
+/*
+ * Draw light or lack of it (blackness) on every tile that's visible in the
+ * player's current view.
+ */
 void Light::renderLight()
 {
-	sf::Vector2i from(0, 0);
-	sf::Vector2i to(MAP_SIZE_X, MAP_SIZE_Y);
+	int playerPositionX = game->player->sprite.getPosition().x / 32;
+	int playerPositionY = game->player->sprite.getPosition().y / 32;
+	int viewSizeX = game->playerView->getSize().x / 32;
+	int viewSizeY = game->playerView->getSize().y / 32;
+	sf::Vector2i from(playerPositionX - viewSizeX, playerPositionY - viewSizeY);
+	sf::Vector2i to(playerPositionX + viewSizeX, playerPositionY + viewSizeY);
 	for (int i = from.x - 1; i < to.x; i++) {
 		for (int j = from.y - 1; j < to.y; j++) {
 			lightMask[0].position = getTilePos(i, j);
