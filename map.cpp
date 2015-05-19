@@ -289,54 +289,58 @@ Map::Map(char *generatedMap)
 		wallVerticalTilesRand[i][j]   = rand() % wallVerticalTiles.size();
 		wallCornerTilesRand[i][j]     = rand() % wallCornerTiles.size();
 		wallFillTilesRand[i][j]	      = rand() % wallFillTiles.size();
+		int wallAbsorb = 45;
+		int floorAbsorb = 10;
+		int collisionOn = 1;
+		int collisionOff = 0;
 
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
 		switch (generatedMap[i + MAP_SIZE_X * j]) {
 		case 'X':
 			tiles[i][j].type = mtWall;
-			tiles[i][j].absorb = 45;
-			collisionMap[i][j] = 1;
+			tiles[i][j].absorb = wallAbsorb;
+			collisionMap[i][j] = collisionOn;
 			break;
 		case '.':
 			tiles[i][j].type = mtFloor;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case ' ':
 			tiles[i][j].type = mtAir;
-			tiles[i][j].absorb = 45;
-			collisionMap[i][j] = 1;
+			tiles[i][j].absorb = wallAbsorb;
+			collisionMap[i][j] = collisionOn;
 			break;
 		case '0':
 			tiles[i][j].type = mtFloorMetal;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case 'L':
 			tiles[i][j].type = mtLava;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case 'S':
 			tiles[i][j].type = mtSpawn;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case 'G':
 			tiles[i][j].type = mtGoal;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case 'D':
 			tiles[i][j].type = mtDoor;
-			tiles[i][j].absorb = 10;
-			collisionMap[i][j] = 0;
+			tiles[i][j].absorb = floorAbsorb;
+			collisionMap[i][j] = collisionOff;
 			break;
 		case 'R':
 			tiles[i][j].type = mtWall;
-			tiles[i][j].absorb = 45;
-			collisionMap[i][j] = 1;
+			tiles[i][j].absorb = wallAbsorb;
+			collisionMap[i][j] = collisionOn;
 		}
 	}
 }

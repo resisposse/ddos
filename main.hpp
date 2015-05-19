@@ -55,10 +55,10 @@ public:
 	sf::Text currentAmmo;
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<ProjectileSprite> enemyProjectiles;
-	std::vector<Object> enemies;
-	std::vector<Weapon> weapons;
-	std::vector<Weapon> weaponsOnMap;
-	std::vector<Weapon> playerWeapons;
+	std::vector<Object*> enemies;
+	std::vector<Weapon*> weapons;
+	std::vector<Weapon*> mapWeapons;
+	std::vector<Weapon*> playerWeapons;
 
 	Event *event;
 	MapGenerator *mapGenerator;
@@ -99,7 +99,7 @@ public:
 	void drawProjectiles();
 	void drawPlayer();
 	void drawWeapon();
-	void drawWeaponsOnMap();
+	void drawMapWeapons();
 	void drawHealthbar();
 	void drawHealthText();
 	void drawCurrentGun();
@@ -112,6 +112,8 @@ public:
 	int checkProximity(sf::Vector2f enemy);
 	sf::Vector2f randomSpawn();
 	sf::Vector2f playerSpawn();
+	void clearVectors();
+	void createNewStage();
 };
 extern float frameClock;
 extern long lastClock;

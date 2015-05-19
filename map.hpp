@@ -7,8 +7,8 @@
 #define MAP
 
 #define TILE_SIZE 32
-#define MAP_SIZE_X 85
-#define MAP_SIZE_Y 73
+#define MAP_SIZE_X 80
+#define MAP_SIZE_Y 68
 
 enum MapTileType
 {

@@ -146,32 +146,28 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 	}
 }
 
-/*
- * Weapon and projectile vectors reside in main Game class, so everything is
- * called through game->.
- */
 void Object::playerShoot()
 {
 	if (playerShooting == true && shootingCooldown <= 0) {
-		shootingCooldown = game->weapons[game->heldWeapon].attackSpeed;
-		game->ammo = game->weapons[game->heldWeapon].getAmmo();
-		game->weapons[game->playerWeapons[game->heldWeapon].weaponPosition].setAmmo(1);
-		switch (game->playerWeapons[game->heldWeapon].ammoType) {
+		shootingCooldown = game->playerWeapons[game->heldWeapon]->attackSpeed;
+		game->playerWeapons[game->heldWeapon]->setAmmo(1);
+		game->ammo = game->playerWeapons[game->heldWeapon]->getAmmo();
+		switch (game->playerWeapons[game->heldWeapon]->ammoType) {
 		case 0:
 			game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
-			                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				game->playerWeapons[game->heldWeapon]->spreadAngle));
 			break;
 		case 1:
 			game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
-			                                        sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-			                                        game->playerWeapons[game->heldWeapon].spreadAngle));
+				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+				game->playerWeapons[game->heldWeapon]->spreadAngle));
 			break;
 		case 2:
-			for (int i = 0; i < game->playerWeapons[game->heldWeapon].bullets; i++) {
+			for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
 				game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
-				                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					game->playerWeapons[game->heldWeapon]->spreadAngle));
 			}
 			break;
 		default:
@@ -182,6 +178,44 @@ void Object::playerShoot()
 		shootingCooldown -= frameClock;
 	}
 }
+
+/*
+ * Weapon and projectile vectors reside in main Game class, so everything is
+ * called through game->.
+ */
+//void Object::playerShoot()
+//{
+//	if (playerShooting == true && shootingCooldown <= 0) {
+//		shootingCooldown = game->heldWeapon.attackSpeed;
+//		game->ammo = game->weapons[game->heldWeapon].getAmmo();
+//		game->weapons[game->playerWeapons[game->heldWeapon].weaponPosition].setAmmo(1);
+//		switch (game->playerWeapons[game->heldWeapon].ammoType) {
+//		case 0:
+//			game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
+//			                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+//			                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+//			break;
+//		case 1:
+//			game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
+//			                                        sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+//			                                        game->playerWeapons[game->heldWeapon].spreadAngle));
+//			break;
+//		case 2:
+//			for (int i = 0; i < game->playerWeapons[game->heldWeapon].bullets; i++) {
+//				game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
+//				                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+//				                                         game->playerWeapons[game->heldWeapon].spreadAngle));
+//			}
+//			break;
+//		default:
+//			std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
+//			break;
+//		}
+//	} else {
+//		shootingCooldown -= frameClock;
+//	}
+//}
+
 
 void Object::enemyShoot(sf::Vector2i coords)
 {

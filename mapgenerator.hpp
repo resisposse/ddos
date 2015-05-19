@@ -6,8 +6,8 @@
 #ifndef MAPGENERATOR
 #define MAPGENERATOR
 
-#define MAP_SIZE_X 85
-#define MAP_SIZE_Y 73
+#define MAP_SIZE_X 80
+#define MAP_SIZE_Y 68
 
 /* Forward declaration due to cyclic dependency */
 class Random;
@@ -72,6 +72,7 @@ private:
 	char *dungeonTiles_;
 	bool spawnCreated = false;
 	bool goalCreated = false;
+	unsigned int edgeOffset;
 	Random *random;
 };
 

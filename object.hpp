@@ -43,7 +43,7 @@ private:
 	int mHitpoints;
 	float meleeDamage;
 	float cooldown;
-	float aggro;
+	float aggro = 0;
 };
 
 class Player : public Object

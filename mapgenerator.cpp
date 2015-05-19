@@ -35,6 +35,8 @@ MapGenerator::MapGenerator()
 	minCorridorWall_ = 3;
 	maxCorridorWall_ = 3;
 
+	edgeOffset = 15;
+
 	random = new Random();
 
 	dungeonTiles_ = new char[MAP_SIZE_X * MAP_SIZE_Y];
@@ -99,8 +101,7 @@ sf::Vector2f getRoomCenter(int x, int y, int roomWidth, int roomHeight, Cardinal
 
 bool MapGenerator::isInBounds(int x, int y) const
 {
-	int offset = 15;
-	return x >= offset && x < MAP_SIZE_X - offset && y >= offset && y < MAP_SIZE_Y - offset;
+	return x >= edgeOffset && x < MAP_SIZE_X - edgeOffset && y >= edgeOffset && y < MAP_SIZE_Y - edgeOffset;
 }
 
 /*
@@ -109,12 +110,11 @@ bool MapGenerator::isInBounds(int x, int y) const
  */
 bool MapGenerator::isInBounds(int x, int y, int offset, CardinalDirection direction) const
 {
-	int safeOffset = 15;
-	int adjustOffset = offset + safeOffset;
+	int adjustOffset = offset + edgeOffset;
 	if (direction == CardinalDirection::north || direction == CardinalDirection::south) {
-		return x >= safeOffset && x < MAP_SIZE_X - safeOffset && y >= adjustOffset && y < MAP_SIZE_Y - adjustOffset;
+		return x >= edgeOffset && x < MAP_SIZE_X - edgeOffset && y >= adjustOffset && y < MAP_SIZE_Y - adjustOffset;
 	} else {
-		return x >= adjustOffset && x < MAP_SIZE_X - adjustOffset && y >= safeOffset && y < MAP_SIZE_Y - safeOffset;
+		return x >= adjustOffset && x < MAP_SIZE_X - adjustOffset && y >= edgeOffset && y < MAP_SIZE_Y - edgeOffset;
 	}
 }
 
@@ -528,8 +528,8 @@ char* MapGenerator::generateMap()
 		spawnCreated = false;
 		goalCreated = false;
 		fillTiles(' ');
-		setTiles(4, 4, MAP_SIZE_X - 4, MAP_SIZE_Y - 4, 'X');
-		generateRoomCenter(MAP_SIZE_X / 4, MAP_SIZE_Y / 4);
+		setTiles(edgeOffset, edgeOffset, MAP_SIZE_X - edgeOffset, MAP_SIZE_Y - edgeOffset, 'X');
+		generateRoomCenter(MAP_SIZE_X / 2, MAP_SIZE_Y / 2);
 
 		for (int features = 1; features != maxFeatures_; features++) {
 			if (!generateFeature()) {

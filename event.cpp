@@ -48,6 +48,14 @@ void Event::processEvent()
 				game->dropWeapon();
 				game->pickWeapon();
 				break;
+			case sf::Keyboard::T: {
+				int i = (int)game->playerPositionX / 32;
+				int j = (int)game->playerPositionY / 32;
+				if (game->map->tiles[i][j].type == MapTileType::mtGoal) {
+					game->createNewStage();
+				}
+				break;
+			}
 			case sf::Keyboard::Escape:
 				app->close();
 				break;
