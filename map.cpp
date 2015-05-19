@@ -483,11 +483,11 @@ void Map::renderTiles()
 	app->draw(*bgSpr);
 
 	/*
-	 * These magic numbers (12, 9, 14 and 11) are roughly the amount needed
+	 * These magic numbers (15, 12, 14 and 11) are roughly the amount needed
 	 * to draw the map just under the visible light and not under the fog of
 	 * war.
 	 */
-	sf::Vector2i from(playerPositionX - 12, playerPositionY - 9);
+	sf::Vector2i from(playerPositionX - 15, playerPositionY - 12);
 	sf::Vector2i to(playerPositionX + 14, playerPositionY + 11);
 	for (int i = from.x - 1; i < to.x; i++) for (int j = from.y - 1; j < to.y; j++) {
 		switch (tiles[i][j].type) {

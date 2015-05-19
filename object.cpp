@@ -45,7 +45,11 @@ void Object::update(float frameClock)
 	b = mouse.y - (playerPositionY);
 	angle = -atan2(a, b) * 180 / 3.141593;
 	sprite.setRotation(angle);
-
+	
+	if (getShieldpoints() < maxShieldPoints) {
+		setShieldpoints(getShieldpoints() + ((maxShieldPoints - getShieldpoints()) / 200));
+	}
+	
 	sf::Vector2f movement(0.0, 0.0);
 	if (mIsMovingUp) {
 		movement.y -= playerSpeed;
@@ -236,12 +240,28 @@ void Object::setHitpoints(int hp)
 	mHitpoints = hp;
 }
 
+float Object::getShieldpoints() const
+{
+	return mShieldpoints;
+}
+
+void Object::setShieldpoints(float shield)
+{
+	mShieldpoints = shield;
+}
+
 void Object::setDamage(float damage)
 {
+	float currentShieldpoints = getShieldpoints();
 	int currentHitpoints = getHitpoints();
-	int newHitpoints = currentHitpoints - damage;
-	if (newHitpoints < 0) newHitpoints = 0;
-	setHitpoints(newHitpoints);
+	if (currentShieldpoints <= 0) {
+		int newHitpoints = currentHitpoints - damage;
+		if (newHitpoints < 0) newHitpoints = 0;
+		setHitpoints(newHitpoints);
+	} else {
+		float newShieldpoints = currentShieldpoints - damage;
+		setShieldpoints(newShieldpoints);
+	}
 }
 
 void Object::setMeleeDamage(float damage)
@@ -271,6 +291,7 @@ float Object::getAggro() const
 
 Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
+	maxShieldPoints = 200.0;
 	/*
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
@@ -283,11 +304,13 @@ Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectT
 	sprite.setPosition(coords.x, coords.y);
 
 	setHitpoints(100);
+	setShieldpoints(100.0);
 	setMeleeDamage(0);
 }
 
 EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
+	maxShieldPoints = 0.0;
 	/*
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
@@ -300,11 +323,17 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object
 	sprite.setPosition(coords.x, coords.y);
 
 	setHitpoints(50);
+	setShieldpoints(0.0);
 	setMeleeDamage(0.5);
 	setCooldown(0);
 }
 
 HealthBar::HealthBar(sf::Texture& objectTexture) : Object(objectTexture)
+{
+
+}
+
+ShieldBar::ShieldBar(sf::Texture& objectTexture) : Object(objectTexture)
 {
 
 }

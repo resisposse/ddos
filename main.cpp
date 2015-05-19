@@ -35,6 +35,7 @@ Game::Game()
 
 	loadCursorTexture();
 	loadHealthbarTexture();
+	loadShieldbarTexture();
 	loadCharacterTextures();
 	loadWeaponTextures();
 	loadProjectileTextures();
@@ -46,6 +47,7 @@ Game::Game()
 	lightState = new LightState;
 	player = new Player(*playerTexture, playerSpawn());
 	healthbar = new HealthBar(*healthTexture);
+	shieldbar = new ShieldBar(*shieldTexture);
 
 	initializeView();
 	initializeLighting();
@@ -74,6 +76,8 @@ Game::~Game()
 	delete player;
 	delete playerView;
 	delete healthbar;
+	delete shieldTexture;
+	delete shieldbar;
 	delete app;
 }
 
@@ -103,7 +107,6 @@ void Game::render()
 {
 	light->initialize();
 	map->renderTiles();
-
 	drawMapWeapons();
 	drawEnemies();
 	drawProjectiles();
@@ -115,6 +118,7 @@ void Game::render()
 	drawCursor();
 	drawHealthbar();
 	drawHealthText();
+	drawShieldBar();
 	drawCurrentGun();
 	drawCurrentAmmo();
 }
@@ -140,6 +144,13 @@ void Game::loadHealthbarTexture()
 	healthTexture = new sf::Texture();
 	healthTexture->loadFromFile("media/laserBeam.png");
 	healthTexture->setSmooth(true);
+}
+
+void Game::loadShieldbarTexture()
+{
+	shieldTexture = new sf::Texture();
+	shieldTexture->loadFromFile("media/shieldBar.png");
+	shieldTexture->setSmooth(true);
 }
 
 void Game::loadCharacterTextures()
@@ -206,7 +217,7 @@ void Game::initializeLighting()
 	 * Options are: stStatic, stPulsing, stFading, stTest
 	 */
 	lightState->brush.type = stPulsing;
-	lightState->brush.sourceTime = 2.0f;
+	lightState->brush.sourceTime = 10.0f;
 }
 
 void Game::initializeWeapons()
@@ -439,6 +450,14 @@ void Game::drawHealthbar()
 	app->draw(healthbar->sprite);
 }
 
+void Game::drawShieldBar()
+{
+	int sbarLength = player->getShieldpoints();
+	sf::IntRect mCurrentShield(0, 0, sbarLength, 5);
+	shieldbar->sprite.setTextureRect(mCurrentShield);
+	app->draw(shieldbar->sprite);
+}
+
 void Game::drawHealthText()
 {
 	app->draw(game->healthText);
@@ -543,6 +562,15 @@ void Game::HUDManager()
 	} else {
 		healthbar->sprite.setColor(sf::Color::Red);
 	}
+
+	/* window middle */
+	float wWShield = (playerView->getSize().x) * (-1);
+	float wHShield = (playerView->getSize().y);
+	shieldbarPositionX = playerPositionX + 115;
+	shieldbarPositionY = playerPositionY - 15;
+
+	shieldbar->sprite.setPosition(wWShield / 2 + shieldbarPositionX, wHShield / 2 + shieldbarPositionY);
+		shieldbar->sprite.setColor(sf::Color(0, 100, 255));
 }
 
 int Game::checkProximity(sf::Vector2f enemy)
