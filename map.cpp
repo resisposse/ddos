@@ -18,6 +18,9 @@ Map::Map(char *generatedMap)
 	tileMapTex = new sf::Texture();
 	tileMapTex->loadFromFile("media/ddos-tiles1.png");
 
+	teleRoomTex = new sf::Texture();
+	teleRoomTex->loadFromFile("media/ddos-spawnroom.png");
+
 	lavaTex = new sf::Texture();
 	lavaTex->loadFromFile("media/ddos-lava.png");
 
@@ -97,6 +100,16 @@ Map::Map(char *generatedMap)
 	sf::IntRect wallFill5 (TILE_SIZE * 2, TILE_SIZE * 6, TILE_SIZE, TILE_SIZE);
 
 	sf::IntRect voidRect (TILE_SIZE * 0, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
+
+	sf::IntRect teleFullClosed         (TILE_SIZE * 1, TILE_SIZE * 1, TILE_SIZE * 4, TILE_SIZE * 4);
+	sf::IntRect teleDoorHorTopShadow   (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorHorTop         (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorVerLeftShadow  (TILE_SIZE * 0, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorVerLeft        (TILE_SIZE * 0, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorHorBottomShadow(TILE_SIZE * 2, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorHorBottom      (TILE_SIZE * 3, TILE_SIZE * 5, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorVerRightShadow (TILE_SIZE * 5, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
+	sf::IntRect teleDoorVerRight       (TILE_SIZE * 5, TILE_SIZE * 3, TILE_SIZE, TILE_SIZE);
 
 	sf::IntRect lavaFrame1 (TILE_SIZE * 0, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect lavaFrame2 (TILE_SIZE * 1, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
@@ -243,6 +256,16 @@ Map::Map(char *generatedMap)
 	voidSpr = new sf::Sprite(*tileMapTex, voidRect);
 	wallFillTiles.push_back(voidSpr);
 
+	teleFullClosedSpr =          new sf::Sprite(*teleRoomTex, teleFullClosed);
+	teleDoorHorTopShadowSpr =    new sf::Sprite(*teleRoomTex, teleDoorHorTopShadow);
+	teleDoorHorTopSpr =          new sf::Sprite(*teleRoomTex, teleDoorHorTop);
+	teleDoorVerLeftShadowSpr =   new sf::Sprite(*teleRoomTex, teleDoorVerLeftShadow);
+	teleDoorVerLeftSpr =         new sf::Sprite(*teleRoomTex, teleDoorVerLeft);
+	teleDoorHorBottomShadowSpr = new sf::Sprite(*teleRoomTex, teleDoorHorBottomShadow);
+	teleDoorHorBottomSpr =       new sf::Sprite(*teleRoomTex, teleDoorHorBottom);
+	teleDoorVerRightShadowSpr =  new sf::Sprite(*teleRoomTex, teleDoorVerRightShadow);
+	teleDoorVerRightSpr =        new sf::Sprite(*teleRoomTex, teleDoorVerRight);
+
 	lava1Spr = new sf::Sprite(*lavaTex, lavaFrame1);
 	lava2Spr = new sf::Sprite(*lavaTex, lavaFrame2);
 	lava3Spr = new sf::Sprite(*lavaTex, lavaFrame3);
@@ -320,7 +343,10 @@ Map::Map(char *generatedMap)
 
 Map::~Map()
 {
+	delete tileMapTex;
 	delete bgTex;
+	delete teleRoomTex;
+	delete lavaTex;
 	delete bgSpr;
 	delete floorSpr;
 	delete floorSprCpy;
@@ -383,6 +409,15 @@ Map::~Map()
 	delete wallFill3Spr;
 	delete wallFill4Spr;
 	delete wallFill5Spr;
+	delete teleFullClosedSpr;
+	delete teleDoorHorTopShadowSpr;
+	delete teleDoorHorTopSpr;
+	delete teleDoorVerLeftShadowSpr;
+	delete teleDoorVerLeftSpr;
+	delete teleDoorHorBottomShadowSpr;
+	delete teleDoorHorBottomSpr;
+	delete teleDoorVerRightShadowSpr;
+	delete teleDoorVerRightSpr;
 	delete lava1Spr;
 	delete lava2Spr;
 	delete lava3Spr;
@@ -613,20 +648,61 @@ void Map::renderTiles()
 			drawLavaFrame(i, j, tileColor, 0.1);
 			break;
 		case mtSpawn:
-			floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-			floorMetalSpr->setColor(sf::Color::Green);
-			app->draw(*floorMetalSpr);
+			if ((checkNeighbourType(tiles[i][j], mtWall) & 208) == 208) {
+				teleFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleFullClosedSpr->setColor(tileColor);
+				app->draw(*teleFullClosedSpr);
+			}
 			break;
 		case mtGoal:
-			/*floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-			floorMetalSpr->setColor(sf::Color::Blue);
-			app->draw(*floorMetalSpr);*/
+			if ((checkNeighbourType(tiles[i][j], mtWall) & 208) == 208) {
+				teleFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleFullClosedSpr->setColor(tileColor);
+				app->draw(*teleFullClosedSpr);
+			}
 			break;
 		case mtDoor:
-			/*floorMetalSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-			floorMetalSpr->setColor(sf::Color::Green);
-			app->draw(*floorMetalSpr);*/
-			drawLavaFrame(i, j, tileColor, 0.1);
+			if (((checkNeighbourType(tiles[i][j], mtWall) & 16) == 16) &&
+			   ((checkNeighbourType(tiles[i][j], mtFloor) & 64) == 64)) {
+				teleDoorHorTopShadowSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorHorTopShadowSpr->setColor(tileColor);
+				app->draw(*teleDoorHorTopShadowSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 8) == 8) &&
+			          ((checkNeighbourType(tiles[i][j], mtFloor) & 64) == 64)) {
+				teleDoorHorTopSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorHorTopSpr->setColor(tileColor);
+				app->draw(*teleDoorHorTopSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 64) == 64) &&
+			          ((checkNeighbourType(tiles[i][j], mtFloor) & 16) == 16)) {
+				teleDoorVerLeftShadowSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorVerLeftShadowSpr->setColor(tileColor);
+				app->draw(*teleDoorVerLeftShadowSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 2) == 2) &&
+			          ((checkNeighbourType(tiles[i][j], mtFloor) & 16) == 16)) {
+				teleDoorVerLeftSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorVerLeftSpr->setColor(tileColor);
+				app->draw(*teleDoorVerLeftSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 16) == 16) &&
+				((checkNeighbourType(tiles[i][j], mtFloor) & 2) == 2)) {
+				teleDoorHorBottomShadowSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorHorBottomShadowSpr->setColor(tileColor);
+				app->draw(*teleDoorHorBottomShadowSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 8) == 8) &&
+				((checkNeighbourType(tiles[i][j], mtFloor) & 2) == 2)) {
+				teleDoorHorBottomSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorHorBottomSpr->setColor(tileColor);
+				app->draw(*teleDoorHorBottomSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 64) == 64) &&
+				((checkNeighbourType(tiles[i][j], mtFloor) & 8) == 8)) {
+				teleDoorVerRightShadowSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorVerRightShadowSpr->setColor(tileColor);
+				app->draw(*teleDoorVerRightShadowSpr);
+			} else if (((checkNeighbourType(tiles[i][j], mtWall) & 2) == 2) &&
+				((checkNeighbourType(tiles[i][j], mtFloor) & 8) == 8)) {
+				teleDoorVerRightSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleDoorVerRightSpr->setColor(tileColor);
+				app->draw(*teleDoorVerRightSpr);
+			}
 			break;
 		case mtAir:
 			break;
