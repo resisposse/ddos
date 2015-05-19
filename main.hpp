@@ -18,6 +18,7 @@ class EnemyMelee;
 class ProjectileSprite;
 class Weapon;
 class HealthBar;
+class ShieldBar;
 
 class Game
 {
@@ -32,6 +33,7 @@ public:
 	float playerPositionX, playerPositionY;
 	float weaponHUDX, weaponHUDY;
 	float healthbarPositionX, healthbarPositionY;
+	float shieldbarPositionX, shieldbarPositionY;
 	float healthTextPositionX, healthTextPositionY;
 	float ammoHUDX, ammoHUDY;
 	sf::Texture *playerTexture;
@@ -44,6 +46,7 @@ public:
 	sf::Texture *shotgunTexture;
 	sf::Texture *cursorTexture;
 	sf::Texture *healthTexture;
+	sf::Texture *shieldTexture;
 	sf::Sprite *cursorSprite;
 	sf::View *playerView;
 	sf::View *backgroundView;
@@ -68,6 +71,7 @@ public:
 	Player *player;
 	EnemyMelee *enemy;
 	HealthBar *healthbar;
+	ShieldBar *shieldbar;
 
 	Game();
 	~Game();
@@ -75,6 +79,7 @@ public:
 	void render();
 	void loadCursorTexture();
 	void loadHealthbarTexture();
+	void loadShieldbarTexture();
 	void loadCharacterTextures();
 	void loadWeaponTextures();
 	void loadProjectileTextures();
@@ -101,6 +106,7 @@ public:
 	void drawWeapon();
 	void drawWeaponsOnMap();
 	void drawHealthbar();
+	void drawShieldBar();
 	void drawHealthText();
 	void drawCurrentGun();
 	void drawCurrentAmmo();

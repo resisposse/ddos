@@ -32,6 +32,8 @@ public:
 	void enemyShoot(sf::Vector2i coords);
 	int getHitpoints() const;
 	void setHitpoints(int hp);
+	float getShieldpoints() const;
+	void setShieldpoints(float shield);
 	float getMeleeDamage() const;
 	void setMeleeDamage(float damage);
 	void setDamage(float damage);
@@ -39,8 +41,10 @@ public:
 	void setCooldown(float amount);
 	void setAggro(float amount);
 	float getAggro() const;
+	float maxShieldPoints;
 private:
 	int mHitpoints;
+	float mShieldpoints;
 	float meleeDamage;
 	float cooldown;
 	float aggro;
@@ -68,6 +72,12 @@ class HealthBar : public Object
 {
 public:
 	HealthBar(sf::Texture& objectTexture);
+};
+
+class ShieldBar : public Object
+{
+public:
+	ShieldBar(sf::Texture& objectTexture);
 };
 
 #endif
