@@ -608,11 +608,10 @@ sf::Vector2f Game::playerSpawn()
 	int coll = 1;
 	sf::Vector2f coords;
 	float spawnX, spawnY;
-	while (coll == 1) {
-		spawnX = (float)mapGenerator->spawn.x * TILE_SIZE + TILE_SIZE / 2;
-		spawnY = (float)mapGenerator->spawn.y * TILE_SIZE + TILE_SIZE / 2;
-		coll = map->collision(spawnX, spawnY, "asd");
-	}
+
+	spawnX = (float)mapGenerator->spawn.x * TILE_SIZE + TILE_SIZE / 2;
+	spawnY = (float)mapGenerator->spawn.y * TILE_SIZE + TILE_SIZE / 2;
+
 	coords = sf::Vector2f(spawnX, spawnY);
 	return coords;
 }
