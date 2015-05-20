@@ -405,6 +405,7 @@ int Game::checkPlayerCollisions(int x, int y, int damage)
 	if (diffX < 10 && diffY < 10) {
 		playerCollision = 1;
 		player->setDamage(damage);
+		player->shieldTimeUntilRecharge = 0.0;
 	}
 	return playerCollision;
 }

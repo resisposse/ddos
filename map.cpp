@@ -18,8 +18,11 @@ Map::Map(char *generatedMap)
 	tileMapTex = new sf::Texture();
 	tileMapTex->loadFromFile("media/ddos-tiles1.png");
 
-	teleRoomTex = new sf::Texture();
-	teleRoomTex->loadFromFile("media/ddos-spawnroom.png");
+	teleSpawnTex = new sf::Texture();
+	teleSpawnTex->loadFromFile("media/ddos-spawnroom.png");
+
+	teleGoalTex = new sf::Texture();
+	teleGoalTex->loadFromFile("media/ddos-goalroom.png");
 
 	lavaTex = new sf::Texture();
 	lavaTex->loadFromFile("media/ddos-lava.png");
@@ -101,7 +104,8 @@ Map::Map(char *generatedMap)
 
 	sf::IntRect voidRect (TILE_SIZE * 0, TILE_SIZE * 1, TILE_SIZE, TILE_SIZE);
 
-	sf::IntRect teleFullClosed         (TILE_SIZE * 1, TILE_SIZE * 1, TILE_SIZE * 4, TILE_SIZE * 4);
+	sf::IntRect teleSpawnFullClosed    (TILE_SIZE * 1, TILE_SIZE * 1, TILE_SIZE * 4, TILE_SIZE * 4);
+	sf::IntRect teleGoalFullClosed     (TILE_SIZE * 1, TILE_SIZE * 1, TILE_SIZE * 4, TILE_SIZE * 4);
 	sf::IntRect teleDoorHorTopShadow   (TILE_SIZE * 2, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect teleDoorHorTop         (TILE_SIZE * 3, TILE_SIZE * 0, TILE_SIZE, TILE_SIZE);
 	sf::IntRect teleDoorVerLeftShadow  (TILE_SIZE * 0, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE);
@@ -256,15 +260,16 @@ Map::Map(char *generatedMap)
 	voidSpr = new sf::Sprite(*tileMapTex, voidRect);
 	wallFillTiles.push_back(voidSpr);
 
-	teleFullClosedSpr =          new sf::Sprite(*teleRoomTex, teleFullClosed);
-	teleDoorHorTopShadowSpr =    new sf::Sprite(*teleRoomTex, teleDoorHorTopShadow);
-	teleDoorHorTopSpr =          new sf::Sprite(*teleRoomTex, teleDoorHorTop);
-	teleDoorVerLeftShadowSpr =   new sf::Sprite(*teleRoomTex, teleDoorVerLeftShadow);
-	teleDoorVerLeftSpr =         new sf::Sprite(*teleRoomTex, teleDoorVerLeft);
-	teleDoorHorBottomShadowSpr = new sf::Sprite(*teleRoomTex, teleDoorHorBottomShadow);
-	teleDoorHorBottomSpr =       new sf::Sprite(*teleRoomTex, teleDoorHorBottom);
-	teleDoorVerRightShadowSpr =  new sf::Sprite(*teleRoomTex, teleDoorVerRightShadow);
-	teleDoorVerRightSpr =        new sf::Sprite(*teleRoomTex, teleDoorVerRight);
+	teleSpawnFullClosedSpr =     new sf::Sprite(*teleSpawnTex, teleSpawnFullClosed);
+	teleGoalFullClosedSpr =      new sf::Sprite(*teleGoalTex,  teleGoalFullClosed);
+	teleDoorHorTopShadowSpr =    new sf::Sprite(*teleSpawnTex, teleDoorHorTopShadow);
+	teleDoorHorTopSpr =          new sf::Sprite(*teleSpawnTex, teleDoorHorTop);
+	teleDoorVerLeftShadowSpr =   new sf::Sprite(*teleSpawnTex, teleDoorVerLeftShadow);
+	teleDoorVerLeftSpr =         new sf::Sprite(*teleSpawnTex, teleDoorVerLeft);
+	teleDoorHorBottomShadowSpr = new sf::Sprite(*teleSpawnTex, teleDoorHorBottomShadow);
+	teleDoorHorBottomSpr =       new sf::Sprite(*teleSpawnTex, teleDoorHorBottom);
+	teleDoorVerRightShadowSpr =  new sf::Sprite(*teleSpawnTex, teleDoorVerRightShadow);
+	teleDoorVerRightSpr =        new sf::Sprite(*teleSpawnTex, teleDoorVerRight);
 
 	lava1Spr = new sf::Sprite(*lavaTex, lavaFrame1);
 	lava2Spr = new sf::Sprite(*lavaTex, lavaFrame2);
@@ -349,7 +354,8 @@ Map::~Map()
 {
 	delete tileMapTex;
 	delete bgTex;
-	delete teleRoomTex;
+	delete teleSpawnTex;
+	delete teleGoalTex;
 	delete lavaTex;
 	delete bgSpr;
 	delete floorSpr;
@@ -413,7 +419,8 @@ Map::~Map()
 	delete wallFill3Spr;
 	delete wallFill4Spr;
 	delete wallFill5Spr;
-	delete teleFullClosedSpr;
+	delete teleSpawnFullClosedSpr;
+	delete teleGoalFullClosedSpr;
 	delete teleDoorHorTopShadowSpr;
 	delete teleDoorHorTopSpr;
 	delete teleDoorVerLeftShadowSpr;
@@ -653,16 +660,16 @@ void Map::renderTiles()
 			break;
 		case mtSpawn:
 			if ((checkNeighbourType(tiles[i][j], mtWall) & 208) == 208) {
-				teleFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				teleFullClosedSpr->setColor(tileColor);
-				app->draw(*teleFullClosedSpr);
+				teleSpawnFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleSpawnFullClosedSpr->setColor(tileColor);
+				app->draw(*teleSpawnFullClosedSpr);
 			}
 			break;
 		case mtGoal:
 			if ((checkNeighbourType(tiles[i][j], mtWall) & 208) == 208) {
-				teleFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
-				teleFullClosedSpr->setColor(tileColor);
-				app->draw(*teleFullClosedSpr);
+				teleGoalFullClosedSpr->setPosition(i * TILE_SIZE, j * TILE_SIZE);
+				teleGoalFullClosedSpr->setColor(tileColor);
+				app->draw(*teleGoalFullClosedSpr);
 			}
 			break;
 		case mtDoor:

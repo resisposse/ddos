@@ -71,7 +71,8 @@ public:
 
 	/* Tiles */
 	sf::Texture *tileMapTex;
-	sf::Texture *teleRoomTex;
+	sf::Texture *teleSpawnTex;
+	sf::Texture *teleGoalTex;
 	sf::Texture *lavaTex;
 	sf::Texture *bgTex;
 	sf::Sprite *bgSpr;
@@ -140,7 +141,8 @@ public:
 	sf::Sprite *wallFill5Spr;
 	sf::Sprite *voidSpr;
 
-	sf::Sprite *teleFullClosedSpr;
+	sf::Sprite *teleSpawnFullClosedSpr;
+	sf::Sprite *teleGoalFullClosedSpr;
 	sf::Sprite *teleDoorHorTopShadowSpr;
 	sf::Sprite *teleDoorHorTopSpr;
 	sf::Sprite *teleDoorVerLeftShadowSpr;

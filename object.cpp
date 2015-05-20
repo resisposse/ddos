@@ -46,10 +46,8 @@ void Object::update(float frameClock)
 	angle = -atan2(a, b) * 180 / 3.141593;
 	sprite.setRotation(angle);
 	
-	if (getShieldpoints() < maxShieldPoints) {
-		setShieldpoints(getShieldpoints() + ((maxShieldPoints - getShieldpoints()) / 200));
-	}
-	
+	updateShield(frameClock);
+
 	sf::Vector2f movement(0.0, 0.0);
 	if (mIsMovingUp) {
 		movement.y -= playerSpeed;
@@ -150,6 +148,10 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 	}
 }
 
+/*
+* Weapon and projectile vectors reside in main Game class, so everything is
+* called through game->.
+*/
 void Object::playerShoot()
 {
 	if (playerShooting == true && shootingCooldown <= 0 && game->playerWeapons[game->heldWeapon]->getAmmo() > 0) {
@@ -183,44 +185,6 @@ void Object::playerShoot()
 	}
 }
 
-/*
- * Weapon and projectile vectors reside in main Game class, so everything is
- * called through game->.
- */
-//void Object::playerShoot()
-//{
-//	if (playerShooting == true && shootingCooldown <= 0) {
-//		shootingCooldown = game->heldWeapon.attackSpeed;
-//		game->ammo = game->weapons[game->heldWeapon].getAmmo();
-//		game->weapons[game->playerWeapons[game->heldWeapon].weaponPosition].setAmmo(1);
-//		switch (game->playerWeapons[game->heldWeapon].ammoType) {
-//		case 0:
-//			game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
-//			                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-//			                                         game->playerWeapons[game->heldWeapon].spreadAngle));
-//			break;
-//		case 1:
-//			game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
-//			                                        sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-//			                                        game->playerWeapons[game->heldWeapon].spreadAngle));
-//			break;
-//		case 2:
-//			for (int i = 0; i < game->playerWeapons[game->heldWeapon].bullets; i++) {
-//				game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
-//				                                         sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-//				                                         game->playerWeapons[game->heldWeapon].spreadAngle));
-//			}
-//			break;
-//		default:
-//			std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
-//			break;
-//		}
-//	} else {
-//		shootingCooldown -= frameClock;
-//	}
-//}
-
-
 void Object::enemyShoot(sf::Vector2i coords)
 {
 	if (cooldown <= 0) {
@@ -228,6 +192,22 @@ void Object::enemyShoot(sf::Vector2i coords)
 		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
 	}
 	else cooldown -= frameClock;
+}
+
+void Object::updateShield(float frameCLock) 
+{
+	shieldTimeUntilRecharge += frameClock;
+	if (getShieldpoints() < maxShieldPoints) {
+		if (getShieldpoints() < 0) {
+			setShieldpoints(0);
+		}
+		if (shieldTimeUntilRecharge > shieldRechargeDelay) {
+			setShieldpoints(getShieldpoints() + 0.1 + ((maxShieldPoints - getShieldpoints()) / 200));
+		}
+	} else if (getShieldpoints() >= maxShieldPoints) {
+		setShieldpoints(maxShieldPoints);
+		shieldTimeUntilRecharge = 0.0;
+	}
 }
 
 int Object::getHitpoints() const
@@ -292,6 +272,7 @@ float Object::getAggro() const
 Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	maxShieldPoints = 200.0;
+	shieldRechargeDelay = 2.0;
 	/*
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");

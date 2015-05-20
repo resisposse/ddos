@@ -30,6 +30,7 @@ public:
 	              float playerPositionX, float playerPositionY);
 	void playerShoot();
 	void enemyShoot(sf::Vector2i coords);
+	void updateShield(float frameClock);
 	int getHitpoints() const;
 	void setHitpoints(int hp);
 	float getShieldpoints() const;
@@ -42,6 +43,8 @@ public:
 	void setAggro(float amount);
 	float getAggro() const;
 	float maxShieldPoints;
+	float shieldRechargeDelay;
+	float shieldTimeUntilRecharge = 0.0;
 private:
 	int mHitpoints;
 	float mShieldpoints;
