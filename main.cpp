@@ -263,6 +263,7 @@ void Game::spawnWeapons(int amount)
 		}
 		mapWeapons[i]->sprite.setPosition(randomSpawn());
 		mapWeapons[i]->sprite.setRotation(rand() % 360);
+		mapWeapons[i]->sprite.setOrigin(16,8);
 	}
 }
 
@@ -313,7 +314,7 @@ void Game::updateEnemies()
 		                  player->sprite.getPosition().y);
 		if (checkProximity(enemies[i]->sprite.getPosition()) == 1) {
 			player->setDamage(enemies[i]->getMeleeDamage());
-			std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
+			//std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
 		}
 		i++;
 	}
@@ -489,6 +490,7 @@ void Game::dropWeapon()
 		mapWeapons.push_back(playerWeapons[heldWeapon]);
 		mapWeapons.back()->sprite.setPosition(playerPositionX, playerPositionY);
 		mapWeapons.back()->sprite.setRotation(rand() % 360);
+		mapWeapons.back()->sprite.setOrigin(16, 8);
 		playerWeapons.erase(playerWeapons.begin() + heldWeapon);
 		heldWeapon = 0;
 	}
@@ -505,6 +507,7 @@ void Game::pickWeapon()
 			diffY = abs(mapWeapons[i]->sprite.getPosition().y - playerCoords.y);
 			if (diffX < 10 && diffY < 10) {
 				playerWeapons.push_back(mapWeapons[i]);
+				playerWeapons.back()->sprite.setOrigin(16, 0);
 				mapWeapons.erase(mapWeapons.begin() + i);
 				heldWeapon = 1;
 			}

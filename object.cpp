@@ -152,7 +152,7 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 
 void Object::playerShoot()
 {
-	if (playerShooting == true && shootingCooldown <= 0) {
+	if (playerShooting == true && shootingCooldown <= 0 && game->playerWeapons[game->heldWeapon]->getAmmo() > 0) {
 		shootingCooldown = game->playerWeapons[game->heldWeapon]->attackSpeed;
 		game->playerWeapons[game->heldWeapon]->setAmmo(1);
 		game->ammo = game->playerWeapons[game->heldWeapon]->getAmmo();

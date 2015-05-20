@@ -242,7 +242,7 @@ Map::Map(char *generatedMap)
 	wallCornerTiles.push_back(wallCorner3Spr);
 	wallCornerTiles.push_back(wallCorner4Spr);
 
-	/*wallFill1Spr = new sf::Sprite(*tileMapTex, wallFill1);
+	wallFill1Spr = new sf::Sprite(*tileMapTex, wallFill1);
 	wallFill2Spr = new sf::Sprite(*tileMapTex, wallFill2);
 	wallFill3Spr = new sf::Sprite(*tileMapTex, wallFill3);
 	wallFill4Spr = new sf::Sprite(*tileMapTex, wallFill4);
@@ -251,7 +251,7 @@ Map::Map(char *generatedMap)
 	wallFillTiles.push_back(wallFill2Spr);
 	wallFillTiles.push_back(wallFill3Spr);
 	wallFillTiles.push_back(wallFill4Spr);
-	wallFillTiles.push_back(wallFill5Spr);*/
+	wallFillTiles.push_back(wallFill5Spr);
 
 	voidSpr = new sf::Sprite(*tileMapTex, voidRect);
 	wallFillTiles.push_back(voidSpr);

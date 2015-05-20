@@ -56,7 +56,7 @@ Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	attackSpeed = 0.2;
 	spreadAngle = 15;
 	ammoType = 0;
-	ammo = 300;
+	ammo = 30;
 	bullets = 1;
 	weaponPosition = 0;
 
@@ -71,7 +71,7 @@ LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	attackSpeed = 0.3;
 	spreadAngle = 5;
 	ammoType = 1;
-	ammo = 300;
+	ammo = 30;
 	bullets = 1;
 	weaponPosition = 1;
 
@@ -86,7 +86,7 @@ Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	attackSpeed = 1;
 	spreadAngle = 20;
 	ammoType = 2;
-	ammo = 300;
+	ammo = 30;
 	bullets = 7;
 	weaponPosition = 2;
 
