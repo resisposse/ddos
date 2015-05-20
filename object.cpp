@@ -45,7 +45,7 @@ void Object::update(float frameClock)
 	b = mouse.y - (playerPositionY);
 	angle = -atan2(a, b) * 180 / 3.141593;
 	sprite.setRotation(angle);
-	
+
 	updateShield(frameClock);
 
 	sf::Vector2f movement(0.0, 0.0);
@@ -149,9 +149,9 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 }
 
 /*
-* Weapon and projectile vectors reside in main Game class, so everything is
-* called through game->.
-*/
+ * Weapon and projectile vectors reside in main Game class, so everything is
+ * called through game->.
+ */
 void Object::playerShoot()
 {
 	if (playerShooting == true && shootingCooldown <= 0 && game->playerWeapons[game->heldWeapon]->getAmmo() > 0) {
@@ -194,7 +194,7 @@ void Object::enemyShoot(sf::Vector2i coords)
 	else cooldown -= frameClock;
 }
 
-void Object::updateShield(float frameCLock) 
+void Object::updateShield(float frameCLock)
 {
 	shieldTimeUntilRecharge += frameClock;
 	if (getShieldpoints() < maxShieldPoints) {

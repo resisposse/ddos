@@ -105,8 +105,15 @@ void Game::update()
 
 void Game::render()
 {
+	/*
+	 * Not to be confused with initializeLighting(), which just initializes
+	 * values for the light to use. This on the other hand paints the screen
+	 * black on every frame, so we can update the position of the light.
+	 */
 	light->initialize();
+
 	map->renderTiles();
+
 	drawMapWeapons();
 	drawEnemies();
 	drawProjectiles();
@@ -201,22 +208,18 @@ void Game::initializeView()
 	app->setView(*playerView);
 }
 
+/*
+ * These values are used for every light source as long as they are not
+ * overridden elsewhere (or more often, hardcoded into their
+ * implementation).
+ */
 void Game::initializeLighting()
 {
-	/* These affect all light sources, if there's nothing to override them */
 	lightState->brush.intensity = 100;
 	lightState->brush.color = sf::Color::White;
 	lightState->brush.color.r = 255;
 	lightState->brush.color.g = 255;
 	lightState->brush.color.b = 255;
-
-	/*
-	 * These only go for light sources added through Light::addSource(),
-	 * not the one around the player.
-	 *
-	 * Options are: stStatic, stPulsing, stFading, stTest
-	 */
-	lightState->brush.type = stPulsing;
 	lightState->brush.sourceTime = 10.0f;
 }
 
@@ -323,8 +326,8 @@ void Game::updateEnemies()
 void Game::updateWeapons()
 {
 	playerWeapons[heldWeapon]->update(player->sprite.getPosition().x,
-	                                 player->sprite.getPosition().y,
-	                                 mouse.x, mouse.y);
+	                                  player->sprite.getPosition().y,
+	                                  mouse.x, mouse.y);
 }
 
 void Game::updateProjectiles()
@@ -595,13 +598,25 @@ int Game::checkProximity(sf::Vector2f enemy)
 
 sf::Vector2f Game::randomSpawn()
 {
-	int coll = 1;
-	sf::Vector2f coords;
+	int collision = 1;
 	float randX, randY;
-	while (coll == 1) {
+	sf::Vector2f coords;
+	sf::Vector2f playerPosition;
+	playerPositionX = player->sprite.getPosition().x;
+	playerPositionY = player->sprite.getPosition().y;
+	while (collision == 1) {
 		randX = rand() % MAP_SIZE_X * 32;
 		randY = rand() % MAP_SIZE_Y * 32;
-		coll = map->collision(randX, randY, "asd");
+		collision = map->collision(randX, randY, "asd");
+
+		/*
+		 * If the object spawn is too close to the player, we override
+		 * the whatever value returned by map->collision() to ensure we
+		 * get a new spawn.
+		 */
+		if (abs(randX - playerPositionX) < 75 || abs(randY - playerPositionY) < 75) {
+			collision = 1;
+		}
 	}
 	coords = sf::Vector2f(randX, randY);
 	return coords;
@@ -609,13 +624,10 @@ sf::Vector2f Game::randomSpawn()
 
 sf::Vector2f Game::playerSpawn()
 {
-	int coll = 1;
 	sf::Vector2f coords;
 	float spawnX, spawnY;
-
 	spawnX = (float)mapGenerator->spawn.x * TILE_SIZE + TILE_SIZE / 2;
 	spawnY = (float)mapGenerator->spawn.y * TILE_SIZE + TILE_SIZE / 2;
-
 	coords = sf::Vector2f(spawnX, spawnY);
 	return coords;
 }

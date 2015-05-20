@@ -40,7 +40,7 @@ void Light::update(StaticLightSource *tmpSource)
 /*
  * Reset lighting by painting the whole screen black, the light around the
  * player is then reapplied later on in buildLight() and renderLight() where the
- * new updated player position is taken into account. This all happens once in a
+ * new updated player position is taken into account. This all happens on every
  * frame.
  */
 void Light::resetLight()
@@ -61,7 +61,7 @@ void Light::checkSources(StaticLightSource *tmpSource)
 	for (unsigned int i = 0; i < sources.size(); i++) {
 		addIntensity(sources[i]->position, sources[i]->getIntensity(), sources[i]->color);
 	}
-	if (sf::IntRect(0, 0, 100, 100).contains(tmpSource->position)) {
+	if (sf::IntRect(0, 0, MAP_SIZE_X, MAP_SIZE_Y).contains(tmpSource->position)) {
 		addIntensity(tmpSource->position, tmpSource->intensity, tmpSource->color);
 	}
 }

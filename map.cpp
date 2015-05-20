@@ -257,8 +257,8 @@ Map::Map(char *generatedMap)
 	wallFillTiles.push_back(wallFill4Spr);
 	wallFillTiles.push_back(wallFill5Spr);
 
-	voidSpr = new sf::Sprite(*tileMapTex, voidRect);
-	wallFillTiles.push_back(voidSpr);
+	/*voidSpr = new sf::Sprite(*tileMapTex, voidRect);
+	wallFillTiles.push_back(voidSpr);*/
 
 	teleSpawnFullClosedSpr =     new sf::Sprite(*teleSpawnTex, teleSpawnFullClosed);
 	teleGoalFullClosedSpr =      new sf::Sprite(*teleGoalTex,  teleGoalFullClosed);
@@ -288,16 +288,16 @@ Map::Map(char *generatedMap)
 	lavaFrames.push_back(lava7Spr);
 	lavaFrames.push_back(lava8Spr);
 
+	int wallAbsorb = 45;
+	int floorAbsorb = 10;
+	int collisionOn = 1;
+	int collisionOff = 0;
 	for (int i = 0; i < MAP_SIZE_X; i++) for (int j = 0; j < MAP_SIZE_Y; j++) {
 		floorTilesRand[i][j]          = rand() % floorTiles.size();
 		wallHorizontalTilesRand[i][j] = rand() % wallHorizontalTiles.size();
 		wallVerticalTilesRand[i][j]   = rand() % wallVerticalTiles.size();
 		wallCornerTilesRand[i][j]     = rand() % wallCornerTiles.size();
 		wallFillTilesRand[i][j]	      = rand() % wallFillTiles.size();
-		int wallAbsorb = 45;
-		int floorAbsorb = 10;
-		int collisionOn = 1;
-		int collisionOff = 0;
 
 		//floorTilesRand[i][j]          = randBellCurve(floorTiles.size());
 		tiles[i][j].index = sf::Vector2i(i, j);
@@ -353,10 +353,11 @@ Map::Map(char *generatedMap)
 Map::~Map()
 {
 	delete tileMapTex;
-	delete bgTex;
 	delete teleSpawnTex;
 	delete teleGoalTex;
 	delete lavaTex;
+	delete bgTex;
+
 	delete bgSpr;
 	delete floorSpr;
 	delete floorSprCpy;
@@ -490,13 +491,13 @@ void Map::renderTiles()
 	app->draw(*bgSpr);
 
 	/*
-	 * These magic numbers (15, 12, 14 and 11) are roughly the amount needed
-	 * to draw the map just under the visible light and not under the fog of
-	 * war.
+	 * These magic numbers (15 for X and 12 for Y) are roughly the amount
+	 * of tiles needed in each direction to draw the map just under the
+	 * visible light and not under the fog of war.
 	 */
 	sf::Vector2i from(playerPositionX - 15, playerPositionY - 12);
-	sf::Vector2i to(playerPositionX + 14, playerPositionY + 11);
-	for (int i = from.x - 1; i < to.x; i++) for (int j = from.y - 1; j < to.y; j++) {
+	sf::Vector2i to(playerPositionX + 15, playerPositionY + 12);
+	for (int i = from.x; i < to.x; i++) for (int j = from.y; j < to.y; j++) {
 		switch (tiles[i][j].type) {
 		case mtWall:
 			switch (direction = updateWallDirection(tiles[i][j])){

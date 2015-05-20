@@ -17,7 +17,6 @@
  * 1 = laser
  * 2 = pellet
  */
-
 Weapon::Weapon(sf::Texture& weaponTexture)
 {
 	sprite.setTexture(weaponTexture);
@@ -37,12 +36,10 @@ void Weapon::update(float playerPositionX, float playerPositionY, float mouseX, 
 
 void Weapon::setAmmo(int _ammo)
 {
-	
 	int currentAmmo = getAmmo();
 	int newAmmo = currentAmmo - _ammo;
 	if (newAmmo < 0) newAmmo = 0;
 	ammo = newAmmo;
-	
 }
 
 int Weapon::getAmmo() const
