@@ -644,7 +644,9 @@ sf::Vector2f Game::randomSpawn()
 		randY = rand() % MAP_SIZE_Y * 32;
 		collision = map->collision(randX, randY, "asd");
 		if (abs(randX - playerPositionX) < (5 * TILE_SIZE) &&
-		    abs(randY - playerPositionY) < (5 * TILE_SIZE)) {
+			abs(randY - playerPositionY) < (5 * TILE_SIZE) ||
+			map->tiles[(int)randX / 32][(int)randY / 32].type == mtGoal &&
+			map->tiles[(int)randX / 32][(int)randY / 32].type == mtDoor) {
 			collision = 1;
 		}
 	}
