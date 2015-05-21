@@ -43,7 +43,7 @@ void Object::update(float frameClock)
 	sprite.setOrigin(16, 16);
 	a = mouse.x - (playerPositionX);
 	b = mouse.y - (playerPositionY);
-	angle = -atan2(a, b) * 180 / 3.141593;
+	angle = -atan2(a, b) * 180 / PI;
 	sprite.setRotation(angle);
 
 	updateShield(frameClock);
@@ -139,7 +139,7 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 				aggro -= frameClock;
 			}
 			sf::Vector2i playerCoords(playerPositionX, playerPositionY);
-			angle = -atan2(distanceX, distanceY) * 180 / 3.141593;
+			angle = -atan2(distanceX, distanceY) * 180 / PI;
 			this->sprite.setOrigin(16, 16);
 			this->sprite.setRotation(angle);
 			this->sprite.move(enemyMovement * frameClock);

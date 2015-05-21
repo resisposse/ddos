@@ -29,7 +29,7 @@ void Weapon::update(float playerPositionX, float playerPositionY, float mouseX, 
 
 	a = mouseX - (playerPositionX);
 	b = mouseY - (playerPositionY);
-	angle = -atan2(a, b) * 180 / 3.141593;
+	angle = -atan2(a, b) * 180 / PI;
 	sprite.setRotation(angle);
 	sprite.setPosition(playerPositionX, playerPositionY);
 }

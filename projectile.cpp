@@ -8,11 +8,12 @@
 #include <cmath>
 #include "weapon.hpp"
 #include "projectile.hpp"
+#include "globals.hpp"
 
 ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
                                    sf::Vector2i mousePosition, int inaccuracy)
 {
-	float PI = 3.14159265359, b;
+	float b;
 	int magnitude, magnitudeTmp;
 	float angle, spreadDist;
 	sf::Vector2f difference, differenceTmp;
