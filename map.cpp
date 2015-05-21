@@ -346,6 +346,8 @@ Map::Map(char *generatedMap)
 			tiles[i][j].type = mtWall;
 			tiles[i][j].absorb = wallAbsorb;
 			collisionMap[i][j] = collisionOn;
+		default:
+			break;
 		}
 	}
 }
@@ -717,6 +719,8 @@ void Map::renderTiles()
 			}
 			break;
 		case mtAir:
+			break;
+		default:
 			break;
 		}
 	}

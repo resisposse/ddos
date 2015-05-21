@@ -4,6 +4,7 @@
  */
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include "globals.hpp"
 #include "event.hpp"
@@ -123,25 +124,20 @@ void Game::render()
 
 void Game::loadTextures()
 {
-	/* Load cursor textures */
+	/* Load cursor texture and initialize */
 	app->setMouseCursorVisible(false);
-	fixed = app->getView();
-
 	cursorTexture = new sf::Texture();
 	cursorTexture->loadFromFile("media/cursor.png");
 	cursorTexture->setSmooth(true);
-
 	cursorSprite = new sf::Sprite(*cursorTexture);
 	sf::Vector2u spriteSize = cursorTexture->getSize();
 	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
 	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
-	app->setView(fixed);
 
-	/* Load healtbar and shieldbar textures */
+	/* Load healthbar and shieldbar textures */
 	healthTexture = new sf::Texture();
 	healthTexture->loadFromFile("media/laserBeam.png");
 	healthTexture->setSmooth(true);
-
 	shieldTexture = new sf::Texture();
 	shieldTexture->loadFromFile("media/shieldBar.png");
 	shieldTexture->setSmooth(true);
@@ -149,7 +145,6 @@ void Game::loadTextures()
 	/* Load character textures */
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
-
 	enemyMeleeTexture = new sf::Texture();
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
 
@@ -161,11 +156,9 @@ void Game::loadTextures()
 	bulletTexture = new sf::Texture();
 	bulletTexture->loadFromFile("media/bullet.png");
 	bulletTexture->setSmooth(true);
-
 	laserBeamTexture = new sf::Texture();
 	laserBeamTexture->loadFromFile("media/laserBeam.png");
 	laserBeamTexture->setSmooth(true);
-
 	pelletTexture = new sf::Texture();
 	pelletTexture->loadFromFile("media/pellet.png");
 	pelletTexture->setSmooth(true);
@@ -636,18 +629,21 @@ sf::Vector2f Game::randomSpawn()
 	playerPositionX = player->sprite.getPosition().x;
 	playerPositionY = player->sprite.getPosition().y;
 	/*
-	 * A loop for checking whether the object's spawn coordinates are either
-	 * colliding with the wall, or too close to the player's spawn room, if
-	 * not, we accept the coords.
+	 * A loop for generating spawn coordinates and checking whether they are
+	 * 	1. Colliding with the wall
+	 * 	2. Too close to the player's spawn room
+	 * 	3. In the goal room
+	 * If so, we make sure the loop is ran again by overriding whatever
+	 * value is returned by map->collision().
 	 */
 	while (collision == 1) {
 		randX = rand() % MAP_SIZE_X * 32;
 		randY = rand() % MAP_SIZE_Y * 32;
 		collision = map->collision(randX, randY, "asd");
-		if (abs(randX - playerPositionX) < (5 * TILE_SIZE) &&
-			abs(randY - playerPositionY) < (5 * TILE_SIZE) ||
-			map->tiles[(int)randX / 32][(int)randY / 32].type == mtGoal &&
-			map->tiles[(int)randX / 32][(int)randY / 32].type == mtDoor) {
+		if ((abs(randX - playerPositionX) < (8 * TILE_SIZE) &&
+		     abs(randY - playerPositionY) < (8 * TILE_SIZE)) ||
+		     (map->tiles[(int)randX / 32][(int)randY / 32].type == mtGoal ||
+		      map->tiles[(int)randX / 32][(int)randY / 32].type == mtDoor)) {
 			collision = 1;
 		}
 	}
@@ -687,6 +683,13 @@ void Game::createNewStage()
 
 int main()
 {
+	sf::Music music;
+	if (!music.openFromFile("music/smilecythe_-_penetrating_breeze.ogg"))
+		    return -1; // error
+	music.setVolume(10);
+	music.setLoop(true);
+	music.play();
+
 	game = new Game;
 	while (game->running) {
 		game->update();

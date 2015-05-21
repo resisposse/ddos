@@ -69,7 +69,7 @@ private:
 	char *dungeonTiles_;
 	bool spawnCreated = false;
 	bool goalCreated = false;
-	unsigned int edgeOffset;
+	int edgeOffset;
 	Random *random;
 };
 

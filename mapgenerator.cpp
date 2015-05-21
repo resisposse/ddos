@@ -520,6 +520,7 @@ bool MapGenerator::generateFeature(int x, int y, CardinalDirection direction)
 		return false;
 	} else {
 		std::cout << "Corridor, room and teleportroom chance totals less than 100, please adjust the values" << std::endl;
+		return false;
 	}
 }
 
