@@ -43,9 +43,8 @@ public:
 	sf::Texture *bulletTexture;
 	sf::Texture *laserBeamTexture;
 	sf::Texture *pelletTexture;
-	sf::Texture *pistolTexture;
-	sf::Texture *laserRifleTexture;
-	sf::Texture *shotgunTexture;
+	sf::Texture *heavyBulletTexture;
+	sf::Texture *weaponTexture;
 	sf::Texture *cursorTexture;
 	sf::Texture *healthTexture;
 	sf::Texture *shieldTexture;

@@ -176,6 +176,13 @@ void Object::playerShoot()
 					game->playerWeapons[game->heldWeapon]->spreadAngle));
 			}
 			break;
+		case 3:
+			for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
+				game->projectiles.push_back(HeavyBulletSprite(*game->heavyBulletTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					game->playerWeapons[game->heldWeapon]->spreadAngle));
+			}
+			break;
 		default:
 			std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
 			break;

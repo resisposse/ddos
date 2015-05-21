@@ -44,4 +44,16 @@ public:
 	Shotgun(sf::Texture& objectTexture);
 };
 
+class MachineGun : public Weapon
+{
+public:
+	MachineGun(sf::Texture& objectTexture);
+};
+
+class SniperRifle : public Weapon
+{
+public:
+	SniperRifle(sf::Texture& objectTexture);
+};
+
 #endif

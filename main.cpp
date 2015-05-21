@@ -55,8 +55,7 @@ Game::~Game()
 	delete bulletTexture;
 	delete laserBeamTexture;
 	delete pelletTexture;
-	delete pistolTexture;
-	delete shotgunTexture;
+	delete weaponTexture;
 	delete playerTexture;
 	delete enemyMeleeTexture;
 	delete cursorTexture;
@@ -155,14 +154,8 @@ void Game::loadTextures()
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
 
 	/* Load weapon textures */
-	pistolTexture = new sf::Texture();
-	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
-
-	laserRifleTexture = new sf::Texture();
-	laserRifleTexture->loadFromFile("media/ddos-dude-guns.png");
-
-	shotgunTexture = new sf::Texture();
-	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
+	weaponTexture = new sf::Texture();
+	weaponTexture->loadFromFile("media/ddos-weapons.png");
 
 	/* Load projectile textures */
 	bulletTexture = new sf::Texture();
@@ -176,6 +169,10 @@ void Game::loadTextures()
 	pelletTexture = new sf::Texture();
 	pelletTexture->loadFromFile("media/pellet.png");
 	pelletTexture->setSmooth(true);
+
+	heavyBulletTexture = new sf::Texture();
+	heavyBulletTexture->loadFromFile("media/heavyBullet.png");
+	heavyBulletTexture->setSmooth(true);
 
 	/* Load valuable textures */
 	valuableTexture = new sf::Texture();
@@ -211,12 +208,14 @@ void Game::initializeLighting()
 
 void Game::initializeWeapons()
 {
-	weapons.push_back(new Pistol(*pistolTexture));
-	weapons.push_back(new LaserRifle(*laserRifleTexture));
-	weapons.push_back(new Shotgun(*shotgunTexture));
+	weapons.push_back(new Pistol(*weaponTexture));
+	weapons.push_back(new LaserRifle(*weaponTexture));
+	weapons.push_back(new Shotgun(*weaponTexture));
+	weapons.push_back(new MachineGun(*weaponTexture));
+	weapons.push_back(new SniperRifle(*weaponTexture));
 
-	playerWeapons.push_back(new Pistol(*pistolTexture));
-	playerWeapons.push_back(new LaserRifle(*laserRifleTexture));
+	playerWeapons.push_back(new Pistol(*weaponTexture));
+	playerWeapons.push_back(new LaserRifle(*weaponTexture));
 }
 
 void Game::initializeHUD()
@@ -243,13 +242,15 @@ void Game::spawnWeapons(int amount)
 	for (int i = 0; i < amount; i++) {
 		int tmp = rand() % weapons.size();
 		if (tmp == 0) {
-			mapWeapons.push_back(new Pistol(*pistolTexture));
-		}
-		else if (tmp == 1) {
-			mapWeapons.push_back(new LaserRifle(*laserRifleTexture));
-		}
-		else {
-			mapWeapons.push_back(new Shotgun(*shotgunTexture));
+			mapWeapons.push_back(new Pistol(*weaponTexture));
+		} else if (tmp == 1) {
+			mapWeapons.push_back(new LaserRifle(*weaponTexture));
+		} else if (tmp == 2) {
+			mapWeapons.push_back(new Shotgun(*weaponTexture));
+		} else if (tmp == 3) {
+			mapWeapons.push_back(new MachineGun(*weaponTexture));
+		} else {
+			mapWeapons.push_back(new SniperRifle(*weaponTexture));
 		}
 		mapWeapons[i]->sprite.setPosition(randomSpawn());
 		mapWeapons[i]->sprite.setRotation(rand() % 360);
@@ -680,7 +681,7 @@ void Game::createNewStage()
 
 	clearVectors();
 	spawnEnemies(30);
-	spawnWeapons(20);
+	spawnWeapons(50);
 	spawnValuables(10000);
 }
 

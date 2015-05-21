@@ -16,6 +16,7 @@
  * 0 = bullet
  * 1 = laser
  * 2 = pellet
+ * 3 = heavyBullet
  */
 Weapon::Weapon(sf::Texture& weaponTexture)
 {
@@ -57,7 +58,7 @@ Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	bullets = 1;
 	weaponPosition = 0;
 
-	sf::IntRect mPistol(32 * 2, 32 * 0, 32, 32);
+	sf::IntRect mPistol(32 * 3, 32 * 0, 32, 32);
 	sprite.setTextureRect(mPistol);
 	sprite.setOrigin(16, 0);
 }
@@ -72,7 +73,7 @@ LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	bullets = 1;
 	weaponPosition = 1;
 
-	sf::IntRect mLaserRifle(32 * 3, 32 * 0, 32, 32);
+	sf::IntRect mLaserRifle(32 * 8, 32 * 0, 32, 32);
 	sprite.setTextureRect(mLaserRifle);
 	sprite.setOrigin(16, 0);
 }
@@ -87,7 +88,37 @@ Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 	bullets = 7;
 	weaponPosition = 2;
 
-	sf::IntRect mShotgun(32 * 1, 32 * 0, 32, 32);
+	sf::IntRect mShotgun(32 * 12, 32 * 0, 32, 32);
 	sprite.setTextureRect(mShotgun);
+	sprite.setOrigin(16, 0);
+}
+
+MachineGun::MachineGun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
+{
+	name = "Machine Gun";
+	attackSpeed = 0.1;
+	spreadAngle = 12;
+	ammoType = 0;
+	ammo = 50;
+	bullets = 1;
+	weaponPosition = 3;
+
+	sf::IntRect mMachineGun(32 * 6, 32 * 0, 32, 32);
+	sprite.setTextureRect(mMachineGun);
+	sprite.setOrigin(16, 0);
+}
+
+SniperRifle::SniperRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
+{
+	name = "Sniper";
+	attackSpeed = 2;
+	spreadAngle = 2;
+	ammoType = 3;
+	ammo = 10;
+	bullets = 1;
+	weaponPosition = 4;
+
+	sf::IntRect mSniperRifle(32 * 13, 32 * 0, 32, 32);
+	sprite.setTextureRect(mSniperRifle);
 	sprite.setOrigin(16, 0);
 }

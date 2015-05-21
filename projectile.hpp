@@ -45,4 +45,12 @@ public:
 	PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
 	             sf::Vector2i mousePosition, int inaccuracy);
 };
+
+class HeavyBulletSprite : public ProjectileSprite
+{
+public:
+	HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+		sf::Vector2i mousePosition, int inaccuracy);
+};
+
 #endif
