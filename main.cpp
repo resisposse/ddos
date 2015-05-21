@@ -50,6 +50,7 @@ Game::Game()
 	initializeHUD();
 	spawnEnemies(30);
 	spawnWeapons(20);
+	spawnValuables(10000);
 
 	delete mapGenerator;
 }
@@ -68,6 +69,7 @@ Game::~Game()
 	delete enemyMeleeTexture;
 	delete cursorTexture;
 	delete healthTexture;
+	delete valuableTexture;
 	delete player;
 	delete playerView;
 	delete healthbar;
@@ -90,6 +92,7 @@ void Game::update()
 		updateProjectiles();
 		checkProjectileCollisions();
 		checkEnemyProjectileCollisions();
+		pickValuables();
 
 		app->clear();
 		render();
@@ -109,6 +112,7 @@ void Game::render()
 
 	map->renderTiles();
 
+	drawMapValuables();
 	drawMapWeapons();
 	drawEnemies();
 	drawProjectiles();
@@ -119,7 +123,7 @@ void Game::render()
 
 	drawCursor();
 	drawHealthbar();
-	drawHealthText();
+	drawHUDText();
 	drawShieldBar();
 	drawCurrentGun();
 	drawCurrentAmmo();
@@ -179,6 +183,10 @@ void Game::loadTextures()
 	pelletTexture = new sf::Texture();
 	pelletTexture->loadFromFile("media/pellet.png");
 	pelletTexture->setSmooth(true);
+
+	/* Load valuable textures */
+	valuableTexture = new sf::Texture();
+	valuableTexture->loadFromFile("media/coin.png");
 }
 
 void Game::initializeView()
@@ -224,6 +232,7 @@ void Game::initializeHUD()
 		//error
 	}
 	healthText.setCharacterSize(15);
+	scoreText.setCharacterSize(15);
 	currentGun.setCharacterSize(15);
 	currentAmmo.setCharacterSize(15);
 }
@@ -252,6 +261,20 @@ void Game::spawnWeapons(int amount)
 		mapWeapons[i]->sprite.setPosition(randomSpawn());
 		mapWeapons[i]->sprite.setRotation(rand() % 360);
 		mapWeapons[i]->sprite.setOrigin(16,8);
+	}
+}
+
+void Game::spawnValuables(int totalValue)
+{
+	for (int i = 0; i < totalValue; i += mapValuables.back()->getValue()) {
+		int r = rand() % 3 + 1;
+		if (r == 1) {
+			mapValuables.push_back(new ValuableLow(*valuableTexture, randomSpawn()));
+		} else if (r == 2) {
+			mapValuables.push_back(new ValuableMed(*valuableTexture, randomSpawn()));
+		} else {
+			mapValuables.push_back(new ValuableHigh(*valuableTexture, randomSpawn()));
+		}
 	}
 }
 
@@ -293,6 +316,7 @@ void Game::updateEnemies()
 {
 	for (unsigned int i = 0; i <  enemies.size();) {
 		if (enemies[i]->getHitpoints() <= 0) {
+			score += enemies[i]->getValue();
 			enemies.erase(enemies.begin() + i);
 			break;
 		}
@@ -302,7 +326,6 @@ void Game::updateEnemies()
 		                  player->sprite.getPosition().y);
 		if (checkProximity(enemies[i]->sprite.getPosition()) == 1) {
 			player->setDamage(enemies[i]->getMeleeDamage());
-			//std::cout << "Hitpoints: " << player->getHitpoints() << std::endl;
 		}
 		i++;
 	}
@@ -432,6 +455,13 @@ void Game::drawMapWeapons()
 	}
 }
 
+void Game::drawMapValuables()
+{
+	for (unsigned int i = 0; i < mapValuables.size(); i++) {
+		app->draw(mapValuables[i]->sprite);
+	}
+}
+
 void Game::drawHealthbar()
 {
 	int hbarLength = player->getHitpoints();
@@ -448,9 +478,10 @@ void Game::drawShieldBar()
 	app->draw(shieldbar->sprite);
 }
 
-void Game::drawHealthText()
+void Game::drawHUDText()
 {
 	app->draw(game->healthText);
+	app->draw(game->scoreText);
 }
 
 void Game::drawCurrentGun()
@@ -500,6 +531,21 @@ void Game::pickWeapon()
 				mapWeapons.erase(mapWeapons.begin() + i);
 				heldWeapon = 1;
 			}
+		}
+	}
+}
+
+void Game::pickValuables()
+{
+	for (unsigned int i = 0; i < mapValuables.size(); i++) {
+		sf::Vector2f playerCoords(player->sprite.getPosition());
+		int diffX, diffY;
+
+		diffX = abs(mapValuables[i]->sprite.getPosition().x - playerCoords.x);
+		diffY = abs(mapValuables[i]->sprite.getPosition().y - playerCoords.y);
+		if (diffX < 20 && diffY < 20) {
+			score += mapValuables[i]->getValue();
+			mapValuables.erase(mapValuables.begin() + i);
 		}
 	}
 }
@@ -562,7 +608,14 @@ void Game::HUDManager()
 	shieldbarPositionY = playerPositionY - 15;
 
 	shieldbar->sprite.setPosition(wWShield / 2 + shieldbarPositionX, wHShield / 2 + shieldbarPositionY);
-		shieldbar->sprite.setColor(sf::Color(0, 100, 255));
+	shieldbar->sprite.setColor(sf::Color(0, 100, 255));
+
+	scoreTextPositionX = playerPositionX + 10;
+	scoreTextPositionY = playerPositionY - 35;
+
+	scoreText.setString("Score: " + std::to_string(score));
+	scoreText.setFont(font);
+	game->scoreText.setPosition(wW / 2 + scoreTextPositionX, wH / 2 + scoreTextPositionY);
 }
 
 int Game::checkProximity(sf::Vector2f enemy)
@@ -621,6 +674,7 @@ void Game::clearVectors()
 {
 	deleteList(mapWeapons);
 	deleteList(enemies);
+	deleteList(mapValuables);
 }
 
 void Game::createNewStage()
@@ -634,6 +688,7 @@ void Game::createNewStage()
 	clearVectors();
 	spawnEnemies(30);
 	spawnWeapons(20);
+	spawnValuables(10000);
 
 	delete mapGenerator;
 }

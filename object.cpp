@@ -269,6 +269,16 @@ float Object::getAggro() const
 	return aggro;
 }
 
+void Object::setValue(int givenValue)
+{
+	value = givenValue;
+}
+
+int Object::getValue() const
+{
+	return value;
+}
+
 Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	maxShieldPoints = 200.0;
@@ -292,6 +302,7 @@ Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectT
 EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	maxShieldPoints = 0.0;
+	setValue(100);
 	/*
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
@@ -307,6 +318,27 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object
 	setShieldpoints(0.0);
 	setMeleeDamage(0.5);
 	setCooldown(0);
+}
+
+ValuableLow::ValuableLow(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+{
+	setValue(100);
+	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
+	sprite.setColor(sf::Color(207, 83, 0));
+}
+
+ValuableMed::ValuableMed(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+{
+	setValue(250);
+	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
+	sprite.setColor(sf::Color(194, 194, 163));
+}
+
+ValuableHigh::ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+{
+	setValue(500);
+	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
+	sprite.setColor(sf::Color(255, 204, 0));
 }
 
 HealthBar::HealthBar(sf::Texture& objectTexture) : Object(objectTexture)

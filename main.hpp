@@ -29,12 +29,14 @@ public:
 	int heldWeapon = 0;
 	int weaponType = 0;
 	int ammo;
+	int score = 0;
 	float zoomLevel;
 	float playerPositionX, playerPositionY;
 	float weaponHUDX, weaponHUDY;
 	float healthbarPositionX, healthbarPositionY;
 	float shieldbarPositionX, shieldbarPositionY;
 	float healthTextPositionX, healthTextPositionY;
+	float scoreTextPositionX, scoreTextPositionY;
 	float ammoHUDX, ammoHUDY;
 	sf::Texture *playerTexture;
 	sf::Texture *enemyMeleeTexture;
@@ -47,6 +49,7 @@ public:
 	sf::Texture *cursorTexture;
 	sf::Texture *healthTexture;
 	sf::Texture *shieldTexture;
+	sf::Texture *valuableTexture;
 	sf::Sprite *cursorSprite;
 	sf::View *playerView;
 	sf::View *backgroundView;
@@ -54,6 +57,7 @@ public:
 	sf::Vector2i mouse;
 	sf::Font font;
 	sf::Text healthText;
+	sf::Text scoreText;
 	sf::Text currentGun;
 	sf::Text currentAmmo;
 	std::vector<ProjectileSprite> projectiles;
@@ -62,6 +66,7 @@ public:
 	std::vector<Weapon*> weapons;
 	std::vector<Weapon*> mapWeapons;
 	std::vector<Weapon*> playerWeapons;
+	std::vector<Object *> mapValuables;
 
 	Event *event;
 	MapGenerator *mapGenerator;
@@ -84,6 +89,7 @@ public:
 	void initializeHUD();
 	void spawnEnemies(int amount);
 	void spawnWeapons(int amount);
+	void spawnValuables(int totalValue);
 	void updateClock();
 	void updateView();
 	void updateLighting();
@@ -100,15 +106,17 @@ public:
 	void drawPlayer();
 	void drawWeapon();
 	void drawMapWeapons();
+	void drawMapValuables();
 	void drawHealthbar();
 	void drawShieldBar();
-	void drawHealthText();
+	void drawHUDText();
 	void drawCurrentGun();
 	void drawCurrentAmmo();
 	void drawCursor();
 	void shoot();
 	void dropWeapon();
 	void pickWeapon();
+	void pickValuables();
 	void HUDManager();
 	int checkProximity(sf::Vector2f enemy);
 	sf::Vector2f randomSpawn();

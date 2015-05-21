@@ -42,6 +42,8 @@ public:
 	void setCooldown(float amount);
 	void setAggro(float amount);
 	float getAggro() const;
+	void setValue(int givenValue);
+	int getValue() const;
 	float maxShieldPoints;
 	float shieldRechargeDelay;
 	float shieldTimeUntilRecharge = 0.0;
@@ -51,6 +53,7 @@ private:
 	float meleeDamage;
 	float cooldown;
 	float aggro = 0;
+	int value;
 };
 
 class Player : public Object
@@ -69,6 +72,24 @@ class EnemySoldier : public Object
 {
 public:
 	EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
+class ValuableLow : public Object
+{
+public:
+	ValuableLow(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
+class ValuableMed : public Object
+{
+public:
+	ValuableMed(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
+class ValuableHigh : public Object
+{
+public:
+	ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords);
 };
 
 class HealthBar : public Object
