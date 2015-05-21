@@ -526,6 +526,8 @@ bool MapGenerator::generateFeature(int x, int y, CardinalDirection direction)
 
 char* MapGenerator::generateMap()
 {
+	spawnCreated = false;
+	goalCreated = false;
 	while (!goalCreated) {
 		spawnCreated = false;
 		goalCreated = false;
