@@ -539,10 +539,10 @@ char* MapGenerator::generateMap()
 
 		clearWalls();
 
-		if (!goalCreated) {
+		/*if (!goalCreated) {
 			delete random;
 			random = new Random();
-		}
+		}*/
 	}
 	std::cout << "Seed: " << random->getSeed() << std::endl;
 	return dungeonTiles_;

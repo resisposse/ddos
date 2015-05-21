@@ -35,12 +35,11 @@ Game::Game()
 
 	loadTextures();
 
-	event = new Event;
 	mapGenerator = new MapGenerator;
-	map = new Map(mapGenerator->generateMap());
+	event = new Event;
 	light = new Light;
 	lightState = new LightState;
-	player = new Player(*playerTexture, playerSpawn());
+	player = new Player(*playerTexture, sf::Vector2f(0,0));
 	healthbar = new HealthBar(*healthTexture);
 	shieldbar = new ShieldBar(*shieldTexture);
 
@@ -48,11 +47,7 @@ Game::Game()
 	initializeLighting();
 	initializeWeapons();
 	initializeHUD();
-	spawnEnemies(30);
-	spawnWeapons(20);
-	spawnValuables(10000);
-
-	delete mapGenerator;
+	createNewStage();
 }
 
 Game::~Game()
@@ -76,6 +71,7 @@ Game::~Game()
 	delete shieldTexture;
 	delete shieldbar;
 	delete app;
+	delete mapGenerator;
 }
 
 void Game::update()
@@ -679,7 +675,6 @@ void Game::clearVectors()
 
 void Game::createNewStage()
 {
-	mapGenerator = new MapGenerator;
 	Map *mapTmp = new Map(mapGenerator->generateMap());
 	delete map;
 	player->sprite.setPosition(playerSpawn());
@@ -689,8 +684,6 @@ void Game::createNewStage()
 	spawnEnemies(30);
 	spawnWeapons(20);
 	spawnValuables(10000);
-
-	delete mapGenerator;
 }
 
 int main()
