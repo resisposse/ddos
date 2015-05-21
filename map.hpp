@@ -6,9 +6,7 @@
 #ifndef MAP
 #define MAP
 
-#define TILE_SIZE 32
-#define MAP_SIZE_X 80
-#define MAP_SIZE_Y 68
+#include "globals.hpp"
 
 enum MapTileType
 {

@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
+#include "globals.hpp"
 #include "random.hpp"
 #include "mapgenerator.hpp"
 

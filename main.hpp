@@ -124,10 +124,5 @@ public:
 	void clearVectors();
 	void createNewStage();
 };
-extern float frameClock;
-extern long lastClock;
-extern sf::Clock timer;
-extern sf::RenderWindow *app;
-extern Game *game;
 
 #endif
