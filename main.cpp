@@ -652,7 +652,7 @@ sf::Vector2f Game::randomSpawn()
 		 * the whatever value returned by map->collision() to ensure we
 		 * get a new spawn.
 		 */
-		if (abs(randX - playerPositionX) < 75 || abs(randY - playerPositionY) < 75) {
+		if (abs(randX - playerPositionX) < (5 * TILE_SIZE) && abs(randY - playerPositionY) < (5 * TILE_SIZE)) {
 			collision = 1;
 		}
 	}

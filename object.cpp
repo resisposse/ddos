@@ -194,7 +194,7 @@ void Object::enemyShoot(sf::Vector2i coords)
 	else cooldown -= frameClock;
 }
 
-void Object::updateShield(float frameCLock)
+void Object::updateShield(float frameClock)
 {
 	shieldTimeUntilRecharge += frameClock;
 	if (getShieldpoints() < maxShieldPoints) {
