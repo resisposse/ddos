@@ -77,12 +77,7 @@ public:
 	~Game();
 	void update();
 	void render();
-	void loadCursorTexture();
-	void loadHealthbarTexture();
-	void loadShieldbarTexture();
-	void loadCharacterTextures();
-	void loadWeaponTextures();
-	void loadProjectileTextures();
+	void loadTextures();
 	void initializeView();
 	void initializeLighting();
 	void initializeWeapons();

@@ -33,12 +33,7 @@ Game::Game()
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
-	loadCursorTexture();
-	loadHealthbarTexture();
-	loadShieldbarTexture();
-	loadCharacterTextures();
-	loadWeaponTextures();
-	loadProjectileTextures();
+	loadTextures();
 
 	event = new Event;
 	mapGenerator = new MapGenerator;
@@ -130,8 +125,9 @@ void Game::render()
 	drawCurrentAmmo();
 }
 
-void Game::loadCursorTexture()
+void Game::loadTextures()
 {
+	/* Load cursor textures */
 	app->setMouseCursorVisible(false);
 	fixed = app->getView();
 
@@ -144,33 +140,24 @@ void Game::loadCursorTexture()
 	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
 	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
 	app->setView(fixed);
-}
 
-void Game::loadHealthbarTexture()
-{
+	/* Load healtbar and shieldbar textures */
 	healthTexture = new sf::Texture();
 	healthTexture->loadFromFile("media/laserBeam.png");
 	healthTexture->setSmooth(true);
-}
 
-void Game::loadShieldbarTexture()
-{
 	shieldTexture = new sf::Texture();
 	shieldTexture->loadFromFile("media/shieldBar.png");
 	shieldTexture->setSmooth(true);
-}
 
-void Game::loadCharacterTextures()
-{
+	/* Load character textures */
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
 
 	enemyMeleeTexture = new sf::Texture();
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
-}
 
-void Game::loadWeaponTextures()
-{
+	/* Load weapon textures */
 	pistolTexture = new sf::Texture();
 	pistolTexture->loadFromFile("media/ddos-dude-guns.png");
 
@@ -179,10 +166,8 @@ void Game::loadWeaponTextures()
 
 	shotgunTexture = new sf::Texture();
 	shotgunTexture->loadFromFile("media/ddos-dude-guns.png");
-}
 
-void Game::loadProjectileTextures()
-{
+	/* Load projectile textures */
 	bulletTexture = new sf::Texture();
 	bulletTexture->loadFromFile("media/bullet.png");
 	bulletTexture->setSmooth(true);
