@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "globals.hpp"
 #include "event.hpp"
 #include "light.hpp"
 #include "map.hpp"
@@ -14,13 +15,9 @@
 #include "weapon.hpp"
 #include "main.hpp"
 
-#define deleteList(list) \
-for (; !(list).empty(); delete (list).back(), (list).pop_back())
-
 float frameClock = 0;
 long lastClock = 0;
 sf::Clock timer;
-
 sf::RenderWindow *app;
 Game *game;
 
@@ -627,7 +624,6 @@ int Game::checkProximity(sf::Vector2f enemy)
 	distanceY = abs(enemy.y - playerPosition.y);
 	//pitää olla sama kuin objectin approachissa, muutetaan myöhemmin
 	distanceFromObject = sqrt(distanceX * 2 + distanceY * 2);
-
 	if (distanceFromObject < 5) {
 		closeEnough = 1;
 	}
@@ -642,17 +638,17 @@ sf::Vector2f Game::randomSpawn()
 	sf::Vector2f playerPosition;
 	playerPositionX = player->sprite.getPosition().x;
 	playerPositionY = player->sprite.getPosition().y;
+	/*
+	 * A loop for checking whether the object's spawn coordinates are either
+	 * colliding with the wall, or too close to the player's spawn room, if
+	 * not, we accept the coords.
+	 */
 	while (collision == 1) {
 		randX = rand() % MAP_SIZE_X * 32;
 		randY = rand() % MAP_SIZE_Y * 32;
 		collision = map->collision(randX, randY, "asd");
-
-		/*
-		 * If the object spawn is too close to the player, we override
-		 * the whatever value returned by map->collision() to ensure we
-		 * get a new spawn.
-		 */
-		if (abs(randX - playerPositionX) < (5 * TILE_SIZE) && abs(randY - playerPositionY) < (5 * TILE_SIZE)) {
+		if (abs(randX - playerPositionX) < (5 * TILE_SIZE) &&
+		    abs(randY - playerPositionY) < (5 * TILE_SIZE)) {
 			collision = 1;
 		}
 	}

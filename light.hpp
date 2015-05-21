@@ -6,21 +6,7 @@
 #ifndef LIGHT
 #define LIGHT
 
-#define LIGHT_MAX_LIGHTLEVEL 100
-#define LIGHT_ABSOLUTE 80
-
-#define deleteList(list) \
-for (; !(list).empty(); delete (list).back(), (list).pop_back())
-
-#define updateList(list) \
-for (unsigned int i = 0; i < (list).size();) { \
-	if (!(list)[i]->update()) { \
-		delete (list)[i]; \
-		(list).erase((list).begin() + i); \
-	} else { \
-		i++; \
-	} \
-}
+#include "globals.hpp"
 
 /* Forward declaration due to a cyclic dependency */
 class MapTile;

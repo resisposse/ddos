@@ -6,9 +6,6 @@
 #ifndef MAPGENERATOR
 #define MAPGENERATOR
 
-#define MAP_SIZE_X 80
-#define MAP_SIZE_Y 68
-
 /* Forward declaration due to cyclic dependency */
 class Random;
 
