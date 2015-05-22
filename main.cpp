@@ -498,8 +498,9 @@ void Game::drawCurrentAmmo()
 
 void Game::drawGore()
 {
+	std::cout << "blood: " << mapBlood.size() << std::endl;
 	int bloodSprsOnMap = 100;
-	if (mapBlood.size() > bloodSprsOnMap) {
+	while (mapBlood.size() > bloodSprsOnMap) {
 		mapBlood.erase(mapBlood.begin());
 	}
 	for (unsigned int i = 0; i < mapBlood.size(); i++) {
@@ -692,6 +693,7 @@ void Game::clearVectors()
 	deleteList(mapWeapons);
 	deleteList(enemies);
 	deleteList(mapValuables);
+	deleteList(mapBlood);
 }
 
 void Game::createNewStage()
