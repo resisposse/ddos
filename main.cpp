@@ -69,6 +69,8 @@ Game::~Game()
 	delete shieldbar;
 	delete app;
 	delete mapGenerator;
+	delete blood8x8Texture;
+	delete blood16x16Texture;
 }
 
 void Game::update()
@@ -105,6 +107,7 @@ void Game::render()
 
 	map->renderTiles();
 
+	drawGore();
 	drawMapValuables();
 	drawMapWeapons();
 	drawEnemies();
@@ -170,6 +173,12 @@ void Game::loadTextures()
 	/* Load valuable textures */
 	valuableTexture = new sf::Texture();
 	valuableTexture->loadFromFile("media/coin.png");
+
+	/*load gore textures */
+	blood8x8Texture = new sf::Texture();
+	blood8x8Texture->loadFromFile("media/blood8x8.png");
+	blood16x16Texture = new sf::Texture();
+	blood16x16Texture->loadFromFile("media/blood16x16.png");
 }
 
 void Game::initializeView()
@@ -304,6 +313,9 @@ void Game::updateEnemies()
 	for (unsigned int i = 0; i <  enemies.size();) {
 		if (enemies[i]->getHitpoints() <= 0) {
 			score += enemies[i]->getValue();
+			for (int tmp = 0; tmp < 3 + rand() % 3; tmp++) {
+				mapBlood.push_back(new BloodMedium(*blood16x16Texture, enemies[i]->sprite.getPosition()));
+			}
 			enemies.erase(enemies.begin() + i);
 			break;
 		}
@@ -384,6 +396,9 @@ int Game::checkEnemyCollisions(int x, int y, int damage)
 		diffX = abs(x - enemyX);
 		diffY = abs(y - enemyY);
 		if (diffX < 10 && diffY < 10) {
+			for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
+				mapBlood.push_back(new BloodSmall(*blood8x8Texture, enemies[b]->sprite.getPosition()));
+			}
 			enemyCollision = 1;
 			enemies[b]->setDamage(damage);
 			enemies[b]->setAggro(5);
@@ -479,6 +494,17 @@ void Game::drawCurrentGun()
 void Game::drawCurrentAmmo()
 {
 	app->draw(game->currentAmmo);
+}
+
+void Game::drawGore()
+{
+	int bloodSprsOnMap = 100;
+	if (mapBlood.size() > bloodSprsOnMap) {
+		mapBlood.erase(mapBlood.begin());
+	}
+	for (unsigned int i = 0; i < mapBlood.size(); i++) {
+		app->draw(mapBlood[i]->sprite);
+	}
 }
 
 void Game::drawCursor()

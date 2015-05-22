@@ -348,6 +348,28 @@ ValuableHigh::ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords) : Ob
 	sprite.setColor(sf::Color(255, 204, 0));
 }
 
+BloodSmall::BloodSmall(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+{
+	/* Number of blood variations in blood8x8Texture */
+	int variation = rand() % 8;
+	sf::IntRect mBlood(variation * 8, 0, 8, 8);
+	sprite.setTextureRect(mBlood);
+	sprite.setOrigin(8, 8);
+	sprite.setRotation(rand() % 360);
+	sprite.setPosition(coords.x + (rand() % 24 - 12), coords.y + (rand() % 24 - 12));
+}
+
+BloodMedium::BloodMedium(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+{
+	/* Number of blood variations in blood16x16Texture */
+	int variation = rand() % 8;
+	sf::IntRect mBlood(variation * 16, 0, 16, 16);
+	sprite.setTextureRect(mBlood);
+	sprite.setOrigin(8, 8);
+	sprite.setRotation(rand() % 360);
+	sprite.setPosition(coords.x + (rand() % 16 - 8), coords.y + (rand() % 16 - 8));
+}
+
 HealthBar::HealthBar(sf::Texture& objectTexture) : Object(objectTexture)
 {
 

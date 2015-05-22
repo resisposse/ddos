@@ -49,6 +49,8 @@ public:
 	sf::Texture *healthTexture;
 	sf::Texture *shieldTexture;
 	sf::Texture *valuableTexture;
+	sf::Texture *blood8x8Texture;
+	sf::Texture *blood16x16Texture;
 	sf::Sprite *cursorSprite;
 	sf::View *playerView;
 	sf::View *backgroundView;
@@ -66,6 +68,7 @@ public:
 	std::vector<Weapon*> mapWeapons;
 	std::vector<Weapon*> playerWeapons;
 	std::vector<Object *> mapValuables;
+	std::vector<Object *> mapBlood;
 
 	Event *event;
 	MapGenerator *mapGenerator;
@@ -111,6 +114,7 @@ public:
 	void drawHUDText();
 	void drawCurrentGun();
 	void drawCurrentAmmo();
+	void drawGore();
 	void drawCursor();
 	void shoot();
 	void dropWeapon();

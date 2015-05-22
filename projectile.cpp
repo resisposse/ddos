@@ -76,7 +76,7 @@ BulletSprite::BulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPos
                            : ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
 	speed = 500;
-	damage = 10;
+	damage = 18;
 }
 
 LaserSprite::LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
@@ -91,7 +91,7 @@ PelletSprite::PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPos
 						: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
 	speed = 300;
-	damage = 5;
+	damage = 8;
 }
 
 HeavyBulletSprite::HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)

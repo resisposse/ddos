@@ -92,6 +92,18 @@ public:
 	ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords);
 };
 
+class BloodSmall : public Object
+{
+public:
+	BloodSmall(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
+class BloodMedium : public Object
+{
+public:
+	BloodMedium(sf::Texture& objectTexture, sf::Vector2f coords);
+};
+
 class HealthBar : public Object
 {
 public:
