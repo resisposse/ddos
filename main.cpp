@@ -8,6 +8,7 @@
 #include <iostream>
 #include "globals.hpp"
 #include "event.hpp"
+#include "audio.hpp"
 #include "light.hpp"
 #include "map.hpp"
 #include "mapgenerator.hpp"
@@ -35,6 +36,7 @@ Game::Game()
 
 	mapGenerator = new MapGenerator;
 	event = new Event;
+	audio = new Audio;
 	light = new Light;
 	lightState = new LightState;
 	player = new Player(*playerTexture, sf::Vector2f(0,0));
@@ -52,6 +54,7 @@ Game::~Game()
 {
 	delete event;
 	delete map;
+	delete audio;
 	delete light;
 	delete bulletTexture;
 	delete laserBeamTexture;
@@ -127,7 +130,6 @@ void Game::render()
 
 void Game::loadTextures()
 {
-	/* Load cursor texture and initialize */
 	app->setMouseCursorVisible(false);
 	cursorTexture = new sf::Texture();
 	cursorTexture->loadFromFile("media/cursor.png");
@@ -137,7 +139,6 @@ void Game::loadTextures()
 	cursorSprite->setOrigin(spriteSize.x / 2, spriteSize.y / 2);
 	cursorSprite->setColor(sf::Color(255, 0, 0, 255));
 
-	/* Load healthbar and shieldbar textures */
 	healthTexture = new sf::Texture();
 	healthTexture->loadFromFile("media/laserBeam.png");
 	healthTexture->setSmooth(true);
@@ -145,17 +146,14 @@ void Game::loadTextures()
 	shieldTexture->loadFromFile("media/shieldBar.png");
 	shieldTexture->setSmooth(true);
 
-	/* Load character textures */
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
 	enemyMeleeTexture = new sf::Texture();
 	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
 
-	/* Load weapon textures */
 	weaponTexture = new sf::Texture();
 	weaponTexture->loadFromFile("media/ddos-weapons.png");
 
-	/* Load projectile textures */
 	bulletTexture = new sf::Texture();
 	bulletTexture->loadFromFile("media/bullet.png");
 	bulletTexture->setSmooth(true);
@@ -165,12 +163,11 @@ void Game::loadTextures()
 	pelletTexture = new sf::Texture();
 	pelletTexture->loadFromFile("media/pellet.png");
 	pelletTexture->setSmooth(true);
-
 	heavyBulletTexture = new sf::Texture();
 	heavyBulletTexture->loadFromFile("media/heavyBullet.png");
 	heavyBulletTexture->setSmooth(true);
 
-	/* Load valuable textures */
+	/* We ought to not lose this texture, it's very valuable */
 	valuableTexture = new sf::Texture();
 	valuableTexture->loadFromFile("media/coin.png");
 
@@ -540,6 +537,8 @@ void Game::pickWeapon()
 				playerWeapons.back()->sprite.setOrigin(16, 0);
 				mapWeapons.erase(mapWeapons.begin() + i);
 				heldWeapon = 1;
+
+				audio->dropgunSound->play();
 			}
 		}
 	}
@@ -556,6 +555,8 @@ void Game::pickValuables()
 		if (diffX < 20 && diffY < 20) {
 			score += mapValuables[i]->getValue();
 			mapValuables.erase(mapValuables.begin() + i);
+
+			audio->coinSound->play();
 		}
 	}
 }
@@ -625,7 +626,7 @@ void Game::HUDManager()
 
 	scoreText.setString("Score: " + std::to_string(score));
 	scoreText.setFont(font);
-	game->scoreText.setPosition(wW / 2 + scoreTextPositionX, wH / 2 + scoreTextPositionY);
+	scoreText.setPosition(wW / 2 + scoreTextPositionX, wH / 2 + scoreTextPositionY);
 }
 
 int Game::checkProximity(sf::Vector2f enemy)
@@ -708,9 +709,8 @@ void Game::createNewStage()
 int main()
 {
 	sf::Music music;
-	if (!music.openFromFile("music/smilecythe_-_penetrating_breeze.ogg"))
-		    return -1; // error
-	music.setVolume(10);
+	music.openFromFile("audio/smilecythe_-_penetrating_breeze.ogg");
+	music.setVolume(MUSIC_VOLUME);
 	music.setLoop(true);
 	music.play();
 

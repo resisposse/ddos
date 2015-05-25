@@ -4,11 +4,14 @@
  */
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
 #include "main.hpp"
 #include "map.hpp"
 #include "light.hpp"
 #include "weapon.hpp"
 #include "object.hpp"
+#include "audio.hpp"
 #include "event.hpp"
 
 /*
@@ -19,21 +22,28 @@
 void Event::processEvent()
 {
 	sf::Event event;
+	clock += frameClock;
+	std::cout << clock << "\n";
+	playFootstepSound();
 	while (app->pollEvent(event)) {
 		switch (event.type) {
 		case sf::Event::KeyPressed:
 			switch (event.key.code) {
 			case sf::Keyboard::W:
 				game->player->mIsMovingUp = true;
+				mIsMovingUpSound = true;
 				break;
 			case sf::Keyboard::A:
 				game->player->mIsMovingLeft = true;
+				mIsMovingLeftSound = true;
 				break;
 			case sf::Keyboard::S:
 				game->player->mIsMovingDown = true;
+				mIsMovingDownSound = true;
 				break;
 			case sf::Keyboard::D:
 				game->player->mIsMovingRight = true;
+				mIsMovingRightSound = true;
 				break;
 			case sf::Keyboard::E:
 				game->heldWeapon = (game->heldWeapon + 1) % game->playerWeapons.size();
@@ -52,6 +62,7 @@ void Event::processEvent()
 				int i = (int)game->playerPositionX / 32;
 				int j = (int)game->playerPositionY / 32;
 				if (game->map->tiles[i][j].type == MapTileType::mtGoal) {
+					game->audio->teleportSound->play();
 					game->createNewStage();
 				}
 				break;
@@ -67,15 +78,19 @@ void Event::processEvent()
 			switch (event.key.code) {
 			case sf::Keyboard::W:
 				game->player->mIsMovingUp = false;
+				mIsMovingUpSound = false;
 				break;
 			case sf::Keyboard::A:
 				game->player->mIsMovingLeft = false;
+				mIsMovingLeftSound = false;
 				break;
 			case sf::Keyboard::S:
 				game->player->mIsMovingDown = false;
+				mIsMovingDownSound = false;
 				break;
 			case sf::Keyboard::D:
 				game->player->mIsMovingRight = false;
+				mIsMovingRightSound = false;
 				break;
 			default:
 				break;
@@ -137,5 +152,24 @@ void Event::processEvent()
 	}
 	if (!app->isOpen()) {
 		game->running = false;
+	}
+}
+
+void Event::playFootstepSound()
+{
+	if (mIsMovingUpSound == true ||
+	    mIsMovingLeftSound == true ||
+	    mIsMovingDownSound == true ||
+	    mIsMovingRightSound == true) {
+		if (isPlaying == false) {
+			clock = 0.0;
+			random = rand() % 3;
+			game->audio->footsteps[random]->play();
+			isPlaying = true;
+		} else if (isPlaying == true) {
+			if (clock > 0.35) {
+				isPlaying = false;
+			}
+		}
 	}
 }

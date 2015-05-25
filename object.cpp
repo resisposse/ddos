@@ -4,9 +4,11 @@
  */
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <cmath>
 #include "map.hpp"
+#include "audio.hpp"
 #include "projectile.hpp"
 #include "main.hpp"
 #include "weapon.hpp"
@@ -154,38 +156,52 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
  */
 void Object::playerShoot()
 {
-	if (playerShooting == true && shootingCooldown <= 0 && game->playerWeapons[game->heldWeapon]->getAmmo() > 0) {
+	if (playerShooting == true && shootingCooldown <= 0) {
 		shootingCooldown = game->playerWeapons[game->heldWeapon]->attackSpeed;
 		game->playerWeapons[game->heldWeapon]->setAmmo(1);
 		game->ammo = game->playerWeapons[game->heldWeapon]->getAmmo();
-		switch (game->playerWeapons[game->heldWeapon]->ammoType) {
-		case 0:
-			game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
-				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				game->playerWeapons[game->heldWeapon]->spreadAngle));
-			break;
-		case 1:
-			game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
-				sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-				game->playerWeapons[game->heldWeapon]->spreadAngle));
-			break;
-		case 2:
-			for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
-				game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
+		if (game->playerWeapons[game->heldWeapon]->getAmmo() <= 0) {
+			game->audio->clickSound->play();
+		} else {
+			switch (game->playerWeapons[game->heldWeapon]->ammoType) {
+			case 0:
+				game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
 					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
 					game->playerWeapons[game->heldWeapon]->spreadAngle));
-			}
-			break;
-		case 3:
-			for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
+
+				game->audio->bulletSound->play();
+
+				break;
+			case 1:
+				game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					game->playerWeapons[game->heldWeapon]->spreadAngle));
+
+				game->audio->laserSound->play();
+
+				break;
+			case 2:
+				for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
+					game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
+						sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+						game->playerWeapons[game->heldWeapon]->spreadAngle));
+				}
+
+				game->audio->shotgunSound->play();
+
+				break;
+			case 3:
 				game->projectiles.push_back(HeavyBulletSprite(*game->heavyBulletTexture, game->player->sprite.getPosition(),
 					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
 					game->playerWeapons[game->heldWeapon]->spreadAngle));
+
+				game->audio->sniperSound->play();
+
+				break;
+			default:
+				std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
+				break;
 			}
-			break;
-		default:
-			std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
-			break;
 		}
 	} else {
 		shootingCooldown -= frameClock;

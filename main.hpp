@@ -8,6 +8,7 @@
 
 /* Forward declarations due to cyclic dependencies */
 class Event;
+class Audio;
 class Map;
 class MapGenerator;
 class Light;
@@ -73,6 +74,7 @@ public:
 	Event *event;
 	MapGenerator *mapGenerator;
 	Map *map;
+	Audio *audio;
 	Light *light;
 	LightState *lightState;
 	Player *player;

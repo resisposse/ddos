@@ -51,7 +51,7 @@ int Weapon::getAmmo() const
 Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Pistol";
-	attackSpeed = 0.2;
+	attackSpeed = 0.6;
 	spreadAngle = 15;
 	ammoType = 0;
 	ammo = 30;
@@ -66,7 +66,7 @@ Pistol::Pistol(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Lasergun";
-	attackSpeed = 0.3;
+	attackSpeed = 0.6;
 	spreadAngle = 5;
 	ammoType = 1;
 	ammo = 30;
@@ -81,7 +81,7 @@ LaserRifle::LaserRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Shotgun";
-	attackSpeed = 1;
+	attackSpeed = 1.4;
 	spreadAngle = 20;
 	ammoType = 2;
 	ammo = 30;
@@ -96,8 +96,8 @@ Shotgun::Shotgun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 MachineGun::MachineGun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Machine Gun";
-	attackSpeed = 0.1;
-	spreadAngle = 12;
+	attackSpeed = 0.08;
+	spreadAngle = 20;
 	ammoType = 0;
 	ammo = 50;
 	bullets = 1;
@@ -111,7 +111,7 @@ MachineGun::MachineGun(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 SniperRifle::SniperRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 {
 	name = "Sniper";
-	attackSpeed = 2;
+	attackSpeed = 2.7;
 	spreadAngle = 2;
 	ammoType = 3;
 	ammo = 10;
