@@ -396,9 +396,6 @@ int Game::checkEnemyCollisions(int x, int y, int damage)
 		diffX = abs(x - enemyX);
 		diffY = abs(y - enemyY);
 		if (diffX < 10 && diffY < 10) {
-			for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
-				mapBlood.push_back(new BloodSmall(*blood8x8Texture, enemies[b]->sprite.getPosition()));
-			}
 			enemyCollision = 1;
 			enemies[b]->setDamage(damage);
 			enemies[b]->setAggro(5);
@@ -498,8 +495,7 @@ void Game::drawCurrentAmmo()
 
 void Game::drawGore()
 {
-	std::cout << "blood: " << mapBlood.size() << std::endl;
-	int bloodSprsOnMap = 100;
+	int bloodSprsOnMap = 2500;
 	while (mapBlood.size() > bloodSprsOnMap) {
 		mapBlood.erase(mapBlood.begin());
 	}

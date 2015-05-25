@@ -243,7 +243,7 @@ void Object::setDamage(float damage)
 	int currentHitpoints = getHitpoints();
 	if (currentShieldpoints <= 0) {
 		for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
-			game->mapBlood.push_back(new BloodSmall(*game->blood8x8Texture, game->player->sprite.getPosition()));
+			game->mapBlood.push_back(new BloodSmall(*game->blood8x8Texture, sprite.getPosition()));
 		}
 		int newHitpoints = currentHitpoints - damage;
 		if (newHitpoints < 0) newHitpoints = 0;
