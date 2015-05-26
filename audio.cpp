@@ -31,7 +31,7 @@ Audio::Audio()
 	laserBuffer->loadFromFile("audio/laser1.ogg");
 	laserSound = new sf::Sound;
 	laserSound->setBuffer(*laserBuffer);
-	laserSound->setVolume(WEAPON_VOLUME + 30);
+	laserSound->setVolume(WEAPON_VOLUME + 20);
 
 	clickBuffer = new sf::SoundBuffer;
 	clickBuffer->loadFromFile("audio/clickCCA.wav");

@@ -30,8 +30,8 @@ MainMenu::MainMenu(StateManager *stateManager)
 	MenuItem playButton(x, y, width, height, sf::Color::Transparent, sf::Color::White, "Play Game", *font);
 	MenuItem exitButton(x, y + height + padding, width, height, sf::Color::Transparent, sf::Color::White, "Exit Game", *font);
 
-	menuItems.push_back(playButton);
-	menuItems.push_back(exitButton);
+	menuButtons.push_back(playButton);
+	menuButtons.push_back(exitButton);
 }
 
 void MainMenu::draw()
@@ -41,14 +41,14 @@ void MainMenu::draw()
 	float scale = app->getSize().y / float(this->menuBgSpr.getTexture()->getSize().y);
 	this->menuBgSpr.setScale(sf::Vector2f(scale, scale));
 	app->draw(this->menuBgSpr);
-	for (unsigned int i = 0; i < menuItems.size(); i++) {
-		app->draw(menuItems[i].rect);
-		if (menuItems[i].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
-			menuItems[i].text.setColor(sf::Color(0,70,255,255));
+	for (unsigned int i = 0; i < menuButtons.size(); i++) {
+		app->draw(menuButtons[i].rect);
+		if (menuButtons[i].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
+			menuButtons[i].text.setColor(sf::Color(0, 70, 255, 255));
 		} else {
-			menuItems[i].text.setColor(sf::Color::White);
+			menuButtons[i].text.setColor(sf::Color::White);
 		}
-		app->draw(menuItems[i].text);
+		app->draw(menuButtons[i].text);
 	}
 	app->draw(title.text);
 }
@@ -69,10 +69,10 @@ void MainMenu::handleInput()
 		case sf::Event::MouseButtonPressed: {
 			switch (event.mouseButton.button) {
 			case sf::Mouse::Left:
-				if (menuItems[0].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
+				if (menuButtons[0].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					game = new Game(this->stateManager);
 					stateManager->pushState(game);
-				} else if (menuItems[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
+				} else if (menuButtons[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					app->close();
 				}
 				break;

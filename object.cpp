@@ -471,10 +471,10 @@ void EnemyMelee::update(float enemyPositionX, float enemyPositionY,
 			if ((pathCooldown <= 0 && newPath) && getAggro() > 0) {
 				sf::Vector2f coords(enemyPositionX, enemyPositionY);
 				if (playerPath.size() > 0) {
-					playerPath = game->testPath(coords);
+					playerPath = game->getPath(coords);
 				}
 				else if (playerPath.size() <= 0) {
-					playerPath = game->testPath(coords);
+					playerPath = game->getPath(coords);
 				}
 				pathCooldown = 1;
 				newPath = false;
@@ -588,10 +588,10 @@ void EnemySoldier::update(float enemyPositionX, float enemyPositionY,
 			if ((pathCooldown <= 0 && newPath) && getAggro() > 0) {
 				sf::Vector2f coords(enemyPositionX, enemyPositionY);
 				if (playerPath.size() > 0) {
-					playerPath = game->testPath(coords);
+					playerPath = game->getPath(coords);
 				}
 				else if (playerPath.size() <= 0) {
-					playerPath = game->testPath(coords);
+					playerPath = game->getPath(coords);
 				}
 				pathCooldown = 1;
 				newPath = false;

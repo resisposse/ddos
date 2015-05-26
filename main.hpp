@@ -140,7 +140,9 @@ public:
 	void clearVectors();
 	void createNewStage();
 	void checkPlayerDeath();
-	std::vector<sf::Vector2f> testPath(sf::Vector2f enemyCoords);
+	std::vector<sf::Vector2f> getPath(sf::Vector2f enemyCoords);
+	void endGame();
+	void returnToMainMenu();
 };
 
 #endif

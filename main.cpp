@@ -17,6 +17,7 @@
 #include "mainmenu.hpp"
 #include "gamestate.hpp"
 #include "gameover.hpp"
+#include "pause.hpp"
 #include "random.hpp"
 #include "node.hpp"
 #include "grid.hpp"
@@ -166,7 +167,8 @@ void Game::handleInput()
 				break;
 			}
 			case sf::Keyboard::Escape:
-				app->close();
+				app->setMouseCursorVisible(true);
+				stateManager->pushState(new Pause(stateManager));
 				break;
 			default:
 				break;
@@ -422,6 +424,9 @@ void Game::updateClock()
 {
 	currentClock += timer.getElapsedTime().asMilliseconds();
 	frameClock = (currentClock - lastClock) / 1000.0;
+	if (frameClock > 0.1) {
+		frameClock = 0.1;
+	}
 	lastClock = currentClock;
 	timer.restart();
 }
@@ -857,7 +862,7 @@ void Game::createNewStage()
 	pathfindAlustus = false;
 }
 
-std::vector<sf::Vector2f> Game::testPath(sf::Vector2f enemyCoords) {
+std::vector<sf::Vector2f> Game::getPath(sf::Vector2f enemyCoords) {
 	if (!pathfindAlustus) {
 		if (pathfinding) {
 			delete pathfinding;
@@ -872,9 +877,19 @@ std::vector<sf::Vector2f> Game::testPath(sf::Vector2f enemyCoords) {
 void Game::checkPlayerDeath()
 {
 	if (player->getHitpoints() <= 0) {
-		app->setMouseCursorVisible(true);
-		stateManager->changeState(new GameOver(stateManager));
+		endGame();
 	}
+}
+
+void Game::endGame()
+{
+	app->setMouseCursorVisible(true);
+	stateManager->changeState(new GameOver(stateManager));
+}
+
+void Game::returnToMainMenu()
+{
+	stateManager->popState();
 }
 
 int main()

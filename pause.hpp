@@ -1,11 +1,11 @@
-#ifndef MAINMENU
-#define MAINMENU
+#ifndef PAUSE
+#define PAUSE
 
 #include <SFML/Graphics.hpp>
 #include "menuitem.hpp"
 #include "gamestate.hpp"
 
-class MainMenu : public GameState
+class Pause : public GameState
 {
 private:
 	sf::View view;
@@ -17,10 +17,12 @@ public:
 	virtual void update();
 	virtual void handleInput();
 
-	MainMenu(StateManager *stateManager);
+	Pause(StateManager *stateManager);
 
 	std::vector<MenuItem> menuButtons;
-	MenuItem title;
+	MenuItem gameOverText;
+	MenuItem deathText;
+	MenuItem score;
 };
 
 #endif

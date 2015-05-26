@@ -33,7 +33,7 @@ for (unsigned int i = 0; i < (list).size();) { \
 #define MAP_SIZE_X 80
 #define MAP_SIZE_Y 68
 
-#define WEAPON_VOLUME 10
+#define WEAPON_VOLUME 3
 #define MISC_VOLUME 10
 #define MUSIC_VOLUME 10
 

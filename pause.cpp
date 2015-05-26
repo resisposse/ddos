@@ -4,9 +4,9 @@
 #include "globals.hpp"
 #include "main.hpp"
 #include "gamestate.hpp"
-#include "gameover.hpp"
+#include "pause.hpp"
 
-GameOver::GameOver(StateManager *stateManager)
+Pause::Pause(StateManager *stateManager)
 {
 	menuBgTex = sf::Texture();
 	menuBgTex.loadFromFile("media/ddos-menu-bg.jpg");
@@ -28,17 +28,17 @@ GameOver::GameOver(StateManager *stateManager)
 	int height = (int)this->view.getSize().y / 20;
 	int padding = (int)this->view.getSize().y / 100;
 
-	gameOverText = MenuItem(x, y / 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::Red, "You Died", *font, 60);
-	score = MenuItem(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::Red, game->scoreText.getString(), *font, 25);
+	gameOverText = MenuItem(x, y / 2, width * 2, height * 2, sf::Color::Transparent, sf::Color(0,170,255,255), "Paused", *font, 60);
+	score = MenuItem(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::White, game->scoreText.getString(), *font, 25);
 
-	MenuItem restartButton(x, y, width, height, sf::Color::Transparent, sf::Color::White, "Restart Game", *font);
+	MenuItem restartButton(x, y, width, height, sf::Color::Transparent, sf::Color::White, "Return Game", *font);
 	MenuItem returnButton(x, y + height + padding, width, height, sf::Color::Transparent, sf::Color::White, "Main Menu", *font);
 
 	menuButtons.push_back(restartButton);
 	menuButtons.push_back(returnButton);
 }
 
-void GameOver::draw()
+void Pause::draw()
 {
 	app->setView(this->view);
 	app->clear(sf::Color::Black);
@@ -58,12 +58,12 @@ void GameOver::draw()
 	app->draw(score.text);
 }
 
-void GameOver::update()
+void Pause::update()
 {
 
 }
 
-void GameOver::handleInput()
+void Pause::handleInput()
 {
 	sf::Event event;
 
@@ -75,10 +75,11 @@ void GameOver::handleInput()
 			switch (event.mouseButton.button) {
 			case sf::Mouse::Left:
 				if (menuButtons[0].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
-					game = new Game(this->stateManager);
-					stateManager->changeState(game);
+					app->setMouseCursorVisible(false);
+					stateManager->popState();
 				} else if (menuButtons[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					stateManager->popState();
+					game->returnToMainMenu();
 				}
 				break;
 			}
@@ -104,7 +105,10 @@ void GameOver::handleInput()
 		}
 		case sf::Event::KeyPressed:
 		{
-			if (event.key.code == sf::Keyboard::Escape) app->close();
+			if (event.key.code == sf::Keyboard::Escape) {
+				app->setMouseCursorVisible(false);
+				stateManager->popState();
+			}
 			break;
 		}
 		default: break;
