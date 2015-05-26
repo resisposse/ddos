@@ -16,6 +16,9 @@ public:
 	bool playerShooting;
 	float playerSpeed;
 	float shootingCooldown = 0;
+	float clock;
+	bool isPlaying = false;
+	int random;
 	sf::Sprite sprite;
 	sf::View fixed;
 	sf::Vector2i mouse;
@@ -29,7 +32,7 @@ public:
 	void approach(float enemyPositionX, float enemyPositionY,
 	              float playerPositionX, float playerPositionY);
 	void playerShoot();
-	void enemyShoot(sf::Vector2i coords);
+	void enemyShoot(sf::Vector2i coords, float distanceX, float distanceY);
 	void updateShield(float frameClock);
 	int getHitpoints() const;
 	void setHitpoints(int hp);

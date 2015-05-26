@@ -96,6 +96,7 @@ void Object::update(float frameClock)
 void Object::approach(float enemyPositionX, float enemyPositionY,
                       float playerPositionX, float playerPositionY)
 {
+	clock += frameClock;
 	int collisionFlag = 1;
 	float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
 	float absoluteDistanceY = abs(playerPositionY - enemyPositionY);
@@ -145,7 +146,21 @@ void Object::approach(float enemyPositionX, float enemyPositionY,
 			this->sprite.setOrigin(16, 16);
 			this->sprite.setRotation(angle);
 			this->sprite.move(enemyMovement * frameClock);
-			enemyShoot(playerCoords);
+			enemyShoot(playerCoords, distanceX, distanceY);
+
+			if (isPlaying == false) {
+				clock = 0.0;
+				random = rand() % game->audio->footsteps.size();
+				/* A hacky way to increase the volume relative to distance */
+				game->audio->footsteps[random]->setVolume(MISC_VOLUME+30);
+				game->audio->footsteps[random]->setPosition(-distanceX / 25, -distanceY / 25, 0);
+				game->audio->footsteps[random]->play();
+				isPlaying = true;
+			} else if (isPlaying == true) {
+				if (clock > 0.35) {
+					isPlaying = false;
+				}
+			}
 		}
 	}
 }
@@ -169,6 +184,7 @@ void Object::playerShoot()
 					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
 					game->playerWeapons[game->heldWeapon]->spreadAngle));
 
+				game->audio->bulletSound->setPosition(0,0,0);
 				game->audio->bulletSound->play();
 
 				break;
@@ -208,11 +224,13 @@ void Object::playerShoot()
 	}
 }
 
-void Object::enemyShoot(sf::Vector2i coords)
+void Object::enemyShoot(sf::Vector2i coords, float distanceX, float distanceY)
 {
 	if (cooldown <= 0) {
 		setCooldown(0.5);
 		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
+		game->audio->bulletSound->setPosition(-distanceX / 25, -distanceY / 25, 0);
+		game->audio->bulletSound->play();
 	}
 	else cooldown -= frameClock;
 }

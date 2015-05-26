@@ -249,13 +249,19 @@ void Game::handleInput()
 
 void Game::playFootstepSound()
 {
+	float playerPositionX = game->player->sprite.getPosition().x;
+	float playerPositionY = game->player->sprite.getPosition().y;
+	int randomValue;
 	if (player->mIsMovingUp == true ||
-		player->mIsMovingLeft == true ||
-		player->mIsMovingDown == true ||
-		player->mIsMovingRight == true) {
+	    player->mIsMovingLeft == true ||
+	    player->mIsMovingDown == true ||
+	    player->mIsMovingRight == true) {
 		if (isPlaying == false) {
 			tempClock = 0.0;
-			audio->footsteps[random->generate(0,audio->footsteps.size()-1)]->play();
+			randomValue = random->generate(0,audio->footsteps.size()-1);
+			audio->footsteps[randomValue]->setVolume(MISC_VOLUME);
+			audio->footsteps[randomValue]->setPosition(0,0,0);
+			audio->footsteps[randomValue]->play();
 			isPlaying = true;
 		} else if (isPlaying == true) {
 			if (tempClock > 0.35) {
@@ -263,6 +269,7 @@ void Game::playFootstepSound()
 			}
 		}
 	}
+
 }
 
 void Game::loadTextures()
@@ -308,7 +315,6 @@ void Game::loadTextures()
 	valuableTexture = new sf::Texture();
 	valuableTexture->loadFromFile("media/coin.png");
 
-	/*load gore textures */
 	blood8x8Texture = new sf::Texture();
 	blood8x8Texture->loadFromFile("media/blood8x8.png");
 	blood16x16Texture = new sf::Texture();
@@ -454,9 +460,9 @@ void Game::updateEnemies()
 			break;
 		}
 		enemies[i]->update(enemies[i]->sprite.getPosition().x,
-		                  enemies[i]->sprite.getPosition().y,
-		                  player->sprite.getPosition().x,
-		                  player->sprite.getPosition().y);
+		                   enemies[i]->sprite.getPosition().y,
+		                   player->sprite.getPosition().x,
+		                   player->sprite.getPosition().y);
 		if (checkProximity(enemies[i]->sprite.getPosition()) == 1) {
 			player->setDamage(enemies[i]->getMeleeDamage());
 		}
