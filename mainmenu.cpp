@@ -34,6 +34,11 @@ MainMenu::MainMenu(StateManager *stateManager)
 	menuButtons.push_back(exitButton);
 }
 
+MainMenu::~MainMenu()
+{
+	delete font;
+}
+
 void MainMenu::draw()
 {
 	app->setView(this->view);

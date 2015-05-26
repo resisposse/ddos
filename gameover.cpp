@@ -38,6 +38,11 @@ GameOver::GameOver(StateManager *stateManager)
 	menuButtons.push_back(returnButton);
 }
 
+GameOver::~GameOver()
+{
+	delete font;
+}
+
 void GameOver::draw()
 {
 	app->setView(this->view);

@@ -18,6 +18,7 @@ public:
 	virtual void handleInput();
 
 	GameOver(StateManager *stateManager);
+	~GameOver();
 
 	std::vector<MenuItem> menuButtons;
 	MenuItem gameOverText;

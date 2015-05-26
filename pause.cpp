@@ -38,6 +38,11 @@ Pause::Pause(StateManager *stateManager)
 	menuButtons.push_back(returnButton);
 }
 
+Pause::~Pause()
+{
+	delete font;
+}
+
 void Pause::draw()
 {
 	app->setView(this->view);

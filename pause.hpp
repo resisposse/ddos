@@ -18,6 +18,7 @@ public:
 	virtual void handleInput();
 
 	Pause(StateManager *stateManager);
+	~Pause();
 
 	std::vector<MenuItem> menuButtons;
 	MenuItem gameOverText;

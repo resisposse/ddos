@@ -853,7 +853,6 @@ void Game::createNewStage()
 	Map *mapOld = map;
 	map = new Map(mapGenerator->generateMap());
 	if (mapOld) {
-		std::cout << "Hello, I'm here" << std::endl;
 		delete mapOld;
 	}
 	player->sprite.setPosition(playerSpawn());

@@ -88,8 +88,6 @@ Audio::~Audio()
 	delete footstep3;
 	delete teleportSound;
 
-
-
 	/*delete bulletBuffer;
 	delete shotgunBuffer;
 	delete laserBuffer;

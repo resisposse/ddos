@@ -18,6 +18,7 @@ public:
 	virtual void handleInput();
 
 	MainMenu(StateManager *stateManager);
+	~MainMenu();
 
 	std::vector<MenuItem> menuButtons;
 	MenuItem title;
