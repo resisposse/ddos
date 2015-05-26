@@ -852,10 +852,6 @@ void Game::createNewStage()
 {
 	Map *mapOld = map;
 	map = new Map(mapGenerator->generateMap());
-	if (mapOld) {
-		std::cout << "Hello, I'm here" << std::endl;
-		delete mapOld;
-	}
 	player->sprite.setPosition(playerSpawn());
 
 	clearVectors();
@@ -867,9 +863,6 @@ void Game::createNewStage()
 
 std::vector<sf::Vector2f> Game::getPath(sf::Vector2f enemyCoords) {
 	if (!pathfindAlustus) {
-		if (pathfinding) {
-			delete pathfinding;
-		}
 		pathfinding = new Pathfinding();
 		pathfindAlustus = true;
 	}
