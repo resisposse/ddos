@@ -356,7 +356,7 @@ void Game::initializeWeapons()
 
 void Game::initializeHUD()
 {
-	if (!font.loadFromFile("fonts/arial.ttf")) {
+	if (!font.loadFromFile("fonts/Exo-Regular.otf")) {
 		//error
 	}
 	healthText.setCharacterSize(15);
@@ -717,7 +717,7 @@ void Game::HUDManager()
 	float wWAmmo = (playerView->getSize().x);
 	float wHAmmo = (playerView->getSize().y);
 	ammoHUDX = playerPositionX - 155;
-	ammoHUDY = playerPositionY - 20;
+	ammoHUDY = playerPositionY - 30;
 
 	currentAmmo.setString("Ammo: " + std::to_string (playerWeapons[heldWeapon]->getAmmo()));
 	currentAmmo.setFont(font);

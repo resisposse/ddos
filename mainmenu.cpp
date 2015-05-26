@@ -12,7 +12,7 @@ MainMenu::MainMenu(StateManager *stateManager)
 	menuBgSpr = sf::Sprite(menuBgTex);
 
 	font = new sf::Font;
-	font->loadFromFile("fonts/arial.ttf");
+	font->loadFromFile("fonts/Exo-Regular.otf");
 
 	this->stateManager = stateManager;
 	sf::Vector2f pos = sf::Vector2f(app->getSize());
