@@ -26,9 +26,9 @@ MainMenu::MainMenu(StateManager *stateManager)
 	int height = (int)this->view.getSize().y / 20;
 	int padding = (int)this->view.getSize().y / 100;
 
-	title = MenuItem(x, y / 2, width * 2, height * 2, sf::Color::Transparent, "Dark Domains of Space", *font, 60);
-	MenuItem playButton(x, y, width, height, sf::Color::Transparent, "Play Game", *font);
-	MenuItem exitButton(x, y + height + padding, width, height, sf::Color::Transparent, "Exit Game", *font);
+	title = MenuItem(x, y / 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::White, "Dark Domains of Space", *font, 60);
+	MenuItem playButton(x, y, width, height, sf::Color::Transparent, sf::Color::White, "Play Game", *font);
+	MenuItem exitButton(x, y + height + padding, width, height, sf::Color::Transparent, sf::Color::White, "Exit Game", *font);
 
 	menuItems.push_back(playButton);
 	menuItems.push_back(exitButton);
@@ -72,8 +72,7 @@ void MainMenu::handleInput()
 				if (menuItems[0].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					game = new Game(this->stateManager);
 					stateManager->pushState(game);
-				}
-				if (menuItems[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
+				} else if (menuItems[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					app->close();
 				}
 				break;

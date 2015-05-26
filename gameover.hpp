@@ -1,11 +1,11 @@
-#ifndef MAINMENU
-#define MAINMENU
+#ifndef GAMEOVER
+#define GAMEOVER
 
 #include <SFML/Graphics.hpp>
 #include "menuitem.hpp"
 #include "gamestate.hpp"
 
-class MainMenu : public GameState
+class GameOver : public GameState
 {
 private:
 	sf::View view;
@@ -17,10 +17,12 @@ public:
 	virtual void update();
 	virtual void handleInput();
 
-	MainMenu(StateManager *stateManager);
+	GameOver(StateManager *stateManager);
 
-	std::vector<MenuItem> menuItems;
-	MenuItem title;
+	std::vector<MenuItem> menuButtons;
+	MenuItem gameOverText;
+	MenuItem deathText;
+	MenuItem score;
 };
 
 #endif

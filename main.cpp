@@ -16,6 +16,7 @@
 #include "weapon.hpp"
 #include "mainmenu.hpp"
 #include "gamestate.hpp"
+#include "gameover.hpp"
 #include "random.hpp"
 #include "main.hpp"
 
@@ -27,7 +28,6 @@ Game *game;
 Game::Game(StateManager *stateManager)
 {
 	this->stateManager = stateManager;
-	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
 	loadTextures();
@@ -116,7 +116,7 @@ void Game::update()
 	checkProjectileCollisions();
 	checkEnemyProjectileCollisions();
 	pickValuables();
-	gameOver();
+	checkPlayerDeath();
 }
 
 void Game::handleInput()
@@ -225,7 +225,7 @@ void Game::handleInput()
 			}
 			break;
 		case sf::Event::Closed:
-			running = false;
+			app->close();
 			break;
 		case sf::Event::Resized: {
 			playerView->setSize(event.size.width, event.size.height);
@@ -241,9 +241,6 @@ void Game::handleInput()
 		default:
 			break;
 		}
-	}
-	if (!app->isOpen()) {
-		running = false;
 	}
 }
 
@@ -852,12 +849,11 @@ void Game::createNewStage()
 	spawnValuables(10000);
 }
 
-void Game::gameOver()
+void Game::checkPlayerDeath()
 {
 	if (player->getHitpoints() <= 0) {
-		running = false;
 		app->setMouseCursorVisible(true);
-		stateManager->popState();
+		stateManager->changeState(new GameOver(stateManager));
 	}
 }
 

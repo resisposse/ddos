@@ -29,7 +29,6 @@ public:
 	float tempClock = 0.0;
 	bool isPlaying = false;
 	long currentClock = 0;
-	bool running;
 	bool focused;
 	int heldWeapon = 0;
 	int weaponType = 0;
@@ -135,7 +134,7 @@ public:
 	sf::Vector2f playerSpawn();
 	void clearVectors();
 	void createNewStage();
-	void gameOver();
+	void checkPlayerDeath();
 };
 
 #endif
