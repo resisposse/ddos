@@ -6,6 +6,7 @@
 #ifndef OBJECT
 #define OBJECT
 
+
 class Object
 {
 public:
@@ -19,18 +20,26 @@ public:
 	float clock;
 	bool isPlaying = false;
 	int random;
+	bool newPath = false;
+	float pathCooldown = 0;
 	sf::Sprite sprite;
 	sf::View fixed;
 	sf::Vector2i mouse;
+	std::vector<sf::Vector2f> playerPath;
+	std::vector<sf::Vector2f> newPlayerPath;
 	// sf::Texture *ObjectTex;
 
 	Object(sf::Texture& objectTexture);
 	void render();
 	void update(float frameClock);
-	void update(float enemyPositionX, float enemyPositionY,
-	            float playerPositionX, float playerPositionY);
-	void approach(float enemyPositionX, float enemyPositionY,
-	              float playerPositionX, float playerPositionY);
+	virtual void update(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY) {}
+	virtual void approach(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY){}
+	void approachPath(float enemyPositionX, float enemyPositionY, float realPlayerPositionX, float realPlayerPositionY);
+	int lineOfSight(int startX, int startY, int endX, int endY);
+	std::vector<sf::Vector2f> getLine(int startX, int startY, int endX, int endY);
+	int getDistanceBetweenTiles(int x0, int y0, int x1, int y1);
 	void playerShoot();
 	void enemyShoot(sf::Vector2i coords, float distanceX, float distanceY);
 	void updateShield(float frameClock);
@@ -45,8 +54,11 @@ public:
 	void setCooldown(float amount);
 	void setAggro(float amount);
 	float getAggro() const;
+	void updateAggro(float amount);
 	void setValue(int givenValue);
 	int getValue() const;
+	float getEnemySpeed() const;
+	void setEnemySpeed(float amount);
 	float maxShieldPoints;
 	float shieldRechargeDelay;
 	float shieldTimeUntilRecharge = 0.0;
@@ -57,6 +69,7 @@ private:
 	float cooldown;
 	float aggro = 0;
 	int value;
+	float enemySpeed;
 };
 
 class Player : public Object
@@ -69,12 +82,21 @@ class EnemyMelee : public Object
 {
 public:
 	EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords);
+	void update(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY);
+	void approach(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY);
 };
 
 class EnemySoldier : public Object
 {
 public:
 	EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords);
+	void update(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY);
+	void approach(float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY);
+	int approachTiles;
 };
 
 class ValuableLow : public Object

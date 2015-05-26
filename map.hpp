@@ -54,6 +54,7 @@ public:
 	int updateWallDirection(MapTile tile);
 	int checkNeighbourType(MapTile tile, MapTileType tileType);
 	int collision(float X, float Y, std::string collisionType);
+	int collision2(float X, float Y, std::string collisionType);
 	int getCorrectFrame(int totalFrames, float duration);
 	void renderTiles();
 	void drawFloorTile(int x, int y, sf::Color tileColor);
@@ -66,6 +67,7 @@ public:
 	              int tileVectorRand[MAP_SIZE_X][MAP_SIZE_Y],
 	              int x, int y,
 	              sf::Color tileColor);
+	int gridCollision(int x, int y);
 
 	/* Tiles */
 	sf::Texture *tileMapTex;

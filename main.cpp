@@ -18,6 +18,9 @@
 #include "gamestate.hpp"
 #include "gameover.hpp"
 #include "random.hpp"
+#include "node.hpp"
+#include "grid.hpp"
+#include "pathfinding.hpp"
 #include "main.hpp"
 
 float frameClock = 0;
@@ -290,7 +293,7 @@ void Game::loadTextures()
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
 	enemyMeleeTexture = new sf::Texture();
-	enemyMeleeTexture->loadFromFile("media/ddos-dude-guns.png");
+	enemyMeleeTexture->loadFromFile("media/ddos-sprites.png");
 
 	weaponTexture = new sf::Texture();
 	weaponTexture->loadFromFile("media/ddos-weapons.png");
@@ -370,9 +373,13 @@ void Game::initializeHUD()
 
 void Game::spawnEnemies(int amount)
 {
-	for (int i = 0; i < amount; i++) {
+	for (int i = 0; i < amount/2; i++) {
 		enemies.push_back(new EnemyMelee(*enemyMeleeTexture, randomSpawn()));
-		std::cout << "Enemy Spawned" << std::endl;
+		std::cout << "Enemy Melee Spawned" << i << std::endl;
+	}
+	for (int i = amount/2;  i < amount; i++) {
+		enemies.push_back(new EnemySoldier(*enemyMeleeTexture, randomSpawn()));
+		std::cout << "Enemy Soldier Spawned" << i << std::endl;
 	}
 }
 
@@ -515,7 +522,7 @@ void Game::checkEnemyProjectileCollisions()
 			break;
 		}
 
-		if (map->collision(x, y, "projectile") == 1) {
+		if (map->collision2(x, y, "projectile") == 1) {
 			enemyProjectiles.erase(enemyProjectiles.begin() + a);
 			break;
 		}
@@ -806,7 +813,7 @@ sf::Vector2f Game::randomSpawn()
 	while (collision == 1) {
 		randX = rand() % MAP_SIZE_X * 32;
 		randY = rand() % MAP_SIZE_Y * 32;
-		collision = map->collision(randX, randY, "asd");
+		collision = map->collision2(randX, randY, "asd");
 		if ((abs(randX - playerPositionX) < (8 * TILE_SIZE) &&
 		     abs(randY - playerPositionY) < (8 * TILE_SIZE)) ||
 		     (map->tiles[(int)randX / 32][(int)randY / 32].type == mtGoal ||
@@ -847,6 +854,19 @@ void Game::createNewStage()
 	spawnEnemies(30);
 	spawnWeapons(50);
 	spawnValuables(10000);
+	pathfindAlustus = false;
+}
+
+std::vector<sf::Vector2f> Game::testPath(sf::Vector2f enemyCoords) {
+	if (!pathfindAlustus) {
+		if (pathfinding) {
+			delete pathfinding;
+		}
+		pathfinding = new Pathfinding();
+		pathfindAlustus = true;
+	}
+	std::vector<sf::Vector2f> path(pathfinding->findPath(player->sprite.getPosition(), enemyCoords));
+	return path;
 }
 
 void Game::checkPlayerDeath()

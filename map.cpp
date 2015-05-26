@@ -789,6 +789,31 @@ int Map::collision(float x, float y, std::string collisionType)
 	return collision;
 }
 
+int Map::collision2(float _x, float _y, std::string collisionType)
+{
+	int x = _x, y = _y, collision = 0, collisionMargin = 10;
+	if (collisionType == "projectile") collisionMargin = 2;
+
+	//top left corner
+	if (collision == 0) {
+		if (collisionMap[(x - collisionMargin) / TILE_SIZE][(y - collisionMargin) / TILE_SIZE] == 1) collision = 1;
+	}
+	//top right corner
+	if (collision == 0) {
+		if (collisionMap[(x + collisionMargin) / TILE_SIZE][(y - collisionMargin) / TILE_SIZE] == 1) collision = 1;
+	}
+	//left bottom corner
+	if (collision == 0) {
+		if (collisionMap[(x - collisionMargin) / TILE_SIZE][(y + collisionMargin) / TILE_SIZE] == 1) collision = 1;
+	}
+	//right bottom corner
+	if (collision == 0) {
+		if (collisionMap[(x + collisionMargin) / TILE_SIZE][(y + collisionMargin) / TILE_SIZE] == 1) collision = 1;
+	}
+
+	return collision;
+}
+
 int Map::checkNeighbourType(MapTile tile, MapTileType tileType)
 {
 	unsigned int neighbours = 0;
@@ -883,3 +908,14 @@ int Map::getCorrectFrame(int totalFrames, float duration)
 	}
 	return frame;
 }
+
+int Map::gridCollision(int x, int y)
+{
+	int gridCollision = 0;
+	if (collisionMap[x][y] == 1){
+		gridCollision = 1;
+	}
+	return gridCollision;
+}
+
+

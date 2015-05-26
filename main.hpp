@@ -21,7 +21,10 @@ class Weapon;
 class HealthBar;
 class ShieldBar;
 class Random;
+class Pathfinding;
 #include "gamestate.hpp"
+
+
 
 class Game : public GameState
 {
@@ -30,6 +33,7 @@ public:
 	bool isPlaying = false;
 	long currentClock = 0;
 	bool focused;
+	bool pathfindAlustus = false;
 	int heldWeapon = 0;
 	int weaponType = 0;
 	int ammo;
@@ -85,6 +89,7 @@ public:
 	HealthBar *healthbar;
 	ShieldBar *shieldbar;
 	StateManager *stateManager;
+	Pathfinding *pathfinding;
 
 	Game(StateManager *stateManager);
 	~Game();
@@ -135,6 +140,7 @@ public:
 	void clearVectors();
 	void createNewStage();
 	void checkPlayerDeath();
+	std::vector<sf::Vector2f> testPath(sf::Vector2f enemyCoords);
 };
 
 #endif
