@@ -91,7 +91,7 @@ PelletSprite::PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPos
 						: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
 	speed = 300;
-	damage = 8;
+	damage = 12;
 }
 
 HeavyBulletSprite::HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)

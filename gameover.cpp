@@ -50,7 +50,7 @@ void GameOver::draw()
 	for (unsigned int i = 0; i < menuButtons.size(); i++) {
 		app->draw(menuButtons[i].rect);
 		if (menuButtons[i].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
-			menuButtons[i].text.setColor(sf::Color::Blue);
+			menuButtons[i].text.setColor(sf::Color(0,70,255,255));
 		} else {
 			menuButtons[i].text.setColor(sf::Color::White);
 		}

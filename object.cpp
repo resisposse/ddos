@@ -437,7 +437,7 @@ Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectT
 EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
 	maxShieldPoints = 0.0;
-	setValue(100);
+	setValue(10);
 	setEnemySpeed(75);
 	/*
 	ObjectTex = new sf::Texture();
@@ -538,7 +538,7 @@ void EnemyMelee::approach(float enemyPositionX, float enemyPositionY,
 			}
 		}
 
-		// Start approaching when player is close enough to the enemy 
+		// Start approaching when player is close enough to the enemy
 		if (((distanceFromPlayer < 20) && (distanceFromPlayer > 5) &&
 			(collisionFlag == 0)) || (getAggro() > 0 && distanceFromPlayer > 5)) {
 			sf::Vector2i playerCoords(playerPositionX, playerPositionY);
@@ -630,8 +630,8 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			this->sprite.setRotation(angle);
 			enemyShoot(playerCoords, distanceX, distanceY);
 		}
-	
-		
+
+
 		else if (distanceFromPlayer < 4 && distanceFromPlayer > approachTiles){
 			if (distanceX > 0) {
 				enemyMovement.x += enemySpeed;
@@ -671,7 +671,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			}
 		}
 	}
-	
+
 	else if ((distanceFromPlayer < 8 && distanceFromPlayer > 4) || (getAggro() > 0)) {
 
 		if (distanceX > 0) {
@@ -703,7 +703,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			}
 		}
 
-		// Start approaching when player is close enough to the enemy 
+		// Start approaching when player is close enough to the enemy
 		if (((distanceFromPlayer < 8) && (distanceFromPlayer > 4) &&
 			(collisionFlag == 0)) || (getAggro() > 0)) {
 			sf::Vector2i playerCoords(playerPositionX, playerPositionY);
@@ -712,7 +712,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			this->sprite.setRotation(angle);
 			this->sprite.move(enemyMovement * frameClock);
 			enemyShoot(playerCoords, distanceX, distanceY);
-			
+
 			if (isPlaying == false) {
 				clock = 0.0;
 				random = rand() % game->audio->footsteps.size();

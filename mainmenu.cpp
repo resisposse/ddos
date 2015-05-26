@@ -44,7 +44,7 @@ void MainMenu::draw()
 	for (unsigned int i = 0; i < menuItems.size(); i++) {
 		app->draw(menuItems[i].rect);
 		if (menuItems[i].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
-			menuItems[i].text.setColor(sf::Color::Blue);
+			menuItems[i].text.setColor(sf::Color(0,70,255,255));
 		} else {
 			menuItems[i].text.setColor(sf::Color::White);
 		}
