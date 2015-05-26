@@ -7,7 +7,6 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include "globals.hpp"
-#include "event.hpp"
 #include "audio.hpp"
 #include "light.hpp"
 #include "map.hpp"
@@ -15,27 +14,26 @@
 #include "object.hpp"
 #include "projectile.hpp"
 #include "weapon.hpp"
+#include "mainmenu.hpp"
+#include "gamestate.hpp"
+#include "random.hpp"
 #include "main.hpp"
 
 float frameClock = 0;
 long lastClock = 0;
 sf::Clock timer;
-sf::RenderWindow *app;
 Game *game;
 
-Game::Game()
+Game::Game(StateManager *stateManager)
 {
-	app = new sf::RenderWindow(sf::VideoMode(800, 608, 32),
-	                           "Dark Domains Of Space",
-	                           sf::Style::Resize | sf::Style::Close);
-	app->setFramerateLimit(60);
+	this->stateManager = stateManager;
 	running = true;
 	lastClock = timer.getElapsedTime().asMilliseconds();
 
 	loadTextures();
 
+	random = new Random;
 	mapGenerator = new MapGenerator;
-	event = new Event;
 	audio = new Audio;
 	light = new Light;
 	lightState = new LightState;
@@ -52,7 +50,6 @@ Game::Game()
 
 Game::~Game()
 {
-	delete event;
 	delete map;
 	delete audio;
 	delete light;
@@ -74,38 +71,16 @@ Game::~Game()
 	delete mapGenerator;
 	delete blood8x8Texture;
 	delete blood16x16Texture;
+	clearVectors();
 }
 
-void Game::update()
-{
-	while (running) {
-		event->processEvent();
-
-		updateClock();
-		updateView();
-		updateLighting();
-		updatePlayer();
-		updateEnemies();
-		updateWeapons();
-		updateProjectiles();
-		checkProjectileCollisions();
-		checkEnemyProjectileCollisions();
-		pickValuables();
-
-		app->clear();
-		render();
-		HUDManager();
-		app->display();
-	}
-}
-
-void Game::render()
+void Game::draw()
 {
 	/*
-	 * Not to be confused with initializeLighting(), which just initializes
-	 * values for the light to use. This on the other hand paints the screen
-	 * black on every frame, so we can update the position of the light.
-	 */
+	* Not to be confused with initializeLighting(), which just initializes
+	* values for the light to use. This on the other hand paints the screen
+	* black on every frame, so we can update the position of the light.
+	*/
 	light->initialize();
 
 	map->renderTiles();
@@ -126,6 +101,168 @@ void Game::render()
 	drawShieldBar();
 	drawCurrentGun();
 	drawCurrentAmmo();
+	HUDManager();
+}
+
+void Game::update()
+{
+	updateClock();
+	updateView();
+	updateLighting();
+	updatePlayer();
+	updateEnemies();
+	updateWeapons();
+	updateProjectiles();
+	checkProjectileCollisions();
+	checkEnemyProjectileCollisions();
+	pickValuables();
+	gameOver();
+}
+
+void Game::handleInput()
+{
+	sf::Event event;
+	tempClock += frameClock;
+	playFootstepSound();
+	while (app->pollEvent(event)) {
+		switch (event.type) {
+		case sf::Event::KeyPressed:
+			switch (event.key.code) {
+			case sf::Keyboard::W:
+				player->mIsMovingUp = true;
+				break;
+			case sf::Keyboard::A:
+				player->mIsMovingLeft = true;
+				break;
+			case sf::Keyboard::S:
+				player->mIsMovingDown = true;
+				break;
+			case sf::Keyboard::D:
+				player->mIsMovingRight = true;
+				break;
+			case sf::Keyboard::E:
+				heldWeapon = (heldWeapon + 1) % playerWeapons.size();
+				break;
+			case sf::Keyboard::Q:
+				if (heldWeapon == 0) {
+					heldWeapon = playerWeapons.size();
+				}
+				heldWeapon = (heldWeapon - 1);
+				break;
+			case sf::Keyboard::G:
+				dropWeapon();
+				pickWeapon();
+				break;
+			case sf::Keyboard::T: {
+				int i = (int)playerPositionX / 32;
+				int j = (int)playerPositionY / 32;
+				if (map->tiles[i][j].type == MapTileType::mtGoal) {
+					audio->teleportSound->play();
+					createNewStage();
+				}
+				break;
+			}
+			case sf::Keyboard::Escape:
+				app->close();
+				break;
+			default:
+				break;
+			}
+			break;
+		case sf::Event::KeyReleased:
+			switch (event.key.code) {
+			case sf::Keyboard::W:
+				player->mIsMovingUp = false;
+				break;
+			case sf::Keyboard::A:
+				player->mIsMovingLeft = false;
+				break;
+			case sf::Keyboard::S:
+				player->mIsMovingDown = false;
+				break;
+			case sf::Keyboard::D:
+				player->mIsMovingRight = false;
+				break;
+			default:
+				break;
+			}
+			break;
+		case sf::Event::MouseButtonPressed:
+			switch (event.mouseButton.button) {
+			case sf::Mouse::Left:
+				player->playerShooting = true;
+				break;
+			case sf::Mouse::Right:
+				spawnEnemies(1);
+				break;
+			default:
+				break;
+			}
+			break;
+		case sf::Event::MouseButtonReleased:
+			switch (event.mouseButton.button) {
+			case sf::Mouse::Left:
+				player->playerShooting = false;
+				break;
+			case sf::Mouse::Right:
+				light->clear();
+				break;
+			default:
+				break;
+			}
+			break;
+		case sf::Event::MouseWheelMoved:
+			if (event.mouseWheel.delta < 0) {
+				if (zoomLevel < 2.0f) {
+					playerView->zoom(2.0f);
+					zoomLevel *= 2.0f;
+				}
+			} else {
+				if (zoomLevel > 0.25f) {
+					playerView->zoom(0.5f);
+					zoomLevel *= 0.5f;
+				}
+			}
+			break;
+		case sf::Event::Closed:
+			running = false;
+			break;
+		case sf::Event::Resized: {
+			playerView->setSize(event.size.width, event.size.height);
+			map->bgSpr->setPosition(app->mapPixelToCoords(sf::Vector2i(0, 0),
+				*playerView));
+			sf::Vector2f pos = sf::Vector2f(event.size.width, event.size.height);
+			pos *= 0.5f;
+			pos = app->mapPixelToCoords(sf::Vector2i(pos), *playerView);
+			map->bgSpr->setScale(float(event.size.width) / float(map->bgSpr->getTexture()->getSize().x),
+				float(event.size.height) / float(map->bgSpr->getTexture()->getSize().y));
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	if (!app->isOpen()) {
+		running = false;
+	}
+}
+
+void Game::playFootstepSound()
+{
+	if (player->mIsMovingUp == true ||
+		player->mIsMovingLeft == true ||
+		player->mIsMovingDown == true ||
+		player->mIsMovingRight == true) {
+		if (isPlaying == false) {
+			tempClock = 0.0;
+			audio->footsteps[random->generate(0,audio->footsteps.size()-1)]->play();
+			isPlaying = true;
+		} else if (isPlaying == true) {
+			if (clock > 0.35) {
+				isPlaying = false;
+			}
+		}
+	}
 }
 
 void Game::loadTextures()
@@ -393,6 +530,9 @@ int Game::checkEnemyCollisions(int x, int y, int damage)
 		diffX = abs(x - enemyX);
 		diffY = abs(y - enemyY);
 		if (diffX < 10 && diffY < 10) {
+			for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
+				mapBlood.push_back(new BloodSmall(*blood8x8Texture, enemies[b]->sprite.getPosition()));
+			}
 			enemyCollision = 1;
 			enemies[b]->setDamage(damage);
 			enemies[b]->setAggro(5);
@@ -476,18 +616,18 @@ void Game::drawShieldBar()
 
 void Game::drawHUDText()
 {
-	app->draw(game->healthText);
-	app->draw(game->scoreText);
+	app->draw(healthText);
+	app->draw(scoreText);
 }
 
 void Game::drawCurrentGun()
 {
-	app->draw(game->currentGun);
+	app->draw(currentGun);
 }
 
 void Game::drawCurrentAmmo()
 {
-	app->draw(game->currentAmmo);
+	app->draw(currentAmmo);
 }
 
 void Game::drawGore()
@@ -571,7 +711,7 @@ void Game::HUDManager()
 
 	currentGun.setString(playerWeapons[heldWeapon]->name);
 	currentGun.setFont(font);
-	game->currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
+	currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
 
 	/*window SE-corner*/
 	float wWAmmo = (playerView->getSize().x);
@@ -581,7 +721,7 @@ void Game::HUDManager()
 
 	currentAmmo.setString("Ammo: " + std::to_string (playerWeapons[heldWeapon]->getAmmo()));
 	currentAmmo.setFont(font);
-	game->currentAmmo.setPosition(wWAmmo / 2 + ammoHUDX, wHAmmo / 2 + ammoHUDY);
+	currentAmmo.setPosition(wWAmmo / 2 + ammoHUDX, wHAmmo / 2 + ammoHUDY);
 
 	/*window SW-corner*/
 	float wW = (playerView->getSize().x) * (-1);
@@ -593,7 +733,7 @@ void Game::HUDManager()
 
 	healthText.setString("Health: " + std::to_string (player->getHitpoints()));
 	healthText.setFont(font);
-	game->healthText.setPosition(wW / 2 + healthTextPositionX, wH / 2 + healthTextPositionY);
+	healthText.setPosition(wW / 2 + healthTextPositionX, wH / 2 + healthTextPositionY);
 	healthbar->sprite.setPosition(wW / 2 + healthbarPositionX, wH / 2 + healthbarPositionY);
 
 	if (player->getHitpoints() >= 70) {
@@ -706,6 +846,15 @@ void Game::createNewStage()
 	spawnValuables(10000);
 }
 
+void Game::gameOver()
+{
+	if (player->getHitpoints() <= 0) {
+		running = false;
+		app->setMouseCursorVisible(true);
+		stateManager->popState();
+	}
+}
+
 int main()
 {
 	sf::Music music;
@@ -714,10 +863,8 @@ int main()
 	music.setLoop(true);
 	music.play();
 
-	game = new Game;
-	while (game->running) {
-		game->update();
-	}
-	delete game;
+	StateManager stateManager;
+	stateManager.pushState(new MainMenu(&stateManager));
+	stateManager.gameLoop();
 	return EXIT_SUCCESS;
 }

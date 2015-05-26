@@ -76,30 +76,30 @@ Audio::Audio()
 
 Audio::~Audio()
 {
-	delete bulletBuffer;
 	delete bulletSound;
-	delete sniperBuffer;
 	delete sniperSound;
-	delete shotgunBuffer;
 	delete shotgunSound;
-	delete laserBuffer;
 	delete laserSound;
-	delete coinBuffer;
 	delete coinSound;
-	delete clickBuffer;
 	delete clickSound;
-	delete dropgunBuffer;
 	delete dropgunSound;
-
-	delete footstepBuffer1;
-	delete footstepBuffer2;
-	delete footstepBuffer3;
 	delete footstep1;
 	delete footstep2;
 	delete footstep3;
-
-	delete teleportBuffer;
 	delete teleportSound;
+
+
+
+	/*delete bulletBuffer;
+	delete shotgunBuffer;
+	delete laserBuffer;
+	delete coinBuffer;
+	delete clickBuffer;
+	delete dropgunBuffer;
+	delete footstepBuffer1;
+	delete footstepBuffer2;
+	delete footstepBuffer3;
+	delete teleportBuffer;*/
 }
 
 void Audio::playMusic()

@@ -20,10 +20,14 @@ class ProjectileSprite;
 class Weapon;
 class HealthBar;
 class ShieldBar;
+class Random;
+#include "gamestate.hpp"
 
-class Game
+class Game : public GameState
 {
 public:
+	float tempClock = 0.0;
+	bool isPlaying = false;
 	long currentClock = 0;
 	bool running;
 	bool focused;
@@ -68,10 +72,10 @@ public:
 	std::vector<Weapon*> weapons;
 	std::vector<Weapon*> mapWeapons;
 	std::vector<Weapon*> playerWeapons;
-	std::vector<Object *> mapValuables;
-	std::vector<Object *> mapBlood;
+	std::vector<Object*> mapValuables;
+	std::vector<Object*> mapBlood;
 
-	Event *event;
+	Random *random;
 	MapGenerator *mapGenerator;
 	Map *map;
 	Audio *audio;
@@ -81,11 +85,14 @@ public:
 	EnemyMelee *enemy;
 	HealthBar *healthbar;
 	ShieldBar *shieldbar;
+	StateManager *stateManager;
 
-	Game();
+	Game(StateManager *stateManager);
 	~Game();
+	void draw();
 	void update();
-	void render();
+	void handleInput();
+	void playFootstepSound();
 	void loadTextures();
 	void initializeView();
 	void initializeLighting();
@@ -128,6 +135,7 @@ public:
 	sf::Vector2f playerSpawn();
 	void clearVectors();
 	void createNewStage();
+	void gameOver();
 };
 
 #endif
