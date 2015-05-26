@@ -377,11 +377,11 @@ void Game::spawnEnemies(int amount)
 {
 	for (int i = 0; i < amount/2; i++) {
 		enemies.push_back(new EnemyMelee(*enemyMeleeTexture, randomSpawn()));
-		std::cout << "Enemy Melee Spawned" << i << std::endl;
+		//std::cout << "Enemy Melee Spawned" << i << std::endl;
 	}
 	for (int i = amount/2;  i < amount; i++) {
 		enemies.push_back(new EnemySoldier(*enemyMeleeTexture, randomSpawn()));
-		std::cout << "Enemy Soldier Spawned" << i << std::endl;
+		//std::cout << "Enemy Soldier Spawned" << i << std::endl;
 	}
 }
 
@@ -850,10 +850,13 @@ void Game::clearVectors()
 
 void Game::createNewStage()
 {
-	Map *mapTmp = new Map(mapGenerator->generateMap());
-	delete map;
+	Map *mapOld = map;
+	map = new Map(mapGenerator->generateMap());
+	if (mapOld) {
+		std::cout << "Hello, I'm here" << std::endl;
+		delete mapOld;
+	}
 	player->sprite.setPosition(playerSpawn());
-	map = mapTmp;
 
 	clearVectors();
 	spawnEnemies(30);
