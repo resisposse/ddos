@@ -852,9 +852,10 @@ void Game::createNewStage()
 {
 	Map *mapOld = map;
 	map = new Map(mapGenerator->generateMap());
+	/* Does not work on Linux with gcc.
 	if (mapOld) {
 		delete mapOld;
-	}
+	}*/
 	player->sprite.setPosition(playerSpawn());
 
 	clearVectors();
@@ -866,9 +867,10 @@ void Game::createNewStage()
 
 std::vector<sf::Vector2f> Game::getPath(sf::Vector2f enemyCoords) {
 	if (!pathfindAlustus) {
+		/* Does not work on Linux with gcc.
 		if (pathfinding) {
 			delete pathfinding;
-		}
+		}*/
 		pathfinding = new Pathfinding();
 		pathfindAlustus = true;
 	}
