@@ -295,7 +295,7 @@ void Game::loadTextures()
 	playerTexture = new sf::Texture();
 	playerTexture->loadFromFile("media/ddos-dude-guns.png");
 	enemyMeleeTexture = new sf::Texture();
-	enemyMeleeTexture->loadFromFile("media/ddos-sprites.png");
+	enemyMeleeTexture->loadFromFile("media/ddos-sprites2.png");
 
 	weaponTexture = new sf::Texture();
 	weaponTexture->loadFromFile("media/ddos-weapons.png");

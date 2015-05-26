@@ -559,7 +559,7 @@ EnemySoldier::EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords) : Ob
 	ObjectTex = new sf::Texture();
 	ObjectTex->loadFromFile("media/ddos-dude-guns.png");
 	*/
-	sf::IntRect mEnemy(32 * 2, 32 * 9, 32, 32);
+	sf::IntRect mEnemy(32 * 5, 32 * 10, 32, 32);
 	//ObjectTex = game->playerTexture;
 	//sprite.setTexture(*ObjectTex);
 	sprite.setTextureRect(mEnemy);
