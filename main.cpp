@@ -258,7 +258,7 @@ void Game::playFootstepSound()
 			audio->footsteps[random->generate(0,audio->footsteps.size()-1)]->play();
 			isPlaying = true;
 		} else if (isPlaying == true) {
-			if (clock > 0.35) {
+			if (tempClock > 0.35) {
 				isPlaying = false;
 			}
 		}
