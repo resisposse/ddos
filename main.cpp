@@ -164,7 +164,7 @@ void Game::handleInput()
 			}
 			case sf::Keyboard::Escape:
 				app->setMouseCursorVisible(true);
-				stateManager->pushState(new Pause(stateManager));
+				stateManager->suspendState(new Pause(stateManager, scoreText.getString()));
 				break;
 			default:
 				break;
@@ -884,7 +884,7 @@ void Game::checkPlayerDeath()
 void Game::endGame()
 {
 	app->setMouseCursorVisible(true);
-	stateManager->changeState(new GameOver(stateManager));
+	stateManager->changeState(new GameOver(stateManager, scoreText.getString()));
 }
 
 void Game::returnToMainMenu()

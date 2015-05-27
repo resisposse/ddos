@@ -64,7 +64,7 @@ class Pause : public Menu
 {
 public:
 	virtual void handleInput();
-	Pause(StateManager *stateManager);
+	Pause(StateManager *stateManager, sf::String score);
 	~Pause();
 };
 
@@ -72,7 +72,7 @@ class GameOver : public Menu
 {
 public:
 	virtual void handleInput();
-	GameOver(StateManager *stateManager);
+	GameOver(StateManager *stateManager, sf::String score);
 	~GameOver();
 };
 

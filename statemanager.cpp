@@ -11,16 +11,17 @@ sf::RenderWindow *app;
 
 StateManager::StateManager()
 {
-	app = new sf::RenderWindow(sf::VideoMode(800, 608, 32),
+	this->window.create(sf::VideoMode(800, 608, 32),
 		"Dark Domains Of Space",
 		sf::Style::Resize | sf::Style::Close);
-	app->setFramerateLimit(60);
+	this->window.setFramerateLimit(60);
+	app = &window;
 }
 
 StateManager::~StateManager()
 {
+	clearSuspendedState();
 	while (!this->states.empty()) popState();
-	delete app;
 }
 
 void StateManager::pushState(GameState* state)
@@ -54,6 +55,31 @@ GameState* StateManager::peekState()
 	return this->states.top();
 }
 
+void StateManager::suspendState(GameState* state)
+{
+	this->suspendedState = this->peekState();
+	if (!this->states.empty())
+		this->states.pop();
+	pushState(state);
+	return;
+}
+
+void StateManager::unSuspendState()
+{
+	if (!this->states.empty())
+		popState();
+	this->states.push(this->suspendedState);
+	this->suspendedState = nullptr;
+}
+
+void StateManager::clearSuspendedState()
+{
+	if (suspendedState) {
+		delete suspendedState;
+	}
+	this->suspendedState = nullptr;
+}
+
 void StateManager::gameLoop()
 {
 	sf::Clock clock;
@@ -65,8 +91,8 @@ void StateManager::gameLoop()
 
 		peekState()->handleInput();
 		peekState()->update();
-		app->clear(sf::Color::Black);
+		window.clear(sf::Color::Black);
 		peekState()->draw();
-		app->display();
+		window.display();
 	}
 }

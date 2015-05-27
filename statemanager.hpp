@@ -10,6 +10,9 @@ class StateManager
 {
 public:
 	std::stack<GameState*> states;
+	GameState *suspendedState;
+
+	sf::RenderWindow window;
 
 	StateManager();
 	~StateManager();
@@ -17,6 +20,9 @@ public:
 	void popState();
 	void changeState(GameState* state);
 	GameState* peekState();
+	void suspendState(GameState* state);
+	void unSuspendState();
+	void clearSuspendedState();
 
 	void gameLoop();
 };

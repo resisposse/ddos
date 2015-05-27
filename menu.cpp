@@ -106,7 +106,7 @@ void MainMenu::handleInput()
 	}
 }
 
-Pause::Pause(StateManager *stateManager)
+Pause::Pause(StateManager *stateManager, sf::String score)
 {
 	menuBgTex = sf::Texture();
 	menuBgTex.loadFromFile("media/ddos-menu-bg.jpg");
@@ -130,12 +130,12 @@ Pause::Pause(StateManager *stateManager)
 	MenuItem restartButton(x, y, width, height, sf::Color::Transparent, sf::Color::White, sf::Color(0, 70, 255, 255), "Return Game", font);
 	MenuItem returnButton(x, y + height + padding, width, height, sf::Color::Transparent, sf::Color::White, sf::Color(0, 70, 255, 255), "Main Menu", font);
 	MenuItem gameOverText(x, y / 2, width * 2, height * 2, sf::Color::Transparent, sf::Color(0, 170, 255, 255), sf::Color(0, 170, 255, 255), "Paused", font, 60);
-	MenuItem score(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::White, sf::Color::White, game->scoreText.getString(), font, 25);
+	MenuItem scoreText(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::White, sf::Color::White, score, font, 25);
 
 	menuItems.push_back(restartButton);
 	menuItems.push_back(returnButton);
 	menuItems.push_back(gameOverText);
-	menuItems.push_back(score);
+	menuItems.push_back(scoreText);
 }
 
 void Pause::handleInput()
@@ -151,10 +151,10 @@ void Pause::handleInput()
 			case sf::Mouse::Left:
 				if (menuItems[0].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
 					app->setMouseCursorVisible(false);
-					stateManager->popState();
+					stateManager->unSuspendState();
 				} else if (menuItems[1].hitBox.contains(sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))))) {
+					stateManager->clearSuspendedState();
 					stateManager->popState();
-					game->returnToMainMenu();
 				}
 				break;
 			}
@@ -182,7 +182,7 @@ void Pause::handleInput()
 		{
 			if (event.key.code == sf::Keyboard::Escape) {
 				app->setMouseCursorVisible(false);
-				stateManager->popState();
+				stateManager->unSuspendState();
 			}
 			break;
 		}
@@ -191,7 +191,7 @@ void Pause::handleInput()
 	}
 }
 
-GameOver::GameOver(StateManager *stateManager)
+GameOver::GameOver(StateManager *stateManager, sf::String score)
 {
 	menuBgTex = sf::Texture();
 	menuBgTex.loadFromFile("media/ddos-menu-bg.jpg");
@@ -216,13 +216,13 @@ GameOver::GameOver(StateManager *stateManager)
 	MenuItem returnButton(x, y + height + padding, width, height, sf::Color::Transparent, sf::Color::White, sf::Color(0, 70, 255, 255), "Main Menu", font);
 
 	MenuItem gameOverText(x, y / 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::Red, sf::Color::Red, "You Died", font, 60);
-	MenuItem score(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::Red, sf::Color::Red, game->scoreText.getString(), font, 25);
+	MenuItem scoreText(x, (y / 2) + height * 2 + padding * 2, width * 2, height * 2, sf::Color::Transparent, sf::Color::Red, sf::Color::Red, score, font, 25);
 
 	menuItems.push_back(restartButton);
 	menuItems.push_back(returnButton);
 
 	menuItems.push_back(gameOverText);
-	menuItems.push_back(score);
+	menuItems.push_back(scoreText);
 }
 
 void GameOver::handleInput()
