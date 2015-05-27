@@ -10,8 +10,6 @@
 #include "map.hpp"
 #include "audio.hpp"
 #include "projectile.hpp"
-#include "node.hpp"
-#include "grid.hpp"
 #include "pathfinding.hpp"
 #include "main.hpp"
 #include "weapon.hpp"

@@ -2,12 +2,124 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <list>
 #include <algorithm>
 #include "object.hpp"
-#include "node.hpp"
-#include "grid.hpp"
+#include "map.hpp"
 #include "pathfinding.hpp"
 #include "main.hpp"
+
+/***************************
+ ********** NODE ***********
+ ***************************/
+
+Node::Node(bool _walkable, sf::Vector2f _worldPos, int _gridX, int _gridY)
+{
+	walkable = _walkable;
+	worldPos = _worldPos;
+	gridX = _gridX;
+	gCost = 0;
+	hCost = 0;
+	gridY = _gridY;
+}
+
+Node::Node()
+{
+	gridX = 0;
+	gridY = 0;
+	gCost = 0;
+	hCost = 0;
+}
+
+int Node::fCost()
+{
+	return gCost + hCost;
+}
+/*
+sf::Vector2f Node::parent() {
+return parentCoords;
+}
+*/
+
+bool Node::operator==(const Node &other) const
+{
+	return (*this == other);
+}
+
+bool Node::operator!=(const Node &other) const
+{
+	return !(*this == other);
+}
+
+
+/***************************
+*********** GRID ***********
+***************************/
+
+
+Grid::Grid()
+{
+	Start();
+}
+
+void Grid::Start()
+{
+	nodeDiameter = nodeRadius * 2;
+	gridSizeX = MAP_SIZE_X;
+	gridSizeY = MAP_SIZE_Y;
+	createGrid();
+}
+
+void Grid::createGrid()
+{
+	grid = new Node*[MAP_SIZE_X * MAP_SIZE_Y];
+
+	for (int x = 0; x < gridSizeX; x++) {
+		for (int y = 0; y < gridSizeY; y++) {
+			sf::Vector2f worldPos((x * nodeDiameter + nodeRadius), (y * nodeDiameter + nodeRadius));
+			bool walkable;
+			if (game->map->gridCollision(x, y) == 1) {
+				walkable = false;
+			} else walkable = true;
+
+			grid[x + MAP_SIZE_X * y] = new Node(walkable, worldPos, x, y);
+		}
+	}
+}
+
+std::vector<Node> Grid::getNeighbours(Node node)
+{
+	std::vector<Node> neighbours;
+
+	for (int x = -1; x <= 1; x++) {
+		for (int y = -1; y <= 1; y++) {
+			if (x == 0 && y == 0) continue;
+
+			int checkX = node.gridX + x;
+			int checkY = node.gridY + y;
+
+			if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY) {
+				neighbours.push_back(*grid[checkX + MAP_SIZE_X * checkY]);
+			}
+		}
+	}
+	return neighbours;
+}
+
+Node Grid::nodeFromWorldPoint(sf::Vector2f worldPos)
+{
+	int x = worldPos.x / 32;
+	int y = worldPos.y / 32;
+
+	return *grid[x + MAP_SIZE_X * y];
+}
+
+
+
+/***************************
+******* PATH FINDING *******
+***************************/
+
 
 Pathfinding::Pathfinding()
 {
