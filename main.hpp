@@ -6,6 +6,8 @@
 #ifndef MAIN
 #define MAIN
 
+#include "gamestate.hpp"
+
 /* Forward declarations due to cyclic dependencies */
 class Event;
 class Audio;
@@ -13,17 +15,16 @@ class Map;
 class MapGenerator;
 class Light;
 class LightState;
-class Object;
-class Player;
-class EnemyMelee;
 class ProjectileSprite;
 class Weapon;
 class HealthBar;
 class ShieldBar;
 class Random;
 class Pathfinding;
-#include "gamestate.hpp"
-
+class Player;
+class Enemy;
+class Valuable;
+class Blood;
 
 
 class Game : public GameState
@@ -70,11 +71,11 @@ public:
 	sf::Text currentAmmo;
 	std::vector<ProjectileSprite> projectiles;
 	std::vector<ProjectileSprite> enemyProjectiles;
-	std::vector<Object*> enemies;
+	std::vector<Enemy*> enemies;
 	std::vector<Weapon*> weapons;
 	std::vector<Weapon*> mapWeapons;
-	std::vector<Object*> mapValuables;
-	std::vector<Object*> mapBlood;
+	std::vector<Valuable*> mapValuables;
+	std::vector<Blood*> mapBlood;
 
 	Random *random;
 	MapGenerator *mapGenerator;
@@ -83,7 +84,6 @@ public:
 	Light *light;
 	LightState *lightState;
 	Player *player;
-	EnemyMelee *enemy;
 	HealthBar *healthbar;
 	ShieldBar *shieldbar;
 	StateManager *stateManager;

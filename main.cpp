@@ -857,7 +857,7 @@ void Game::createNewStage()
 	clearVectors();
 	spawnEnemies(30);
 	spawnWeapons(15);
-	spawnValuables(1000);
+	spawnValuables(3000);
 	pathfindAlustus = false;
 }
 

@@ -15,187 +15,26 @@
 #include "weapon.hpp"
 #include "object.hpp"
 
+void ScoreValue::setValue(int givenValue)
+{
+	value = givenValue;
+}
+
+int ScoreValue::getValue() const
+{
+	return value;
+}
+
+/*********
+* Object *
+**********/
+
 Object::Object(sf::Texture& objectTexture)
 {
-	mIsMovingUp = false;
-	mIsMovingDown = false;
-	mIsMovingRight = false;
-	mIsMovingLeft = false;
-	playerSpeed = 100.0;
-	playerShooting = false;
-
-	//sf::IntRect mPlayer(32 * 0, 32 * 0, 32, 32);
 	sprite.setTexture(objectTexture);
-	//sprite.setTextureRect(mPlayer);
-	//sprite.setOrigin(16, 16);
 }
 
-void Object::update(float frameclock)
-{
-
-}
-
-void Object::approachPath(float enemyPositionX, float enemyPositionY, float realPlayerPositionX, float realPlayerPositionY)
-{
-	clock += frameClock;
-	int playerPositionX = playerPath[0].x;
-	int playerPositionY = playerPath[0].y;
-
-	if (abs(playerPositionX - enemyPositionX) < 2 && abs(playerPositionY - enemyPositionY) < 2) {
-		playerPath.erase(playerPath.begin());
-	}
-	if (playerPath.size() > 0) {
-		playerPositionX = playerPath[0].x;
-		playerPositionY = playerPath[0].y;
-		int collisionFlag = 1;
-		float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
-		float absoluteDistanceY = abs(playerPositionY - enemyPositionY);
-		float distanceFromPlayer = sqrt(absoluteDistanceX * 2 + absoluteDistanceY * 2);
-		float enemySpeed = getEnemySpeed();
-		float angle;
-
-		sf::Vector2f enemyMovement(0.f, 0.f);
-
-		float distanceX = playerPositionX - enemyPositionX;
-		float distanceY = playerPositionY - enemyPositionY;
-
-
-		if (distanceX > 0) {
-			enemyMovement.x += enemySpeed;
-		}
-		if (distanceX < 0) {
-			enemyMovement.x -= enemySpeed;
-		}
-		if (distanceY > 0) {
-			enemyMovement.y += enemySpeed;
-		}
-		if (distanceY < 0) {
-			enemyMovement.y -= enemySpeed;
-		}
-
-
-		float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
-		float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
-		int enemyCollisionX = game->map->collision2(enemySpeedX, enemyPositionY, "player");
-		int enemyCollisionY = game->map->collision2(enemyPositionX, enemySpeedY, "player");
-
-		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
-			collisionFlag = 0;
-			if (enemyCollisionX == 1) {
-				enemyMovement.x = 0.f;
-			}
-			if (enemyCollisionY == 1) {
-				enemyMovement.y = 0.f;
-			}
-		}
-		if (collisionFlag == 0) {
-			float angleX = playerPath[playerPath.size() - 1].x - enemyPositionX;
-			float angleY = playerPath[playerPath.size() - 1].y - enemyPositionY;
-			//float angleX = realPlayerPositionX - enemyPositionX;
-			//float angleY = realPlayerPositionY - enemyPositionY;
-			angle = -atan2(angleX, angleY) * 180 / 3.141593;
-			this->sprite.setOrigin(16, 16);
-			this->sprite.setRotation(angle);
-			this->sprite.move(enemyMovement * frameClock);
-
-			if (isPlaying == false) {
-				clock = 0.0;
-				random = rand() % game->audio->footsteps.size();
-				/* A hacky way to increase the volume relative to distance */
-				game->audio->footsteps[random]->setVolume(MISC_VOLUME+30);
-				game->audio->footsteps[random]->setPosition(-distanceX / 25, -distanceY / 25, 0);
-				game->audio->footsteps[random]->play();
-				isPlaying = true;
-			} else if (isPlaying == true) {
-				if (clock > 0.35) {
-					isPlaying = false;
-				}
-			}
-		}
-	}
-}
-
-
-int Object::lineOfSight(int _x0, int _y0, int _x1, int _y1)
-{
-	int x0 = (_x0 - 10) / 32, y0 = (_y0 - 10) / 32, x1 = _x1 / 32, y1 = _y1 / 32;
-	std::vector<sf::Vector2f> line = getLine(x0, y0, x1, y1);
-	int lineOfSight = 1;
-	for (int i = 0; i < line.size(); i++) {
-		if (game->map->gridCollision(line[i].x, line[i].y) == 1) {
-			lineOfSight = 0;
-		}
-	}
-
-	x0 = (_x0 + 10) / 32, y0 = (_y0 + 10) / 32;
-	std::vector<sf::Vector2f> line2 = getLine(x0, y0, x1, y1);
-	for (int i = 0; i < line2.size(); i++) {
-		if (game->map->gridCollision(line2[i].x, line2[i].y) == 1) {
-			lineOfSight = 0;
-		}
-	}
-	return lineOfSight;
-	return lineOfSight;
-}
-
-std::vector<sf::Vector2f> Object::getLine(int x0, int y0, int x1, int y1)
-{
-	int sx, sy, dx, dy, err, e2;
-
-	dx = abs(x1 - x0);
-	dy = abs(y1 - y0);
-	std::vector<sf::Vector2f> line;
-
-	sx = (x0 < x1) ? 1 : -1;
-	sy = (y0 < y1) ? 1 : -1;
-
-	err = dx - dy;
-
-	while (true) {
-		sf::Vector2f point(x0, y0);
-		line.push_back(point);
-
-		if (x0 == x1 && y0 == y1) {
-			break;
-		}
-
-		e2 = 2 * err;
-		if (e2 > -dy) {
-			err = err - dy;
-			x0 = x0 + sx;
-		}
-		if (e2 < dx) {
-			err = err + dx;
-			y0 = y0 + sy;
-		}
-	}
-	return line;
-}
-
-int Object::getDistanceBetweenTiles(int _x0, int _y0, int _x1, int _y1)
-{
-	int x0 = _x0, x1 = _x1, y0 = _y0, y1 = _y1;
-	int tiles = 0;
-	int dx = abs(x1 - x0);
-	int dy = abs(y1 - y0);
-
-	tiles = sqrt(dx * dx + dy * dy) / 32;
-
-	return tiles;
-}
-
-void Object::enemyShoot(sf::Vector2i coords, float distanceX, float distanceY)
-{
-	if (cooldown <= 0) {
-		setCooldown(0.5);
-		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
-		game->audio->bulletSound->setPosition(-distanceX / 25, -distanceY / 25, 0);
-		game->audio->bulletSound->play();
-	}
-	else cooldown -= frameClock;
-}
-
-void Object::updateShield(float frameClock)
+void Character::updateShield(float frameClock)
 {
 	shieldTimeUntilRecharge += frameClock;
 	if (getShieldpoints() < maxShieldPoints) {
@@ -211,27 +50,27 @@ void Object::updateShield(float frameClock)
 	}
 }
 
-int Object::getHitpoints() const
+int Character::getHitpoints() const
 {
 	return mHitpoints;
 }
 
-void Object::setHitpoints(int hp)
+void Character::setHitpoints(int hp)
 {
 	mHitpoints = hp;
 }
 
-float Object::getShieldpoints() const
+float Character::getShieldpoints() const
 {
 	return mShieldpoints;
 }
 
-void Object::setShieldpoints(float shield)
+void Character::setShieldpoints(float shield)
 {
 	mShieldpoints = shield;
 }
 
-void Object::setDamage(float damage)
+void Character::setDamage(float damage)
 {
 	float currentShieldpoints = getShieldpoints();
 	int currentHitpoints = getHitpoints();
@@ -248,58 +87,25 @@ void Object::setDamage(float damage)
 	}
 }
 
-void Object::setMeleeDamage(float damage)
+void Character::setMeleeDamage(float damage)
 {
 	meleeDamage = damage;
 }
 
-float Object::getMeleeDamage() const
+float Character::getMeleeDamage() const
 {
 	return meleeDamage;
 }
 
-void Object::setCooldown(float amount)
+Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vector2f coords) : Character(objectTexture)
 {
-	cooldown = amount;
-}
+	mIsMovingUp = false;
+	mIsMovingDown = false;
+	mIsMovingRight = false;
+	mIsMovingLeft = false;
+	playerSpeed = 100.0;
+	playerShooting = false;
 
-void Object::setAggro(float amount)
-{
-	aggro = amount;
-}
-
-float Object::getAggro() const
-{
-	return aggro;
-}
-
-void Object::updateAggro(float amount)
-{
-	aggro -= amount;
-}
-
-void Object::setValue(int givenValue)
-{
-	value = givenValue;
-}
-
-int Object::getValue() const
-{
-	return value;
-}
-
-float Object::getEnemySpeed() const
-{
-	return enemySpeed;
-}
-
-void Object::setEnemySpeed(float amount)
-{
-	enemySpeed = amount;
-}
-
-Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vector2f coords) : Object(objectTexture)
-{
 	weapons.push_back(new Pistol(weaponTexture));
 	weapons.push_back(new LaserRifle(weaponTexture));
 
@@ -439,8 +245,188 @@ void Player::shoot()
 	}
 }
 
+int Enemy::lineOfSight(int _x0, int _y0, int _x1, int _y1)
+{
+	int x0 = (_x0 - 10) / 32, y0 = (_y0 - 10) / 32, x1 = _x1 / 32, y1 = _y1 / 32;
+	std::vector<sf::Vector2f> line = getLine(x0, y0, x1, y1);
+	int lineOfSight = 1;
+	for (int i = 0; i < line.size(); i++) {
+		if (game->map->gridCollision(line[i].x, line[i].y) == 1) {
+			lineOfSight = 0;
+		}
+	}
 
-EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+	x0 = (_x0 + 10) / 32, y0 = (_y0 + 10) / 32;
+	std::vector<sf::Vector2f> line2 = getLine(x0, y0, x1, y1);
+	for (int i = 0; i < line2.size(); i++) {
+		if (game->map->gridCollision(line2[i].x, line2[i].y) == 1) {
+			lineOfSight = 0;
+		}
+	}
+	return lineOfSight;
+	return lineOfSight;
+}
+
+std::vector<sf::Vector2f> Enemy::getLine(int x0, int y0, int x1, int y1)
+{
+	int sx, sy, dx, dy, err, e2;
+
+	dx = abs(x1 - x0);
+	dy = abs(y1 - y0);
+	std::vector<sf::Vector2f> line;
+
+	sx = (x0 < x1) ? 1 : -1;
+	sy = (y0 < y1) ? 1 : -1;
+
+	err = dx - dy;
+
+	while (true) {
+		sf::Vector2f point(x0, y0);
+		line.push_back(point);
+
+		if (x0 == x1 && y0 == y1) {
+			break;
+		}
+
+		e2 = 2 * err;
+		if (e2 > -dy) {
+			err = err - dy;
+			x0 = x0 + sx;
+		}
+		if (e2 < dx) {
+			err = err + dx;
+			y0 = y0 + sy;
+		}
+	}
+	return line;
+}
+
+int Enemy::getDistanceBetweenTiles(int _x0, int _y0, int _x1, int _y1)
+{
+	int x0 = _x0, x1 = _x1, y0 = _y0, y1 = _y1;
+	int tiles = 0;
+	int dx = abs(x1 - x0);
+	int dy = abs(y1 - y0);
+
+	tiles = sqrt(dx * dx + dy * dy) / 32;
+
+	return tiles;
+}
+
+void Enemy::approachPath(float enemyPositionX, float enemyPositionY, float realPlayerPositionX, float realPlayerPositionY)
+{
+	clock += frameClock;
+	int playerPositionX = playerPath[0].x;
+	int playerPositionY = playerPath[0].y;
+
+	if (abs(playerPositionX - enemyPositionX) < 2 && abs(playerPositionY - enemyPositionY) < 2) {
+		playerPath.erase(playerPath.begin());
+	}
+	if (playerPath.size() > 0) {
+		playerPositionX = playerPath[0].x;
+		playerPositionY = playerPath[0].y;
+		int collisionFlag = 1;
+		float absoluteDistanceX = abs(playerPositionX - enemyPositionX);
+		float absoluteDistanceY = abs(playerPositionY - enemyPositionY);
+		float distanceFromPlayer = sqrt(absoluteDistanceX * 2 + absoluteDistanceY * 2);
+		float enemySpeed = getEnemySpeed();
+		float angle;
+
+		sf::Vector2f enemyMovement(0.f, 0.f);
+
+		float distanceX = playerPositionX - enemyPositionX;
+		float distanceY = playerPositionY - enemyPositionY;
+
+
+		if (distanceX > 0) {
+			enemyMovement.x += enemySpeed;
+		}
+		if (distanceX < 0) {
+			enemyMovement.x -= enemySpeed;
+		}
+		if (distanceY > 0) {
+			enemyMovement.y += enemySpeed;
+		}
+		if (distanceY < 0) {
+			enemyMovement.y -= enemySpeed;
+		}
+
+
+		float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
+		float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
+		int enemyCollisionX = game->map->collision2(enemySpeedX, enemyPositionY, "player");
+		int enemyCollisionY = game->map->collision2(enemyPositionX, enemySpeedY, "player");
+
+		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
+			collisionFlag = 0;
+			if (enemyCollisionX == 1) {
+				enemyMovement.x = 0.f;
+			}
+			if (enemyCollisionY == 1) {
+				enemyMovement.y = 0.f;
+			}
+		}
+		if (collisionFlag == 0) {
+			float angleX = playerPath[playerPath.size() - 1].x - enemyPositionX;
+			float angleY = playerPath[playerPath.size() - 1].y - enemyPositionY;
+			//float angleX = realPlayerPositionX - enemyPositionX;
+			//float angleY = realPlayerPositionY - enemyPositionY;
+			angle = -atan2(angleX, angleY) * 180 / 3.141593;
+			this->sprite.setOrigin(16, 16);
+			this->sprite.setRotation(angle);
+			this->sprite.move(enemyMovement * frameClock);
+
+			if (isPlaying == false) {
+				clock = 0.0;
+				random = rand() % game->audio->footsteps.size();
+				/* A hacky way to increase the volume relative to distance */
+				game->audio->footsteps[random]->setVolume(MISC_VOLUME + 30);
+				game->audio->footsteps[random]->setPosition(-distanceX / 25, -distanceY / 25, 0);
+				game->audio->footsteps[random]->play();
+				isPlaying = true;
+			} else if (isPlaying == true) {
+				if (clock > 0.35) {
+					isPlaying = false;
+				}
+			}
+		}
+	}
+}
+
+float Enemy::getEnemySpeed() const
+{
+	return enemySpeed;
+}
+
+void Enemy::setEnemySpeed(float amount)
+{
+	enemySpeed = amount;
+}
+
+void Enemy::setCooldown(float amount)
+{
+	cooldown = amount;
+}
+
+void Enemy::setAggro(float amount)
+{
+	aggro = amount;
+}
+
+float Enemy::getAggro() const
+{
+	return aggro;
+}
+
+void Enemy::updateAggro(float amount)
+{
+	aggro -= amount;
+}
+
+
+
+
+EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Enemy(objectTexture)
 {
 	maxShieldPoints = 0.0;
 	setValue(10);
@@ -556,7 +542,7 @@ void EnemyMelee::approach(float enemyPositionX, float enemyPositionY,
 	}
 }
 
-EnemySoldier::EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+EnemySoldier::EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords) : Enemy(objectTexture)
 {
 	maxShieldPoints = 0.0;
 	setValue(100);
@@ -634,7 +620,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			angle = -atan2(distanceX, distanceY) * 180 / PI;
 			this->sprite.setOrigin(16, 16);
 			this->sprite.setRotation(angle);
-			enemyShoot(playerCoords, distanceX, distanceY);
+			shoot(playerCoords, distanceX, distanceY);
 		}
 
 
@@ -673,7 +659,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 				this->sprite.setOrigin(16, 16);
 				this->sprite.setRotation(angle);
 				this->sprite.move(enemyMovement * frameClock);
-				enemyShoot(playerCoords, distanceX, distanceY);
+				shoot(playerCoords, distanceX, distanceY);
 			}
 		}
 	}
@@ -717,7 +703,7 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			this->sprite.setOrigin(16, 16);
 			this->sprite.setRotation(angle);
 			this->sprite.move(enemyMovement * frameClock);
-			enemyShoot(playerCoords, distanceX, distanceY);
+			shoot(playerCoords, distanceX, distanceY);
 
 			if (isPlaying == false) {
 				clock = 0.0;
@@ -736,28 +722,38 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 	}
 }
 
-ValuableLow::ValuableLow(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+void EnemySoldier::shoot(sf::Vector2i coords, float distanceX, float distanceY)
+{
+	if (cooldown <= 0) {
+		setCooldown(0.5);
+		game->enemyProjectiles.push_back(BulletSprite(*game->bulletTexture, sprite.getPosition(), coords, 15));
+		game->audio->bulletSound->setPosition(-distanceX / 25, -distanceY / 25, 0);
+		game->audio->bulletSound->play();
+	} else cooldown -= frameClock;
+}
+
+ValuableLow::ValuableLow(sf::Texture& objectTexture, sf::Vector2f coords) : Valuable(objectTexture)
 {
 	setValue(100);
 	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
 	sprite.setColor(sf::Color(207, 83, 0));
 }
 
-ValuableMed::ValuableMed(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+ValuableMed::ValuableMed(sf::Texture& objectTexture, sf::Vector2f coords) : Valuable(objectTexture)
 {
 	setValue(250);
 	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
 	sprite.setColor(sf::Color(194, 194, 163));
 }
 
-ValuableHigh::ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+ValuableHigh::ValuableHigh(sf::Texture& objectTexture, sf::Vector2f coords) : Valuable(objectTexture)
 {
 	setValue(500);
 	sprite.setPosition(coords.x + rand() % 16, coords.y + rand() % 16);
 	sprite.setColor(sf::Color(255, 204, 0));
 }
 
-BloodSmall::BloodSmall(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+BloodSmall::BloodSmall(sf::Texture& objectTexture, sf::Vector2f coords) : Blood(objectTexture)
 {
 	/* Number of blood variations in blood8x8Texture */
 	int variation = rand() % 8;
@@ -768,7 +764,7 @@ BloodSmall::BloodSmall(sf::Texture& objectTexture, sf::Vector2f coords) : Object
 	sprite.setPosition(coords.x + (rand() % 24 - 12), coords.y + (rand() % 24 - 12));
 }
 
-BloodMedium::BloodMedium(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+BloodMedium::BloodMedium(sf::Texture& objectTexture, sf::Vector2f coords) : Blood(objectTexture)
 {
 	/* Number of blood variations in blood16x16Texture */
 	int variation = rand() % 8;
