@@ -9,9 +9,9 @@
 #include "pathfinding.hpp"
 #include "main.hpp"
 
-/***************************
- ********** NODE ***********
- ***************************/
+/****************************
+*********** NODE ************
+****************************/
 
 Node::Node(bool _walkable, sf::Vector2f _worldPos, int _gridX, int _gridY)
 {
@@ -122,11 +122,6 @@ Node Grid::nodeFromWorldPoint(sf::Vector2f worldPos)
 
 
 Pathfinding::Pathfinding()
-{
-	grid = new Grid();
-}
-
-void Pathfinding::Awake()
 {
 	grid = new Grid();
 }

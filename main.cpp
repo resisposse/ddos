@@ -353,9 +353,6 @@ void Game::initializeWeapons()
 	weapons.push_back(new Shotgun(*weaponTexture));
 	weapons.push_back(new MachineGun(*weaponTexture));
 	weapons.push_back(new SniperRifle(*weaponTexture));
-
-	//player->weapons.push_back(new Pistol(*weaponTexture));
-	//player->weapons.push_back(new LaserRifle(*weaponTexture));
 }
 
 void Game::initializeHUD()
@@ -450,7 +447,7 @@ void Game::updateLighting()
 
 void Game::updatePlayer()
 {
-	player->update(frameClock);
+	player->update(map, frameClock);
 }
 
 void Game::updateEnemies()
@@ -464,12 +461,15 @@ void Game::updateEnemies()
 			enemies.erase(enemies.begin() + i);
 			break;
 		}
-		enemies[i]->update(enemies[i]->sprite.getPosition().x,
+		enemies[i]->update(map, enemies[i]->sprite.getPosition().x,
 		                   enemies[i]->sprite.getPosition().y,
 		                   player->sprite.getPosition().x,
 		                   player->sprite.getPosition().y);
 		if (checkProximity(enemies[i]->sprite.getPosition()) == 1) {
-			player->setDamage(enemies[i]->getMeleeDamage());
+			bool healthLost = player->setDamage(enemies[i]->getMeleeDamage());
+			if (healthLost) {
+				dropBlood(player->sprite.getPosition());
+			}
 		}
 		i++;
 	}
@@ -541,11 +541,12 @@ int Game::checkEnemyCollisions(int x, int y, int damage)
 		diffX = abs(x - enemyX);
 		diffY = abs(y - enemyY);
 		if (diffX < 10 && diffY < 10) {
-			for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
-				mapBlood.push_back(new BloodSmall(*blood8x8Texture, enemies[b]->sprite.getPosition()));
-			}
 			enemyCollision = 1;
-			enemies[b]->setDamage(damage);
+			bool healthLost = enemies[b]->setDamage(damage);
+			if (healthLost) {
+				dropBlood(enemies[b]->sprite.getPosition());
+			}
+			enemies[b]->shieldTimeUntilRecharge = 0.0;
 			enemies[b]->setAggro(5);
 		}
 	}
@@ -562,7 +563,10 @@ int Game::checkPlayerCollisions(int x, int y, int damage)
 	diffY = abs(y - playerCoords.y);
 	if (diffX < 10 && diffY < 10) {
 		playerCollision = 1;
-		player->setDamage(damage);
+		bool healthLost = player->setDamage(damage);
+		if (healthLost) {
+			dropBlood(player->sprite.getPosition());
+		}
 		player->shieldTimeUntilRecharge = 0.0;
 	}
 	return playerCollision;
@@ -658,6 +662,13 @@ void Game::drawCursor()
 	cursorSprite->setPosition(static_cast<sf::Vector2f>(mouse));
 	app->draw(*cursorSprite);
 
+}
+
+void Game::dropBlood(sf::Vector2f coords)
+{
+	for (int tmp = 0; tmp < random->generate(1,3); tmp++) {
+		mapBlood.push_back(new BloodSmall(*blood8x8Texture, coords));
+	}
 }
 
 void Game::dropWeapon()

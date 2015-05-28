@@ -128,6 +128,7 @@ public:
 	void drawGore();
 	void drawCursor();
 	void shoot();
+	void dropBlood(sf::Vector2f coords);
 	void dropWeapon();
 	void pickWeapon();
 	void pickValuables();

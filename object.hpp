@@ -7,6 +7,7 @@
 #define OBJECT
 
 class Weapon;
+class Map;
 
 /*
  * ScoreValue
@@ -69,8 +70,8 @@ public:
 class Character : public Object
 {
 public:
-	float maxShieldPoints;
-	float shieldRechargeDelay;
+	float maxShieldPoints = 0.0;
+	float shieldRechargeDelay = 0.0;
 	float shieldTimeUntilRecharge = 0.0;
 	bool isPlaying = false;
 	float shootingCooldown = 0;
@@ -81,7 +82,7 @@ public:
 	float getShieldpoints() const;
 	void setShieldpoints(float shield);
 	void updateShield(float frameClock);
-	void setDamage(float damage);
+	bool setDamage(float damage);
 	float getMeleeDamage() const;
 	void setMeleeDamage(float damage);
 private:
@@ -111,10 +112,10 @@ public:
 	float pathCooldown = 0;
 
 	Enemy(sf::Texture& objectTexture) : Character(objectTexture) {};
-	virtual void update(float enemyPositionX, float enemyPositionY,
-		float playerPositionX, float playerPositionY) {}
-	virtual void approach(float enemyPositionX, float enemyPositionY,
-		float playerPositionX, float playerPositionY){}
+	virtual void update(Map *map, float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY) = 0;
+	virtual void approach(Map *map, float enemyPositionX, float enemyPositionY,
+		float playerPositionX, float playerPositionY) = 0;
 	void approachPath(float enemyPositionX, float enemyPositionY, float realPlayerPositionX, float realPlayerPositionY);
 	int lineOfSight(int startX, int startY, int endX, int endY);
 	std::vector<sf::Vector2f> getLine(int startX, int startY, int endX, int endY);
@@ -146,9 +147,9 @@ class EnemyMelee : public Enemy
 {
 public:
 	EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords);
-	void update(float enemyPositionX, float enemyPositionY,
+	void update(Map *map, float enemyPositionX, float enemyPositionY,
 		float playerPositionX, float playerPositionY);
-	void approach(float enemyPositionX, float enemyPositionY,
+	void approach(Map *map, float enemyPositionX, float enemyPositionY,
 		float playerPositionX, float playerPositionY);
 };
 
@@ -168,9 +169,9 @@ public:
 	int approachTiles;
 
 	EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords);
-	void update(float enemyPositionX, float enemyPositionY,
+	virtual void update(Map *map, float enemyPositionX, float enemyPositionY,
 		float playerPositionX, float playerPositionY);
-	void approach(float enemyPositionX, float enemyPositionY,
+	virtual void approach(Map *map, float enemyPositionX, float enemyPositionY,
 		float playerPositionX, float playerPositionY);
 	void shoot(sf::Vector2i coords, float distanceX, float distanceY);
 };
@@ -199,7 +200,7 @@ public:
 	int heldWeapon = 0;
 
 	Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vector2f coords);
-	void update(float frameClock);
+	void update(Map *map, float frameClock);
 	void shoot();
 };
 

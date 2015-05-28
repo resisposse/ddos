@@ -70,20 +70,19 @@ void Character::setShieldpoints(float shield)
 	mShieldpoints = shield;
 }
 
-void Character::setDamage(float damage)
+bool Character::setDamage(float damage)
 {
 	float currentShieldpoints = getShieldpoints();
 	int currentHitpoints = getHitpoints();
 	if (currentShieldpoints <= 0) {
-		for (int tmp = 0; tmp < 1 + rand() % 3; tmp++) {
-			game->mapBlood.push_back(new BloodSmall(*game->blood8x8Texture, sprite.getPosition()));
-		}
 		int newHitpoints = currentHitpoints - damage;
 		if (newHitpoints < 0) newHitpoints = 0;
 		setHitpoints(newHitpoints);
+		return true;
 	} else {
 		float newShieldpoints = currentShieldpoints - damage;
 		setShieldpoints(newShieldpoints);
+		return false;
 	}
 }
 
@@ -128,7 +127,7 @@ Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vecto
 
 }
 
-void Player::update(float frameClock)
+void Player::update(Map *map, float frameClock)
 {
 	float angle;
 	double a, b;
@@ -168,8 +167,8 @@ void Player::update(float frameClock)
 	float playerSpeedX = (movement.x * frameClock + positionPlayerX);
 	float playerSpeedY = (movement.y * frameClock + positionPlayerY);
 
-	int collisionX = game->map->collision2(playerSpeedX, positionPlayerY, "player");
-	int collisionY = game->map->collision2(positionPlayerX, playerSpeedY, "player");
+	int collisionX = map->collision2(playerSpeedX, positionPlayerY, "player");
+	int collisionY = map->collision2(positionPlayerX, playerSpeedY, "player");
 
 
 	if (collisionX != 1 || collisionY != 1) {
@@ -195,7 +194,6 @@ void Player::shoot()
 	if (playerShooting == true && shootingCooldown <= 0) {
 		shootingCooldown = weapons[heldWeapon]->attackSpeed;
 		weapons[heldWeapon]->setAmmo(1);
-		game->ammo = weapons[heldWeapon]->getAmmo();
 		if (weapons[heldWeapon]->getAmmo() <= 0) {
 			game->audio->clickSound->play();
 		} else {
@@ -449,14 +447,14 @@ EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Enemy(
 
 }
 
-void EnemyMelee::update(float enemyPositionX, float enemyPositionY,
+void EnemyMelee::update(Map *map, float enemyPositionX, float enemyPositionY,
 	float playerPositionX, float playerPositionY)
 
 {
 	if (getDistanceBetweenTiles(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY) <= 7 || getAggro() > 0) {
 		if (lineOfSight(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY) == 1) {
 			setAggro(5);
-			approach(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
+			approach(map, enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
 			newPath = true;
 		}
 		else {
@@ -488,7 +486,7 @@ void EnemyMelee::update(float enemyPositionX, float enemyPositionY,
 
 }
 
-void EnemyMelee::approach(float enemyPositionX, float enemyPositionY,
+void EnemyMelee::approach(Map *map, float enemyPositionX, float enemyPositionY,
 	float playerPositionX, float playerPositionY)
 {
 	int collisionFlag = 1;
@@ -517,8 +515,8 @@ void EnemyMelee::approach(float enemyPositionX, float enemyPositionY,
 		float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
 		float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
 
-		int enemyCollisionX = game->map->collision2(enemySpeedX, enemyPositionY, "player");
-		int enemyCollisionY = game->map->collision2(enemyPositionX, enemySpeedY, "player");
+		int enemyCollisionX = map->collision2(enemySpeedX, enemyPositionY, "player");
+		int enemyCollisionY = map->collision2(enemyPositionX, enemySpeedY, "player");
 
 		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 			collisionFlag = 0;
@@ -566,14 +564,14 @@ EnemySoldier::EnemySoldier(sf::Texture& objectTexture, sf::Vector2f coords) : En
 
 }
 
-void EnemySoldier::update(float enemyPositionX, float enemyPositionY,
+void EnemySoldier::update(Map *map, float enemyPositionX, float enemyPositionY,
 	float playerPositionX, float playerPositionY)
 
 {
 	if (getDistanceBetweenTiles(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY) <= 7 || getAggro() > 0) {
 		if (lineOfSight(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY) == 1) {
 			setAggro(5);
-			approach(enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
+			approach(map, enemyPositionX, enemyPositionY, playerPositionX, playerPositionY);
 			newPath = true;
 		}
 		else {
@@ -602,7 +600,7 @@ void EnemySoldier::update(float enemyPositionX, float enemyPositionY,
 
 }
 
-void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
+void EnemySoldier::approach(Map *map, float enemyPositionX, float enemyPositionY,
 	float playerPositionX, float playerPositionY)
 {
 	clock += frameClock;
@@ -641,8 +639,8 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 			float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
 			float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
 
-			int enemyCollisionX = game->map->collision2(enemySpeedX, enemyPositionY, "player");
-			int enemyCollisionY = game->map->collision2(enemyPositionX, enemySpeedY, "player");
+			int enemyCollisionX = map->collision2(enemySpeedX, enemyPositionY, "player");
+			int enemyCollisionY = map->collision2(enemyPositionX, enemySpeedY, "player");
 
 			if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 				collisionFlag = 0;
@@ -682,8 +680,8 @@ void EnemySoldier::approach(float enemyPositionX, float enemyPositionY,
 		float enemySpeedX = (enemyMovement.x * frameClock + enemyPositionX);
 		float enemySpeedY = (enemyMovement.y * frameClock + enemyPositionY);
 
-		int enemyCollisionX = game->map->collision2(enemySpeedX, enemyPositionY, "player");
-		int enemyCollisionY = game->map->collision2(enemyPositionX, enemySpeedY, "player");
+		int enemyCollisionX = map->collision2(enemySpeedX, enemyPositionY, "player");
+		int enemyCollisionY = map->collision2(enemyPositionX, enemySpeedY, "player");
 
 		if (enemyCollisionX != 1 || enemyCollisionY != 1) {
 			collisionFlag = 0;
