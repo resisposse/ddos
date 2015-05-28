@@ -6,6 +6,7 @@
 #ifndef OBJECT
 #define OBJECT
 
+class Weapon;
 
 class Object
 {
@@ -28,10 +29,9 @@ public:
 	std::vector<sf::Vector2f> playerPath;
 	std::vector<sf::Vector2f> newPlayerPath;
 	// sf::Texture *ObjectTex;
-
 	Object(sf::Texture& objectTexture);
 	void render();
-	void update(float frameClock);
+	virtual void update(float frameClock);
 	virtual void update(float enemyPositionX, float enemyPositionY,
 		float playerPositionX, float playerPositionY) {}
 	virtual void approach(float enemyPositionX, float enemyPositionY,
@@ -40,7 +40,6 @@ public:
 	int lineOfSight(int startX, int startY, int endX, int endY);
 	std::vector<sf::Vector2f> getLine(int startX, int startY, int endX, int endY);
 	int getDistanceBetweenTiles(int x0, int y0, int x1, int y1);
-	void playerShoot();
 	void enemyShoot(sf::Vector2i coords, float distanceX, float distanceY);
 	void updateShield(float frameClock);
 	int getHitpoints() const;
@@ -75,7 +74,12 @@ private:
 class Player : public Object
 {
 public:
-	Player(sf::Texture& objectTexture, sf::Vector2f coords);
+	std::vector<Weapon*> weapons;
+	int heldWeapon = 0;
+
+	Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vector2f coords);
+	void update(float frameClock);
+	void shoot();
 };
 
 class EnemyMelee : public Object

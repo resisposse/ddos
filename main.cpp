@@ -37,7 +37,7 @@ Game::Game(StateManager *stateManager)
 	audio = new Audio;
 	light = new Light;
 	lightState = new LightState;
-	player = new Player(*playerTexture, sf::Vector2f(0,0));
+	player = new Player(*playerTexture, *weaponTexture, sf::Vector2f(0,0));
 	healthbar = new HealthBar(*healthTexture);
 	shieldbar = new ShieldBar(*shieldTexture);
 
@@ -141,13 +141,13 @@ void Game::handleInput()
 				player->mIsMovingRight = true;
 				break;
 			case sf::Keyboard::E:
-				heldWeapon = (heldWeapon + 1) % playerWeapons.size();
+				player->heldWeapon = (player->heldWeapon + 1) % player->weapons.size();
 				break;
 			case sf::Keyboard::Q:
-				if (heldWeapon == 0) {
-					heldWeapon = playerWeapons.size();
+				if (player->heldWeapon == 0) {
+					player->heldWeapon = player->weapons.size();
 				}
-				heldWeapon = (heldWeapon - 1);
+				player->heldWeapon = (player->heldWeapon - 1);
 				break;
 			case sf::Keyboard::G:
 				dropWeapon();
@@ -247,8 +247,8 @@ void Game::handleInput()
 
 void Game::playFootstepSound()
 {
-	float playerPositionX = game->player->sprite.getPosition().x;
-	float playerPositionY = game->player->sprite.getPosition().y;
+	float playerPositionX = player->sprite.getPosition().x;
+	float playerPositionY = player->sprite.getPosition().y;
 	int randomValue;
 	if (player->mIsMovingUp == true ||
 	    player->mIsMovingLeft == true ||
@@ -354,8 +354,8 @@ void Game::initializeWeapons()
 	weapons.push_back(new MachineGun(*weaponTexture));
 	weapons.push_back(new SniperRifle(*weaponTexture));
 
-	playerWeapons.push_back(new Pistol(*weaponTexture));
-	playerWeapons.push_back(new LaserRifle(*weaponTexture));
+	//player->weapons.push_back(new Pistol(*weaponTexture));
+	//player->weapons.push_back(new LaserRifle(*weaponTexture));
 }
 
 void Game::initializeHUD()
@@ -477,7 +477,7 @@ void Game::updateEnemies()
 
 void Game::updateWeapons()
 {
-	playerWeapons[heldWeapon]->update(player->sprite.getPosition().x,
+	player->weapons[player->heldWeapon]->update(player->sprite.getPosition().x,
 	                                  player->sprite.getPosition().y,
 	                                  mouse.x, mouse.y);
 }
@@ -592,7 +592,7 @@ void Game::drawPlayer()
 
 void Game::drawWeapon()
 {
-	app->draw(playerWeapons[heldWeapon]->sprite);
+	app->draw(player->weapons[player->heldWeapon]->sprite);
 }
 
 void Game::drawMapWeapons()
@@ -662,32 +662,32 @@ void Game::drawCursor()
 
 void Game::dropWeapon()
 {
-	if (playerWeapons.size() > 1) {
+	if (player->weapons.size() > 1) {
 		int playerPositionX = player->sprite.getPosition().x;
 		int playerPositionY = player->sprite.getPosition().y;
-		mapWeapons.push_back(playerWeapons[heldWeapon]);
+		mapWeapons.push_back(player->weapons[player->heldWeapon]);
 		mapWeapons.back()->sprite.setPosition(playerPositionX, playerPositionY);
 		mapWeapons.back()->sprite.setRotation(rand() % 360);
 		mapWeapons.back()->sprite.setOrigin(16, 8);
-		playerWeapons.erase(playerWeapons.begin() + heldWeapon);
-		heldWeapon = 0;
+		player->weapons.erase(player->weapons.begin() + player->heldWeapon);
+		player->heldWeapon = 0;
 	}
 }
 
 void Game::pickWeapon()
 {
 	for (unsigned int i = 0; i < mapWeapons.size(); i++) {
-		if (playerWeapons.size() < 2) {
+		if (player->weapons.size() < 2) {
 			sf::Vector2f playerCoords(player->sprite.getPosition());
 			int diffX, diffY;
 
 			diffX = abs(mapWeapons[i]->sprite.getPosition().x - playerCoords.x);
 			diffY = abs(mapWeapons[i]->sprite.getPosition().y - playerCoords.y);
 			if (diffX < 10 && diffY < 10) {
-				playerWeapons.push_back(mapWeapons[i]);
-				playerWeapons.back()->sprite.setOrigin(16, 0);
+				player->weapons.push_back(mapWeapons[i]);
+				player->weapons.back()->sprite.setOrigin(16, 0);
 				mapWeapons.erase(mapWeapons.begin() + i);
-				heldWeapon = 1;
+				player->heldWeapon = 1;
 
 				audio->dropgunSound->play();
 			}
@@ -720,7 +720,7 @@ void Game::HUDManager()
 	weaponHUDX = playerPositionX - 155;
 	weaponHUDY = playerPositionY - 55;
 
-	currentGun.setString(playerWeapons[heldWeapon]->name);
+	currentGun.setString(player->weapons[player->heldWeapon]->name);
 	currentGun.setFont(font);
 	currentGun.setPosition(wWGun/2 + weaponHUDX , wHGun/2 + weaponHUDY);
 
@@ -730,7 +730,7 @@ void Game::HUDManager()
 	ammoHUDX = playerPositionX - 155;
 	ammoHUDY = playerPositionY - 30;
 
-	currentAmmo.setString("Ammo: " + std::to_string (playerWeapons[heldWeapon]->getAmmo()));
+	currentAmmo.setString("Ammo: " + std::to_string (player->weapons[player->heldWeapon]->getAmmo()));
 	currentAmmo.setFont(font);
 	currentAmmo.setPosition(wWAmmo / 2 + ammoHUDX, wHAmmo / 2 + ammoHUDY);
 

@@ -34,7 +34,6 @@ public:
 	long currentClock = 0;
 	bool focused;
 	bool pathfindAlustus = false;
-	int heldWeapon = 0;
 	int weaponType = 0;
 	int ammo;
 	int score = 0;
@@ -74,7 +73,6 @@ public:
 	std::vector<Object*> enemies;
 	std::vector<Weapon*> weapons;
 	std::vector<Weapon*> mapWeapons;
-	std::vector<Weapon*> playerWeapons;
 	std::vector<Object*> mapValuables;
 	std::vector<Object*> mapBlood;
 

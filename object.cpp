@@ -30,64 +30,10 @@ Object::Object(sf::Texture& objectTexture)
 	//sprite.setOrigin(16, 16);
 }
 
-void Object::update(float frameClock)
+void Object::update(float frameclock)
 {
-	float angle;
-	double a, b;
-	float playerPositionX = sprite.getPosition().x;
-	float playerPositionY = sprite.getPosition().y;
-	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
-	sprite.setOrigin(16, 16);
-	a = mouse.x - (playerPositionX);
-	b = mouse.y - (playerPositionY);
-	angle = -atan2(a, b) * 180 / PI;
-	sprite.setRotation(angle);
 
-	updateShield(frameClock);
-
-	sf::Vector2f movement(0.0, 0.0);
-	if (mIsMovingUp) {
-		movement.y -= playerSpeed;
-	}
-	if (mIsMovingDown) {
-		movement.y += playerSpeed;
-	}
-	if (mIsMovingLeft) {
-		movement.x -= playerSpeed;
-	}
-	if (mIsMovingRight) {
-		movement.x += playerSpeed;
-	}
-	if (getHitpoints() <= 0) {
-		/* you dieded */
-	}
-
-	/* Goes in to check whether shooting flag is true or false */
-	playerShoot();
-
-	float positionPlayerX = sprite.getPosition().x;
-	float positionPlayerY = sprite.getPosition().y;
-	float playerSpeedX = (movement.x * frameClock + positionPlayerX);
-	float playerSpeedY = (movement.y * frameClock + positionPlayerY);
-
-	int collisionX = game->map->collision2(playerSpeedX, positionPlayerY, "player");
-	int collisionY = game->map->collision2(positionPlayerX, playerSpeedY, "player");
-
-
-	if (collisionX != 1 || collisionY != 1) {
-		if (collisionX == 1) {
-			movement.x = 0.0;
-		}
-		if (collisionY == 1) {
-			movement.y = 0.0;
-		}
-
-		sprite.move(movement * frameClock);
-		positionPlayerX = sprite.getPosition().x;
-		positionPlayerY = sprite.getPosition().y;
-	}
 }
-
 
 void Object::approachPath(float enemyPositionX, float enemyPositionY, float realPlayerPositionX, float realPlayerPositionY)
 {
@@ -238,65 +184,6 @@ int Object::getDistanceBetweenTiles(int _x0, int _y0, int _x1, int _y1)
 	return tiles;
 }
 
-/*
- * Weapon and projectile vectors reside in main Game class, so everything is
- * called through game->.
- */
-void Object::playerShoot()
-{
-	if (playerShooting == true && shootingCooldown <= 0) {
-		shootingCooldown = game->playerWeapons[game->heldWeapon]->attackSpeed;
-		game->playerWeapons[game->heldWeapon]->setAmmo(1);
-		game->ammo = game->playerWeapons[game->heldWeapon]->getAmmo();
-		if (game->playerWeapons[game->heldWeapon]->getAmmo() <= 0) {
-			game->audio->clickSound->play();
-		} else {
-			switch (game->playerWeapons[game->heldWeapon]->ammoType) {
-			case 0:
-				game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
-					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-					game->playerWeapons[game->heldWeapon]->spreadAngle));
-
-				game->audio->bulletSound->setPosition(0,0,0);
-				game->audio->bulletSound->play();
-
-				break;
-			case 1:
-				game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
-					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-					game->playerWeapons[game->heldWeapon]->spreadAngle));
-
-				game->audio->laserSound->play();
-
-				break;
-			case 2:
-				for (int i = 0; i < game->playerWeapons[game->heldWeapon]->bullets; i++) {
-					game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
-						sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-						game->playerWeapons[game->heldWeapon]->spreadAngle));
-				}
-
-				game->audio->shotgunSound->play();
-
-				break;
-			case 3:
-				game->projectiles.push_back(HeavyBulletSprite(*game->heavyBulletTexture, game->player->sprite.getPosition(),
-					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
-					game->playerWeapons[game->heldWeapon]->spreadAngle));
-
-				game->audio->sniperSound->play();
-
-				break;
-			default:
-				std::cout << "heldWeapon fail: " << game->heldWeapon << std::endl;
-				break;
-			}
-		}
-	} else {
-		shootingCooldown -= frameClock;
-	}
-}
-
 void Object::enemyShoot(sf::Vector2i coords, float distanceX, float distanceY)
 {
 	if (cooldown <= 0) {
@@ -411,8 +298,11 @@ void Object::setEnemySpeed(float amount)
 	enemySpeed = amount;
 }
 
-Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
+Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vector2f coords) : Object(objectTexture)
 {
+	weapons.push_back(new Pistol(weaponTexture));
+	weapons.push_back(new LaserRifle(weaponTexture));
+
 	maxShieldPoints = 200.0;
 	shieldRechargeDelay = 2.0;
 	/*
@@ -431,6 +321,124 @@ Player::Player(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectT
 	setMeleeDamage(0);
 
 }
+
+void Player::update(float frameClock)
+{
+	float angle;
+	double a, b;
+	float playerPositionX = sprite.getPosition().x;
+	float playerPositionY = sprite.getPosition().y;
+	mouse = sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app)));
+	sprite.setOrigin(16, 16);
+	a = mouse.x - (playerPositionX);
+	b = mouse.y - (playerPositionY);
+	angle = -atan2(a, b) * 180 / PI;
+	sprite.setRotation(angle);
+
+	updateShield(frameClock);
+
+	sf::Vector2f movement(0.0, 0.0);
+	if (mIsMovingUp) {
+		movement.y -= playerSpeed;
+	}
+	if (mIsMovingDown) {
+		movement.y += playerSpeed;
+	}
+	if (mIsMovingLeft) {
+		movement.x -= playerSpeed;
+	}
+	if (mIsMovingRight) {
+		movement.x += playerSpeed;
+	}
+	if (getHitpoints() <= 0) {
+		/* you dieded */
+	}
+
+	/* Goes in to check whether shooting flag is true or false */
+	shoot();
+
+	float positionPlayerX = sprite.getPosition().x;
+	float positionPlayerY = sprite.getPosition().y;
+	float playerSpeedX = (movement.x * frameClock + positionPlayerX);
+	float playerSpeedY = (movement.y * frameClock + positionPlayerY);
+
+	int collisionX = game->map->collision2(playerSpeedX, positionPlayerY, "player");
+	int collisionY = game->map->collision2(positionPlayerX, playerSpeedY, "player");
+
+
+	if (collisionX != 1 || collisionY != 1) {
+		if (collisionX == 1) {
+			movement.x = 0.0;
+		}
+		if (collisionY == 1) {
+			movement.y = 0.0;
+		}
+
+		sprite.move(movement * frameClock);
+		positionPlayerX = sprite.getPosition().x;
+		positionPlayerY = sprite.getPosition().y;
+	}
+}
+
+/*
+ * Weapon and projectile vectors reside in main Game class, so everything is
+ * called through game-> which means "Uh-oh spagetti Os".
+ */
+void Player::shoot()
+{
+	if (playerShooting == true && shootingCooldown <= 0) {
+		shootingCooldown = weapons[heldWeapon]->attackSpeed;
+		weapons[heldWeapon]->setAmmo(1);
+		game->ammo = weapons[heldWeapon]->getAmmo();
+		if (weapons[heldWeapon]->getAmmo() <= 0) {
+			game->audio->clickSound->play();
+		} else {
+			switch (weapons[heldWeapon]->ammoType) {
+			case 0:
+				game->projectiles.push_back(BulletSprite(*game->bulletTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					weapons[heldWeapon]->spreadAngle));
+
+				game->audio->bulletSound->setPosition(0, 0, 0);
+				game->audio->bulletSound->play();
+
+				break;
+			case 1:
+				game->projectiles.push_back(LaserSprite(*game->laserBeamTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					weapons[heldWeapon]->spreadAngle));
+
+				game->audio->laserSound->play();
+
+				break;
+			case 2:
+				for (int i = 0; i < weapons[heldWeapon]->bullets; i++) {
+					game->projectiles.push_back(PelletSprite(*game->pelletTexture, game->player->sprite.getPosition(),
+						sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+						weapons[heldWeapon]->spreadAngle));
+				}
+
+				game->audio->shotgunSound->play();
+
+				break;
+			case 3:
+				game->projectiles.push_back(HeavyBulletSprite(*game->heavyBulletTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					weapons[heldWeapon]->spreadAngle));
+
+				game->audio->sniperSound->play();
+
+				break;
+			default:
+				std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
+				break;
+			}
+		}
+	} else {
+		shootingCooldown -= frameClock;
+	}
+}
+
 
 EnemyMelee::EnemyMelee(sf::Texture& objectTexture, sf::Vector2f coords) : Object(objectTexture)
 {
