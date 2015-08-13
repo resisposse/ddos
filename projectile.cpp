@@ -21,6 +21,7 @@ ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f 
 	position = startPosition;
 	speed = 300;
 	damage = 10;
+	aoe = 0; /* Area of effect in pixels */
 
 	sprite.setTexture(projectileTexture);
 	sprite.setScale(0.5, 0.5);
@@ -64,6 +65,10 @@ int ProjectileSprite::getDamage()
 	return damage;
 }
 
+int ProjectileSprite::getAoE() {
+	return aoe;
+}
+
 /* Undecided if we need this function
 bool ProjectileSprite::outsideWindow()
 {
@@ -77,6 +82,7 @@ BulletSprite::BulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPos
 {
 	speed = 500;
 	damage = 18;
+	aoe = 0;
 }
 
 LaserSprite::LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
@@ -84,6 +90,7 @@ LaserSprite::LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosit
 {
 	speed = 1000;
 	damage = 25;
+	aoe = 0;
 
 }
 
@@ -92,6 +99,7 @@ PelletSprite::PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPos
 {
 	speed = 300;
 	damage = 12;
+	aoe = 0;
 }
 
 HeavyBulletSprite::HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
@@ -99,4 +107,13 @@ HeavyBulletSprite::HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2
 {
 	speed = 1500;
 	damage = 50;
+	aoe = 0;
+}
+
+PlasmaBallSprite::PlasmaBallSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
+	: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
+{
+	speed = 500;
+	damage = 50;
+	aoe = 64;
 }

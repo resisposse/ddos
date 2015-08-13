@@ -52,6 +52,7 @@ public:
 	sf::Texture *laserBeamTexture;
 	sf::Texture *pelletTexture;
 	sf::Texture *heavyBulletTexture;
+	sf::Texture *plasmaBallTexture;
 	sf::Texture *weaponTexture;
 	sf::Texture *cursorTexture;
 	sf::Texture *healthTexture;
@@ -114,6 +115,7 @@ public:
 	void checkEnemyProjectileCollisions();
 	int checkEnemyCollisions(int x, int y, int damage);
 	int checkPlayerCollisions(int x, int y, int damage);
+	void checkEnemiesInAoE(int x, int y, int aoe, int damage);
 	void drawEnemies();
 	void drawProjectiles();
 	void drawPlayer();
@@ -134,6 +136,7 @@ public:
 	void pickValuables();
 	void HUDManager();
 	int checkProximity(sf::Vector2f enemy);
+	int getDistance(int _x0, int _y0, int _x1, int _y1);
 	sf::Vector2f randomSpawn();
 	sf::Vector2f playerSpawn();
 	void clearVectors();

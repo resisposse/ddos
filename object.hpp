@@ -77,6 +77,7 @@ public:
 	float shootingCooldown = 0;
 
 	Character(sf::Texture& objectTexture) : Object(objectTexture) {};
+	void takeDamage(int damage);
 	int getHitpoints() const;
 	void setHitpoints(int hp);
 	float getShieldpoints() const;

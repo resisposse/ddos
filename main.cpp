@@ -56,6 +56,8 @@ Game::~Game()
 	delete bulletTexture;
 	delete laserBeamTexture;
 	delete pelletTexture;
+	delete heavyBulletTexture;
+	delete plasmaBallTexture;
 	delete weaponTexture;
 	delete playerTexture;
 	delete enemyMeleeTexture;
@@ -77,10 +79,10 @@ Game::~Game()
 void Game::draw()
 {
 	/*
-	* Not to be confused with initializeLighting(), which just initializes
-	* values for the light to use. This on the other hand paints the screen
-	* black on every frame, so we can update the position of the light.
-	*/
+	 * Not to be confused with initializeLighting(), which just initializes
+	 * values for the light to use. This on the other hand paints the screen
+	 * black on every frame, so we can update the position of the light.
+	 */
 	light->initialize();
 
 	map->renderTiles();
@@ -308,6 +310,9 @@ void Game::loadTextures()
 	heavyBulletTexture = new sf::Texture();
 	heavyBulletTexture->loadFromFile("media/heavyBullet.png");
 	heavyBulletTexture->setSmooth(true);
+	plasmaBallTexture = new sf::Texture();
+	plasmaBallTexture->loadFromFile("media/plasmaBall.png");
+	plasmaBallTexture->setSmooth(true);
 
 	/* We ought to not lose this texture, it's very valuable */
 	valuableTexture = new sf::Texture();
@@ -353,6 +358,7 @@ void Game::initializeWeapons()
 	weapons.push_back(new Shotgun(*weaponTexture));
 	weapons.push_back(new MachineGun(*weaponTexture));
 	weapons.push_back(new SniperRifle(*weaponTexture));
+	weapons.push_back(new PlasmaCannon(*weaponTexture));
 }
 
 void Game::initializeHUD()
@@ -390,9 +396,11 @@ void Game::spawnWeapons(int amount)
 			mapWeapons.push_back(new Shotgun(*weaponTexture));
 		} else if (tmp == 3) {
 			mapWeapons.push_back(new MachineGun(*weaponTexture));
-		} else {
+		} else if (tmp == 4) {
 			mapWeapons.push_back(new SniperRifle(*weaponTexture));
-		}
+		} else {
+			mapWeapons.push_back(new PlasmaCannon(*weaponTexture));
+	}
 		mapWeapons[i]->sprite.setPosition(randomSpawn());
 		mapWeapons[i]->sprite.setRotation(rand() % 360);
 		mapWeapons[i]->sprite.setOrigin(16,8);
@@ -497,14 +505,22 @@ void Game::updateProjectiles()
 void Game::checkProjectileCollisions()
 {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		int x, y;
+		int x, y, damage, aoe;
 		x = projectiles[i].position.x;
 		y = projectiles[i].position.y;
-		if (checkEnemyCollisions(x, y, projectiles[i].getDamage()) == 1) {
+		damage = projectiles[i].getDamage();
+		aoe = projectiles[i].getAoE();
+		if (checkEnemyCollisions(x, y, damage) == 1) {
+			if (aoe > 0) {
+				checkEnemiesInAoE(x, y, aoe, damage);
+			}
 			projectiles.erase(projectiles.begin() + i);
 			break;
 		}
 		if (map->collision(x, y, "projectile") == 1) {
+			if (aoe > 0) {
+				checkEnemiesInAoE(x, y, aoe, damage);
+			}
 			projectiles.erase(projectiles.begin() + i);
 			break;
 		}
@@ -519,6 +535,10 @@ void Game::checkEnemyProjectileCollisions()
 		y = enemyProjectiles[a].position.y;
 
 		if (checkPlayerCollisions(x, y, enemyProjectiles[a].getDamage()) == 1) {
+			/* TODO
+			 * The right way to take damage, fix enemies to work in the same way.
+			 * player->takeDamage(enemyProjectiles[a].getDamage());
+			 */
 			enemyProjectiles.erase(enemyProjectiles.begin() + a);
 			break;
 		}
@@ -532,21 +552,15 @@ void Game::checkEnemyProjectileCollisions()
 
 int Game::checkEnemyCollisions(int x, int y, int damage)
 {
-	int enemyX, enemyY, diffX, diffY;
+	int enemyX, enemyY;
 	int enemyCollision = 0;
 	for (unsigned int b = 0; b < enemies.size(); b++) {
 		enemyX = enemies[b]->sprite.getPosition().x;
 		enemyY = enemies[b]->sprite.getPosition().y;
 
-		diffX = abs(x - enemyX);
-		diffY = abs(y - enemyY);
-		if (diffX < 10 && diffY < 10) {
+		if (getDistance(x, y, enemyX, enemyY) < 15) {
 			enemyCollision = 1;
-			bool healthLost = enemies[b]->setDamage(damage);
-			if (healthLost) {
-				dropBlood(enemies[b]->sprite.getPosition());
-			}
-			enemies[b]->shieldTimeUntilRecharge = 0.0;
+			enemies[b]->takeDamage(damage);
 			enemies[b]->setAggro(5);
 		}
 	}
@@ -556,20 +570,28 @@ int Game::checkEnemyCollisions(int x, int y, int damage)
 int Game::checkPlayerCollisions(int x, int y, int damage)
 {
 	sf::Vector2f playerCoords(player->sprite.getPosition());
-	int diffX, diffY;
 	int playerCollision = 0;
 
-	diffX = abs(x - playerCoords.x);
-	diffY = abs(y - playerCoords.y);
-	if (diffX < 10 && diffY < 10) {
+	if (getDistance(x, y, playerCoords.x, playerCoords.y) < 15) {
 		playerCollision = 1;
-		bool healthLost = player->setDamage(damage);
-		if (healthLost) {
-			dropBlood(player->sprite.getPosition());
-		}
-		player->shieldTimeUntilRecharge = 0.0;
+		player->takeDamage(damage);
 	}
 	return playerCollision;
+}
+
+void Game::checkEnemiesInAoE(int x, int y, int aoe, int damage) {
+	int enemyX, enemyY;
+	int enemyCollision = 0;
+	for (unsigned int b = 0; b < enemies.size(); b++) {
+		enemyX = enemies[b]->sprite.getPosition().x;
+		enemyY = enemies[b]->sprite.getPosition().y;
+
+		if (getDistance(x, y, enemyX, enemyY) < aoe) {
+			enemyCollision = 1;
+			enemies[b]->takeDamage(damage);
+			enemies[b]->setAggro(5);
+		}
+	}
 }
 
 void Game::drawEnemies()
@@ -804,6 +826,17 @@ int Game::checkProximity(sf::Vector2f enemy)
 		closeEnough = 1;
 	}
 	return closeEnough;
+}
+
+int Game::getDistance(int _x0, int _y0, int _x1, int _y1) {
+	int x0 = _x0, x1 = _x1, y0 = _y0, y1 = _y1;
+	int distance = 0;
+	int dx = abs(x1 - x0);
+	int dy = abs(y1 - y0);
+
+	distance = sqrt(dx * dx + dy * dy);
+
+	return distance;
 }
 
 sf::Vector2f Game::randomSpawn()

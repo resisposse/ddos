@@ -17,6 +17,7 @@
  * 1 = laser
  * 2 = pellet
  * 3 = heavyBullet
+ * 4 = plasmaBall
  */
 Weapon::Weapon(sf::Texture& weaponTexture)
 {
@@ -120,5 +121,20 @@ SniperRifle::SniperRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 
 	sf::IntRect mSniperRifle(32 * 13, 32 * 0, 32, 32);
 	sprite.setTextureRect(mSniperRifle);
+	sprite.setOrigin(16, 0);
+}
+
+PlasmaCannon::PlasmaCannon(sf::Texture& weaponTexture) : Weapon(weaponTexture)
+{
+	name = "Plasma Cannon";
+	attackSpeed = 2.0;
+	spreadAngle = 2;
+	ammoType = 4;
+	ammo = 20;
+	bullets = 1;
+	weaponPosition = 5;
+
+	sf::IntRect mPlasmaCannon(32 * 9, 32 * 0, 32, 32);
+	sprite.setTextureRect(mPlasmaCannon);
 	sprite.setOrigin(16, 0);
 }

@@ -50,6 +50,15 @@ void Character::updateShield(float frameClock)
 	}
 }
 
+void Character::takeDamage(int damage) {
+	bool healthLost = setDamage(damage);
+	if (healthLost) {
+		game->dropBlood(sprite.getPosition());
+	}
+	shieldTimeUntilRecharge = 0.0;
+	//setAggro(5);
+}
+
 int Character::getHitpoints() const
 {
 	return mHitpoints;
@@ -105,7 +114,7 @@ Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vecto
 	playerSpeed = 100.0;
 	playerShooting = false;
 
-	weapons.push_back(new Pistol(weaponTexture));
+	weapons.push_back(new PlasmaCannon(weaponTexture));
 	weapons.push_back(new LaserRifle(weaponTexture));
 
 	maxShieldPoints = 200.0;
@@ -233,6 +242,14 @@ void Player::shoot()
 				game->audio->sniperSound->play();
 
 				break;
+			case 4:
+				game->projectiles.push_back(PlasmaBallSprite(*game->plasmaBallTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					weapons[heldWeapon]->spreadAngle));
+
+				game->audio->sniperSound->play();
+
+				break;
 			default:
 				std::cout << "heldWeapon fail: " << heldWeapon << std::endl;
 				break;
@@ -301,13 +318,10 @@ std::vector<sf::Vector2f> Enemy::getLine(int x0, int y0, int x1, int y1)
 
 int Enemy::getDistanceBetweenTiles(int _x0, int _y0, int _x1, int _y1)
 {
-	int x0 = _x0, x1 = _x1, y0 = _y0, y1 = _y1;
+	//int x0 = _x0, x1 = _x1, y0 = _y0, y1 = _y1;
 	int tiles = 0;
-	int dx = abs(x1 - x0);
-	int dy = abs(y1 - y0);
 
-	tiles = sqrt(dx * dx + dy * dy) / 32;
-
+	tiles = game->getDistance(_x0, _y0, _x1, _y1) / 32;
 	return tiles;
 }
 

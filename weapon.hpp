@@ -56,4 +56,10 @@ public:
 	SniperRifle(sf::Texture& objectTexture);
 };
 
+class PlasmaCannon : public Weapon
+{
+public:
+	PlasmaCannon(sf::Texture& objectTexture);
+};
+
 #endif

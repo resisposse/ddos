@@ -11,6 +11,7 @@ class ProjectileSprite
 public:
 	int speed;
 	int damage;
+	int aoe;
 	float xVelocity;
 	float yVelocity;
 	float inaccuracyAmount = 0.f;
@@ -22,6 +23,7 @@ public:
 	                 sf::Vector2i mousePosition, int inaccuracy);
 	void update(float second);
 	int getDamage();
+	int getAoE();
 	//bool outsideWindow();
 };
 
@@ -50,6 +52,13 @@ class HeavyBulletSprite : public ProjectileSprite
 {
 public:
 	HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+		sf::Vector2i mousePosition, int inaccuracy);
+};
+
+class PlasmaBallSprite : public ProjectileSprite
+{
+public:
+	PlasmaBallSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
 		sf::Vector2i mousePosition, int inaccuracy);
 };
 
