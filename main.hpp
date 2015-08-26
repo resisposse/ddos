@@ -53,6 +53,7 @@ public:
 	sf::Texture *pelletTexture;
 	sf::Texture *heavyBulletTexture;
 	sf::Texture *plasmaBallTexture;
+	sf::Texture *beamTexture;
 	sf::Texture *weaponTexture;
 	sf::Texture *cursorTexture;
 	sf::Texture *healthTexture;

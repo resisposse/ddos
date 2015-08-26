@@ -18,6 +18,7 @@
  * 2 = pellet
  * 3 = heavyBullet
  * 4 = plasmaBall
+ * 5 = beam
  */
 Weapon::Weapon(sf::Texture& weaponTexture)
 {
@@ -136,5 +137,20 @@ PlasmaCannon::PlasmaCannon(sf::Texture& weaponTexture) : Weapon(weaponTexture)
 
 	sf::IntRect mPlasmaCannon(32 * 9, 32 * 0, 32, 32);
 	sprite.setTextureRect(mPlasmaCannon);
+	sprite.setOrigin(16, 0);
+}
+
+BeamRifle::BeamRifle(sf::Texture& weaponTexture) : Weapon(weaponTexture)
+{
+	name = "Beam Rifle";
+	attackSpeed = 0.02;
+	spreadAngle = 2;
+	ammoType = 5;
+	ammo = 200;
+	bullets = 1;
+	weaponPosition = 6;
+
+	sf::IntRect mBeamRifle(32 * 11, 32 * 0, 32, 32);
+	sprite.setTextureRect(mBeamRifle);
 	sprite.setOrigin(16, 0);
 }

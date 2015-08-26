@@ -19,9 +19,11 @@ ProjectileSprite::ProjectileSprite(sf::Texture& projectileTexture, sf::Vector2f 
 	sf::Vector2f difference, differenceTmp;
 	sf::Vector2u spriteSize = projectileTexture.getSize();
 	position = startPosition;
+	hit = false;
 	speed = 300;
 	damage = 10;
 	aoe = 0; /* Area of effect in pixels */
+	piercing = false;
 
 	sprite.setTexture(projectileTexture);
 	sprite.setScale(0.5, 0.5);
@@ -80,40 +82,60 @@ bool ProjectileSprite::outsideWindow()
 BulletSprite::BulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
                            : ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
+	hit = false;
 	speed = 500;
 	damage = 18;
 	aoe = 0;
+	piercing = false;
 }
 
 LaserSprite::LaserSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
                          : ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
+	hit = false;
 	speed = 1000;
 	damage = 25;
 	aoe = 0;
+	piercing = true;
 
 }
 
 PelletSprite::PelletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
 						: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
+	hit = false;
 	speed = 300;
 	damage = 12;
 	aoe = 0;
+	piercing = false;
 }
 
 HeavyBulletSprite::HeavyBulletSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
 	: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
+	hit = false;
 	speed = 1500;
 	damage = 50;
 	aoe = 0;
+	piercing = false;
 }
 
 PlasmaBallSprite::PlasmaBallSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
 	: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
 {
+	hit = false;
 	speed = 500;
 	damage = 50;
 	aoe = 64;
+	piercing = false;
+}
+
+BeamSprite::BeamSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition, sf::Vector2i mousePosition, int inaccuracy)
+	: ProjectileSprite(projectileTexture, startPosition, mousePosition, inaccuracy)
+{
+	hit = false;
+	speed = 800;
+	damage = 10;
+	aoe = 0;
+	piercing = true;
 }

@@ -9,9 +9,11 @@
 class ProjectileSprite
 {
 public:
+	bool hit;
 	int speed;
 	int damage;
 	int aoe;
+	bool piercing;
 	float xVelocity;
 	float yVelocity;
 	float inaccuracyAmount = 0.f;
@@ -59,6 +61,13 @@ class PlasmaBallSprite : public ProjectileSprite
 {
 public:
 	PlasmaBallSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
+		sf::Vector2i mousePosition, int inaccuracy);
+};
+
+class BeamSprite : public ProjectileSprite
+{
+public:
+	BeamSprite(sf::Texture& projectileTexture, sf::Vector2f startPosition,
 		sf::Vector2i mousePosition, int inaccuracy);
 };
 

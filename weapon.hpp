@@ -62,4 +62,10 @@ public:
 	PlasmaCannon(sf::Texture& objectTexture);
 };
 
+class BeamRifle : public Weapon
+{
+public:
+	BeamRifle(sf::Texture& objectTexture);
+};
+
 #endif

@@ -114,7 +114,7 @@ Player::Player(sf::Texture &objectTexture, sf::Texture &weaponTexture, sf::Vecto
 	playerSpeed = 100.0;
 	playerShooting = false;
 
-	weapons.push_back(new PlasmaCannon(weaponTexture));
+	weapons.push_back(new BeamRifle(weaponTexture));
 	weapons.push_back(new LaserRifle(weaponTexture));
 
 	maxShieldPoints = 200.0;
@@ -248,6 +248,14 @@ void Player::shoot()
 					weapons[heldWeapon]->spreadAngle));
 
 				game->audio->sniperSound->play();
+
+				break;
+			case 5:
+				game->projectiles.push_back(BeamSprite(*game->beamTexture, game->player->sprite.getPosition(),
+					sf::Vector2i(app->mapPixelToCoords(sf::Mouse::getPosition(*app))),
+					weapons[heldWeapon]->spreadAngle));
+
+				game->audio->laserSound->play();
 
 				break;
 			default:

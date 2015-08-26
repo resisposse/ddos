@@ -58,6 +58,7 @@ Game::~Game()
 	delete pelletTexture;
 	delete heavyBulletTexture;
 	delete plasmaBallTexture;
+	delete beamTexture;
 	delete weaponTexture;
 	delete playerTexture;
 	delete enemyMeleeTexture;
@@ -313,6 +314,9 @@ void Game::loadTextures()
 	plasmaBallTexture = new sf::Texture();
 	plasmaBallTexture->loadFromFile("media/plasmaBall.png");
 	plasmaBallTexture->setSmooth(true);
+	beamTexture = new sf::Texture();
+	beamTexture->loadFromFile("media/beam.png");
+	beamTexture->setSmooth(true);
 
 	/* We ought to not lose this texture, it's very valuable */
 	valuableTexture = new sf::Texture();
@@ -359,6 +363,7 @@ void Game::initializeWeapons()
 	weapons.push_back(new MachineGun(*weaponTexture));
 	weapons.push_back(new SniperRifle(*weaponTexture));
 	weapons.push_back(new PlasmaCannon(*weaponTexture));
+	weapons.push_back(new BeamRifle(*weaponTexture));
 }
 
 void Game::initializeHUD()
@@ -398,8 +403,10 @@ void Game::spawnWeapons(int amount)
 			mapWeapons.push_back(new MachineGun(*weaponTexture));
 		} else if (tmp == 4) {
 			mapWeapons.push_back(new SniperRifle(*weaponTexture));
-		} else {
+		} else if (tmp == 5) {
 			mapWeapons.push_back(new PlasmaCannon(*weaponTexture));
+		} else {
+			mapWeapons.push_back(new BeamRifle(*weaponTexture));
 	}
 		mapWeapons[i]->sprite.setPosition(randomSpawn());
 		mapWeapons[i]->sprite.setRotation(rand() % 360);
@@ -506,16 +513,26 @@ void Game::checkProjectileCollisions()
 {
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		int x, y, damage, aoe;
+		bool hit = projectiles[i].hit;
 		x = projectiles[i].position.x;
 		y = projectiles[i].position.y;
-		damage = projectiles[i].getDamage();
+		if (hit) {
+			damage = 0;
+		} else {
+			damage = projectiles[i].getDamage();
+		}
 		aoe = projectiles[i].getAoE();
 		if (checkEnemyCollisions(x, y, damage) == 1) {
+			projectiles[i].hit = true;
 			if (aoe > 0) {
 				checkEnemiesInAoE(x, y, aoe, damage);
 			}
-			projectiles.erase(projectiles.begin() + i);
+			if (!projectiles[i].piercing) {
+				projectiles.erase(projectiles.begin() + i);
+			}
 			break;
+		} else {
+			projectiles[i].hit = false;
 		}
 		if (map->collision(x, y, "projectile") == 1) {
 			if (aoe > 0) {
