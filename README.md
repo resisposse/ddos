@@ -10,11 +10,11 @@ Dark Domains of Space aka DDoS is a top-down sci-fi roguelike space shooter. Kil
 5. Enjoy!
 
 # Controls
-WASD to move character
-Mouse to aim
-Q and E to switch weapons
-G to pick up weapons from the ground
-T on teleport pad to move to next stage
+* WASD to move character
+* Mouse to aim
+* Q and E to switch weapons
+* G to pick up weapons from the ground
+* T on teleport pad to move to next stage
 
 # Authors
 * Topias Vainio [@topiasv](https://github.com/topiasv)
