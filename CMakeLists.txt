@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project("Dark Domains of Space")
 
 # To find SFML headers
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/SFML/cmake/Modules")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/SFML/cmake/Modules")
 
 # Typing every file separately is actually what CMake itself recommends. The
 # problem with GLOB is that when a new file is added, cmake has to be rerun
